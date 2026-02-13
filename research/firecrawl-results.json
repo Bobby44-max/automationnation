@@ -1,0 +1,187 @@
+{
+  "industry_pain_points": [
+    {
+      "value": "Uncertainty in scheduling and deciding when to postpone work (lack of clear SOP)",
+      "value_citation": "roofing_weather.json"
+    },
+    {
+      "value": "Water damage to interiors if unexpected rain occurs during roof tear-off",
+      "value_citation": "roofing_weather.json"
+    },
+    {
+      "value": "Shingles failing to seal in cold temperatures (below 40°F)",
+      "value_citation": "roofing_weather.json"
+    },
+    {
+      "value": "High humidity causes drying and curing challenges, leading to slow project completion",
+      "value_citation": "painting_weather.json"
+    },
+    {
+      "value": "Dew point issues where surface temperature and ambient temperature converge, preventing coating application",
+      "value_citation": "painting_weather.json"
+    },
+    {
+      "value": "Route and schedule management difficulties (windows, call-ahead, weather moves, skips/returns)",
+      "value_citation": "landscaping_weather.json"
+    },
+    {
+      "value": "Clogging and clumping of mowing equipment when operating in wet conditions",
+      "value_citation": "landscaping_weather.json"
+    },
+    {
+      "value": "Manual rescheduling of entire routes due to rain or inclement weather",
+      "value_citation": "software_solutions.json"
+    },
+    {
+      "value": "Loss of revenue due to 'no-shows' or late cancellations based on weather forecasts",
+      "value_citation": "software_solutions.json"
+    }
+  ],
+  "existing_solutions": [
+    {
+      "name": "Jobber",
+      "name_citation": "https://getjobber.com/pricing/",
+      "pricing": "$35 - $499/mo depending on plan",
+      "pricing_citation": "https://getjobber.com/pricing/",
+      "features": [
+        { "value": "Custom automation builder", "value_citation": "https://getjobber.com/pricing/" },
+        { "value": "Automated client notifications", "value_citation": "https://getjobber.com/pricing/" },
+        { "value": "Route optimization", "value_citation": "https://getjobber.com/pricing/" }
+      ],
+      "source_url": "https://getjobber.com/pricing/"
+    },
+    {
+      "name": "ServiceTitan",
+      "name_citation": "https://www.servicetitan.com/solutions/scheduling-software",
+      "pricing": "Contact for pricing",
+      "pricing_citation": "https://www.servicetitan.com/solutions/scheduling-software",
+      "features": [
+        { "value": "Comprehensive dispatching", "value_citation": "https://www.servicetitan.com/solutions/scheduling-software" },
+        { "value": "AI-driven route optimization", "value_citation": "https://www.servicetitan.com/solutions/scheduling-software" },
+        { "value": "Advanced customer communication", "value_citation": "https://www.servicetitan.com/solutions/scheduling-software" }
+      ],
+      "source_url": "https://www.servicetitan.com/solutions/scheduling-software"
+    },
+    {
+      "name": "Housecall Pro",
+      "name_citation": "https://www.housecallpro.com/pricing/",
+      "pricing": "Starts at $49/mo (Basic)",
+      "pricing_citation": "https://www.housecallpro.com/pricing/",
+      "features": [
+        { "value": "Scheduling and dispatching with drag-and-drop", "value_citation": "https://www.housecallpro.com/pricing/" },
+        { "value": "Snow removal management tools", "value_citation": "https://www.housecallpro.com/pricing/" },
+        { "value": "Instantly adjust schedules", "value_citation": "https://www.housecallpro.com/pricing/" }
+      ],
+      "source_url": "https://www.housecallpro.com/pricing/"
+    },
+    {
+      "name": "LawnPro",
+      "name_citation": "https://www.lawnprosoftware.com/pricing/",
+      "pricing": "$29 - $97/mo",
+      "pricing_citation": "https://www.lawnprosoftware.com/pricing/",
+      "features": [
+        { "value": "AI Route Optimization with weather overlays", "value_citation": "https://www.lawnprosoftware.com/pricing/" },
+        { "value": "Weather-based routing on rain delay days", "value_citation": "https://www.lawnprosoftware.com/pricing/" },
+        { "value": "Automated customer notifications", "value_citation": "https://www.lawnprosoftware.com/pricing/" }
+      ],
+      "source_url": "https://www.lawnprosoftware.com/pricing/"
+    },
+    {
+      "name": "Yardbook",
+      "name_citation": "https://support.yardbook.com/weather-report/",
+      "pricing": "Free or $34.99/mo",
+      "pricing_citation": "https://support.yardbook.com/weather-report/",
+      "features": [
+        { "value": "Live Weather Report for chosen city", "value_citation": "https://support.yardbook.com/weather-report/" },
+        { "value": "Scheduling and dispatching", "value_citation": "https://support.yardbook.com/weather-report/" },
+        { "value": "Route optimization", "value_citation": "https://support.yardbook.com/weather-report/" }
+      ],
+      "source_url": "https://support.yardbook.com/weather-report/"
+    },
+    {
+      "name": "Zuper",
+      "name_citation": "https://www.zuper.co/pricing",
+      "pricing": "Starts around $20-30/user/mo",
+      "pricing_citation": "https://www.zuper.co/pricing",
+      "features": [
+        { "value": "Real-time weather integration in scheduler", "value_citation": "https://www.zuper.co/pricing" },
+        { "value": "AI voice notes", "value_citation": "https://www.zuper.co/pricing" },
+        { "value": "Route optimization with live traffic and weather", "value_citation": "https://www.zuper.co/pricing" }
+      ],
+      "source_url": "https://www.zuper.co/pricing"
+    },
+    {
+      "name": "Workiz",
+      "name_citation": "https://www.workiz.com/pricing/",
+      "pricing": "$199 - $599/mo",
+      "pricing_citation": "https://www.workiz.com/pricing/",
+      "features": [
+        { "value": "Automation Center for custom triggers", "value_citation": "https://www.workiz.com/pricing/" },
+        { "value": "Snow removal specific support", "value_citation": "https://www.workiz.com/pricing/" },
+        { "value": "Advanced scheduling", "value_citation": "https://www.workiz.com/pricing/" }
+      ],
+      "source_url": "https://www.workiz.com/pricing/"
+    },
+    {
+      "name": "GorillaDesk",
+      "name_citation": "https://gorilladesk.com/pricing/",
+      "pricing": "$49 - $99/mo",
+      "pricing_citation": "https://gorilladesk.com/pricing/",
+      "features": [
+        { "value": "Triggered Automations", "value_citation": "https://gorilladesk.com/pricing/" },
+        { "value": "Adjust schedules for weather", "value_citation": "https://gorilladesk.com/pricing/" },
+        { "value": "GPS tracking", "value_citation": "https://gorilladesk.com/pricing/" }
+      ],
+      "source_url": "https://gorilladesk.com/pricing/"
+    }
+  ],
+  "weather_thresholds": [
+    { "industry_vertical": "Roofing", "weather_condition": "Temperature", "threshold": "40°F and rising (shingle brittleness)" },
+    { "industry_vertical": "Roofing", "weather_condition": "Rain Probability", "threshold": "70% chance (trigger for cancellation)" },
+    { "industry_vertical": "Roofing", "weather_condition": "Wind Speed", "threshold": "20-30 mph (safety limit)" },
+    { "industry_vertical": "Exterior Painting", "weather_condition": "Humidity", "threshold": "85% RH (max for application)" },
+    { "industry_vertical": "Exterior Painting", "weather_condition": "Temperature", "threshold": "35°F for low-temp paint; 50°F standard" },
+    { "industry_vertical": "Exterior Painting", "weather_condition": "Dew Point", "threshold": "Surface must be 5°F above dew point" },
+    { "industry_vertical": "Lawn Care (Mowing)", "weather_condition": "Temperature", "threshold": "Stop mowing > 80°F (cool season grass)" },
+    { "industry_vertical": "Lawn Care (Application)", "weather_condition": "Soil Temperature", "threshold": "52-53°F (pre-emergent timing)" },
+    { "industry_vertical": "Lawn Care (Chemical)", "weather_condition": "Wind Speed", "threshold": "10-15 mph (max for spraying)" }
+  ],
+  "buying_signals": [
+    { "value": "Business scaling to 3+ crews making manual reschedule unmanageable" },
+    { "value": "Customer churn due to poor communication regarding weather-related delays" },
+    { "value": "Post-severe wind events (homeowners finding shingles in yard)" },
+    { "value": "High humidity seasons causing repeated drying delays" },
+    { "value": "Interest in irrigation system evaluations for water efficiency" }
+  ],
+  "operational_patterns": [
+    { "value": "Final cancellation calls made early morning (approx. 5:00 AM - 7:00 AM) after final forecast check" },
+    { "value": "Shifting crews to indoor work or maintenance tasks during rain days" },
+    { "value": "Raising mower height (e.g., to 4 inches) during hot and dry summer periods" },
+    { "value": "Waiting 1-2 days post-pressure washing to ensure substrate dryness" },
+    { "value": "Using bulk SMS tools to notify clients of rain delays by early morning" }
+  ],
+  "feature_wishlist": [
+    { "feature": "Auto-reschedule engine", "description": "Automatically moves jobs to the next clear day based on forecast" },
+    { "feature": "Radar overlay on maps", "description": "Native radar overlay directly on the scheduling map" },
+    { "feature": "ROI forecasting", "description": "Predict automation ROI based on volume and exception rates" },
+    { "feature": "Impact-based alerts", "description": "Alerts based on actual operational impact (e.g., paint dry time) rather than just temp" },
+    { "feature": "One-click route-wide notification", "description": "SMS/Email 'Rain Delay' button for immediate route notification" }
+  ],
+  "industry_vertical_categorization": {
+    "Roofing": {
+      "Key Thresholds": ["40°F", "20mph wind", "70% rain"],
+      "Critical Pains": ["Shingle adhesion", "Water intrusion"],
+      "Top Features": ["Safety alerts", "Wind monitoring"]
+    },
+    "Painting": {
+      "Key Thresholds": ["85% humidity", "35-50°F temp", "5°F dew point spread"],
+      "Critical Pains": ["Slow dry times", "Curing failures"],
+      "Top Features": ["Humidity-based scheduling", "Product-specific dry-time prediction"]
+    },
+    "Landscaping": {
+      "Key Thresholds": ["80°F heat", "52°F soil temp", "Wet soil clumping"],
+      "Critical Pains": ["Route disruption", "Equipment clogging"],
+      "Top Features": ["Weather-aware routing", "Automated rain skip notifications"]
+    }
+  }
+}
