@@ -1,0 +1,33 @@
+# ============================================================
+# APEX WEATHER SCHEDULING — ENVIRONMENT VARIABLES
+# ============================================================
+# Copy this file to .env.local and fill in your values.
+# NEVER commit .env.local to version control.
+# ============================================================
+
+# --- Convex Backend ---
+CONVEX_DEPLOYMENT=                        # From: npx convex init
+NEXT_PUBLIC_CONVEX_URL=                   # From: Convex dashboard → Settings → URL
+
+# --- Weather Data Providers ---
+TOMORROW_IO_API_KEY=                      # From: https://www.tomorrow.io/weather-api/ (500 free calls/day)
+OPENWEATHERMAP_API_KEY=                   # Fallback: https://openweathermap.org/api (1000 free calls/day)
+
+# --- SMS Notifications (Twilio) ---
+TWILIO_ACCOUNT_SID=                       # From: https://console.twilio.com
+TWILIO_AUTH_TOKEN=                        # From: Twilio console → Account Info
+TWILIO_PHONE_NUMBER=                      # From: Twilio console → Phone Numbers (~$1/mo)
+
+# --- Email Notifications (SendGrid) ---
+SENDGRID_API_KEY=                         # From: https://sendgrid.com (100 free emails/day)
+SENDGRID_FROM_EMAIL=weather@yourdomain.com
+
+# --- Local AI (Ollama) ---
+OLLAMA_BASE_URL=http://localhost:11434    # Local Ollama instance (D:\ollama on your machine)
+OLLAMA_MODEL=                             # Run `ollama list` to get your model name
+
+# --- n8n Workflow Orchestration ---
+N8N_WEBHOOK_BASE_URL=                     # Your n8n instance URL (e.g., http://localhost:5678)
+
+# --- App ---
+NEXT_PUBLIC_APP_URL=http://localhost:3000  # Your app's public URL
