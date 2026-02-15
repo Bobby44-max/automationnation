@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --status-green: #22c55e;
+    --status-yellow: #eab308;
+    --status-red: #ef4444;
+  }
+
+  body {
+    @apply bg-gray-950 text-white antialiased;
+  }
+}

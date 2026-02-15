@@ -7,7 +7,7 @@ import { mutation } from "./_generated/server";
  * - LawnSite/r/lawncare (landscaping)
  */
 export const seedDefaultPresets = mutation({
-  handler: async (ctx) => {
+  handler: async (ctx: any) => {
     // Check if defaults already exist
     const existing = await ctx.db
       .query("weatherRules")
