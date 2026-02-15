@@ -1,0 +1,31 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx convex dev)",
+      "Bash(npx convex deploy)",
+      "Bash(npm run dev)",
+      "Bash(npm run build)",
+      "Bash(npm run lint)",
+      "Bash(npx tsc --noEmit)",
+      "Bash(npm install *)",
+      "Bash(npm test *)",
+      "Bash(npx convex run *)",
+      "Bash(ollama *)",
+      "Bash(git status)",
+      "Bash(git diff *)",
+      "Bash(git log *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push *)"
+    ]
+  },
+  "mcpServers": {
+    "convex": {
+      "command": "npx",
+      "args": ["-y", "@anthropic-ai/claude-code-mcp-server"],
+      "env": {
+        "CONVEX_URL": "${NEXT_PUBLIC_CONVEX_URL}"
+      }
+    }
+  }
+}

@@ -1,0 +1,108 @@
+{
+  "name": "Weather Check Daily",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [{ "field": "cronExpression", "expression": "0 5 * * *" }]
+        }
+      },
+      "name": "Daily 5AM Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [250, 300],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "url": "={{$env.CONVEX_URL}}/api/query",
+        "method": "POST",
+        "body": {
+          "path": "weatherScheduling:getJobsForDate",
+          "args": {
+            "businessId": "={{$env.BUSINESS_ID}}",
+            "date": "={{$today.format('YYYY-MM-DD')}}"
+          }
+        }
+      },
+      "name": "Fetch Today's Jobs",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [450, 300],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "value"
+      },
+      "name": "Split by Job",
+      "type": "n8n-nodes-base.splitOut",
+      "position": [650, 300],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "url": "https://api.tomorrow.io/v4/timelines",
+        "qs": {
+          "location": "={{$json.zipCode}}",
+          "fields": "temperature,humidity,windSpeed,windGust,precipitationProbability,dewPoint",
+          "timesteps": "1h",
+          "units": "imperial",
+          "apikey": "={{$env.TOMORROW_IO_API_KEY}}"
+        }
+      },
+      "name": "Fetch Weather",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [850, 300],
+      "typeVersion": 1,
+      "notes": "Deduplicate by zip code to minimize API calls"
+    },
+    {
+      "parameters": {
+        "functionCode": "// Rule Engine - evaluates weather rules for this job's trade\nconst forecast = items[0].json.data?.timelines?.[0]?.intervals || [];\nconst job = items[0].json.job;\nconst rules = items[0].json.tradePreset?.rules || [];\n\nconst triggered = [];\nconst workHours = forecast.filter(h => {\n  const hour = new Date(h.startTime).getHours();\n  return hour >= 8 && hour < 17;\n});\n\nfor (const hourData of workHours) {\n  for (const rule of rules) {\n    const actual = hourData.values[rule.variable];\n    if (actual === undefined) continue;\n    let hit = false;\n    switch (rule.operator) {\n      case '>=': hit = actual >= rule.value; break;\n      case '<=': hit = actual <= rule.value; break;\n    }\n    if (hit) {\n      triggered.push({ variable: rule.variable, actual, threshold: rule.value, action: rule.action, reason: rule.reason });\n    }\n  }\n}\n\nconst hasCancel = triggered.some(r => ['cancel','reschedule_route','cancel_chemical'].includes(r.action));\nconst hasWarn = triggered.some(r => r.action === 'warn');\nconst status = hasCancel ? 'red' : hasWarn ? 'yellow' : 'green';\n\nreturn [{ json: { jobId: job._id, status, triggered_rules: triggered, recommendation: hasCancel ? 'reschedule' : hasWarn ? 'proceed_with_caution' : 'proceed' } }];"
+      },
+      "name": "Rule Engine",
+      "type": "n8n-nodes-base.function",
+      "position": [1050, 300],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            { "value1": "={{$json.status}}", "value2": "red" },
+            { "value1": "={{$json.status}}", "value2": "yellow" },
+            { "value1": "={{$json.status}}", "value2": "green" }
+          ]
+        }
+      },
+      "name": "Route by Status",
+      "type": "n8n-nodes-base.switch",
+      "position": [1250, 300],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "url": "={{$env.CONVEX_URL}}/api/mutation",
+        "method": "POST",
+        "body": {
+          "path": "weatherScheduling:updateJobWeatherStatus",
+          "args": "={{$json}}"
+        }
+      },
+      "name": "Update Convex Status",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [1450, 300],
+      "typeVersion": 1
+    }
+  ],
+  "connections": {
+    "Daily 5AM Trigger": { "main": [[{ "node": "Fetch Today's Jobs", "type": "main", "index": 0 }]] },
+    "Fetch Today's Jobs": { "main": [[{ "node": "Split by Job", "type": "main", "index": 0 }]] },
+    "Split by Job": { "main": [[{ "node": "Fetch Weather", "type": "main", "index": 0 }]] },
+    "Fetch Weather": { "main": [[{ "node": "Rule Engine", "type": "main", "index": 0 }]] },
+    "Rule Engine": { "main": [[{ "node": "Route by Status", "type": "main", "index": 0 }]] },
+    "Route by Status": { "main": [[{ "node": "Update Convex Status", "type": "main", "index": 0 }]] }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
