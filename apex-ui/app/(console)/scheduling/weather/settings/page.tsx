@@ -173,6 +173,104 @@ export default function WeatherSettingsPage() {
             </div>
           </div>
         )}
+
+        {/* Integrations Section */}
+        <div className="mt-10">
+          <h2 className="text-xl font-bold mb-2">Integrations</h2>
+          <p className="text-gray-400 mb-6 text-sm">
+            Connected services that sync with weather-based reschedules.
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Voice AI (Riley / Vapi) */}
+            <div className="rounded-xl bg-gray-900 p-5">
+              <div className="flex items-center gap-3 mb-3">
+                <span className="inline-block h-3 w-3 rounded-full bg-purple-400" />
+                <h3 className="text-sm font-semibold">Voice AI — Riley</h3>
+              </div>
+              <p className="text-xs text-gray-400 mb-4">
+                Hands-free weather checks, reschedule confirmations, and crew
+                alerts via voice calls powered by Vapi.
+              </p>
+              <div className="space-y-2 text-xs text-gray-500">
+                <div className="flex justify-between">
+                  <span>Workflow</span>
+                  <span className="text-gray-300 font-mono">
+                    voice-ai-weather-scheduler-v1
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Triggers</span>
+                  <span className="text-gray-300">
+                    Inbound call, voice command, outbound alert
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Status</span>
+                  <span className="text-purple-400">Active</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Jobber CRM */}
+            <div className="rounded-xl bg-gray-900 p-5">
+              <div className="flex items-center gap-3 mb-3">
+                <span className="inline-block h-3 w-3 rounded-full bg-blue-400" />
+                <h3 className="text-sm font-semibold">Jobber CRM</h3>
+              </div>
+              <p className="text-xs text-gray-400 mb-4">
+                Syncs weather reschedules with Jobber visits, client
+                notifications, and invoice dates automatically.
+              </p>
+              <div className="space-y-2 text-xs text-gray-500">
+                <div className="flex justify-between">
+                  <span>Workflow</span>
+                  <span className="text-gray-300 font-mono">
+                    jobber-weather-rescheduler-v1
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Sync</span>
+                  <span className="text-gray-300">
+                    Bidirectional (Apex wins on conflict)
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Status</span>
+                  <span className="text-blue-400">Connected</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Calendar Sync */}
+            <div className="rounded-xl bg-gray-900 p-5">
+              <div className="flex items-center gap-3 mb-3">
+                <span className="inline-block h-3 w-3 rounded-full bg-green-400" />
+                <h3 className="text-sm font-semibold">Calendar Sync</h3>
+              </div>
+              <p className="text-xs text-gray-400 mb-4">
+                Keeps Google Calendar, Outlook, and CalDAV calendars updated
+                when weather reschedules occur.
+              </p>
+              <div className="space-y-2 text-xs text-gray-500">
+                <div className="flex justify-between">
+                  <span>Workflow</span>
+                  <span className="text-gray-300 font-mono">
+                    calendar-sync-v1
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Reconciliation</span>
+                  <span className="text-gray-300">Every 4 hours</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Status</span>
+                  <span className="text-green-400">Active</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -14,6 +14,8 @@ export function WeatherSchedulingClient() {
   const [selectedTrade, setSelectedTrade] = useState<string>("all");
   const [showChat, setShowChat] = useState(false);
   const [isChecking, setIsChecking] = useState(false);
+  const [isSyncingJobber, setIsSyncingJobber] = useState(false);
+  const [isSyncingCalendar, setIsSyncingCalendar] = useState(false);
 
   // TODO: Replace with actual authenticated business ID
   const businessId = "placeholder_business_id";
@@ -57,6 +59,46 @@ export function WeatherSchedulingClient() {
     }
   }
 
+  // Trigger Jobber CRM sync for weather reschedules
+  async function handleJobberSync() {
+    setIsSyncingJobber(true);
+    try {
+      const webhookUrl =
+        process.env.NEXT_PUBLIC_N8N_WEBHOOK_URL ||
+        "http://localhost:5678/webhook/jobber-weather-sync";
+
+      await fetch(webhookUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ businessId, date: today }),
+      });
+    } catch (err) {
+      console.error("Jobber sync failed:", err);
+    } finally {
+      setTimeout(() => setIsSyncingJobber(false), 3000);
+    }
+  }
+
+  // Trigger calendar sync across all connected providers
+  async function handleCalendarSync() {
+    setIsSyncingCalendar(true);
+    try {
+      const webhookUrl =
+        process.env.NEXT_PUBLIC_N8N_WEBHOOK_URL ||
+        "http://localhost:5678/webhook/calendar-sync";
+
+      await fetch(webhookUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ businessId, date: today }),
+      });
+    } catch (err) {
+      console.error("Calendar sync failed:", err);
+    } finally {
+      setTimeout(() => setIsSyncingCalendar(false), 3000);
+    }
+  }
+
   return (
     <div className="min-h-screen bg-gray-950 text-white">
       {/* Header */}
@@ -88,6 +130,45 @@ export function WeatherSchedulingClient() {
           </div>
         </div>
       </header>
+
+      {/* Integration Status Bar */}
+      <div className="border-b border-gray-800 px-6 py-3">
+        <div className="flex items-center gap-6 text-xs">
+          {/* Voice AI (Riley) Status */}
+          <div className="flex items-center gap-2">
+            <span className="inline-block h-2 w-2 rounded-full bg-purple-400 animate-pulse" />
+            <span className="text-gray-400">
+              Voice AI (Riley) — Active
+            </span>
+          </div>
+
+          {/* Jobber CRM Sync */}
+          <div className="flex items-center gap-2">
+            <span className="inline-block h-2 w-2 rounded-full bg-blue-400" />
+            <span className="text-gray-400">Jobber CRM</span>
+            <button
+              onClick={handleJobberSync}
+              disabled={isSyncingJobber}
+              className="rounded bg-gray-800 px-2 py-0.5 text-gray-300 hover:bg-gray-700 disabled:opacity-50 transition-colors"
+            >
+              {isSyncingJobber ? "Syncing..." : "Sync"}
+            </button>
+          </div>
+
+          {/* Calendar Sync */}
+          <div className="flex items-center gap-2">
+            <span className="inline-block h-2 w-2 rounded-full bg-green-400" />
+            <span className="text-gray-400">Calendar Sync</span>
+            <button
+              onClick={handleCalendarSync}
+              disabled={isSyncingCalendar}
+              className="rounded bg-gray-800 px-2 py-0.5 text-gray-300 hover:bg-gray-700 disabled:opacity-50 transition-colors"
+            >
+              {isSyncingCalendar ? "Syncing..." : "Sync"}
+            </button>
+          </div>
+        </div>
+      </div>
 
       {/* Stats Bar */}
       <WeatherStatsBar
