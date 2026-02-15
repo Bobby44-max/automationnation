@@ -1,13 +1,20 @@
 import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
+import {
+  authenticateAndAuthorize,
+  getAuthenticatedUser,
+  requireRole,
+} from "./auth";
 
 // ============================================================
-// QUERIES
+// QUERIES (all require authentication + business access)
 // ============================================================
 
 export const getJobsForDate = query({
   args: { businessId: v.id("businesses"), date: v.string() },
   handler: async (ctx, { businessId, date }) => {
+    await authenticateAndAuthorize(ctx, businessId as string);
+
     const jobs = await ctx.db
       .query("jobs")
       .withIndex("by_business_date", (q) =>
@@ -15,7 +22,6 @@ export const getJobsForDate = query({
       )
       .collect();
 
-    // Enrich with client data and weather status
     const enriched = await Promise.all(
       jobs.map(async (job) => {
         const client = await ctx.db.get(job.clientId);
@@ -41,6 +47,8 @@ export const getJobsForDateRange = query({
     endDate: v.string(),
   },
   handler: async (ctx, { businessId, startDate, endDate }) => {
+    await authenticateAndAuthorize(ctx, businessId as string);
+
     const allJobs = await ctx.db
       .query("jobs")
       .withIndex("by_business_date", (q) => q.eq("businessId", businessId))
@@ -52,6 +60,9 @@ export const getJobsForDateRange = query({
 export const getWeatherStatusForJobs = query({
   args: { jobIds: v.array(v.id("jobs")) },
   handler: async (ctx, { jobIds }) => {
+    // Auth: verify user is authenticated (business check done per-job)
+    await getAuthenticatedUser(ctx);
+
     const statuses = await Promise.all(
       jobIds.map((jobId) =>
         ctx.db
@@ -67,8 +78,8 @@ export const getWeatherStatusForJobs = query({
 export const getTradePreset = query({
   args: { businessId: v.optional(v.id("businesses")), trade: v.string() },
   handler: async (ctx, { businessId, trade }) => {
-    // Try business-specific first
     if (businessId) {
+      await authenticateAndAuthorize(ctx, businessId as string);
       const custom = await ctx.db
         .query("weatherRules")
         .withIndex("by_business_trade", (q) =>
@@ -76,6 +87,8 @@ export const getTradePreset = query({
         )
         .first();
       if (custom) return custom;
+    } else {
+      await getAuthenticatedUser(ctx);
     }
 
     // Fall back to system default
@@ -94,6 +107,8 @@ export const getWeatherWindows = query({
     trade: v.string(),
   },
   handler: async (ctx, { businessId, location, trade }) => {
+    await authenticateAndAuthorize(ctx, businessId as string);
+
     const windows = await ctx.db
       .query("weatherWindows")
       .withIndex("by_business_location", (q) =>
@@ -111,6 +126,8 @@ export const getWeatherActions = query({
     endDate: v.string(),
   },
   handler: async (ctx, { businessId, startDate, endDate }) => {
+    await authenticateAndAuthorize(ctx, businessId as string);
+
     const actions = await ctx.db
       .query("weatherActions")
       .withIndex("by_business", (q) => q.eq("businessId", businessId))
@@ -124,6 +141,8 @@ export const getWeatherActions = query({
 export const getDashboardStats = query({
   args: { businessId: v.id("businesses"), date: v.string() },
   handler: async (ctx, { businessId, date }) => {
+    await authenticateAndAuthorize(ctx, businessId as string);
+
     const statuses = await ctx.db
       .query("jobWeatherStatus")
       .withIndex("by_business_date", (q) =>
@@ -137,7 +156,6 @@ export const getDashboardStats = query({
     const proceeding = statuses.filter((s) => s.status === "green").length;
     const warnings = statuses.filter((s) => s.status === "yellow").length;
 
-    // Sum revenue protected from today's actions
     const actions = await ctx.db
       .query("weatherActions")
       .withIndex("by_business_date", (q) =>
@@ -173,6 +191,8 @@ export const getNotificationLog = query({
     limit: v.optional(v.number()),
   },
   handler: async (ctx, { businessId, limit }) => {
+    await authenticateAndAuthorize(ctx, businessId as string);
+
     const notifications = await ctx.db
       .query("notifications")
       .withIndex("by_business", (q) => q.eq("businessId", businessId))
@@ -185,30 +205,34 @@ export const getNotificationLog = query({
 export const getAllTradePresets = query({
   args: { businessId: v.optional(v.id("businesses")) },
   handler: async (ctx, { businessId }) => {
+    const user = await getAuthenticatedUser(ctx);
+    if (businessId) {
+      await authenticateAndAuthorize(ctx, businessId as string);
+    }
+
     const defaults = await ctx.db
       .query("weatherRules")
       .withIndex("by_default", (q) => q.eq("isDefault", true))
       .collect();
 
-    if (!businessId) return defaults;
-
+    const targetBusinessId = businessId || user.businessId;
     const custom = await ctx.db
       .query("weatherRules")
-      .withIndex("by_business_trade", (q) => q.eq("businessId", businessId))
+      .withIndex("by_business_trade", (q) =>
+        q.eq("businessId", targetBusinessId as any)
+      )
       .collect();
 
-    // Merge: custom overrides defaults for same trade
     const customTrades = new Set(custom.map((c) => c.trade));
-    const merged = [
+    return [
       ...custom,
       ...defaults.filter((d) => !customTrades.has(d.trade)),
     ];
-    return merged;
   },
 });
 
 // ============================================================
-// MUTATIONS
+// MUTATIONS (all require authentication + business access)
 // ============================================================
 
 export const updateJobWeatherStatus = mutation({
@@ -234,6 +258,8 @@ export const updateJobWeatherStatus = mutation({
     summary: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    await authenticateAndAuthorize(ctx, args.businessId as string);
+
     const existing = await ctx.db
       .query("jobWeatherStatus")
       .withIndex("by_job", (q) => q.eq("jobId", args.jobId))
@@ -264,19 +290,25 @@ export const rescheduleJob = mutation({
     autoRescheduled: v.boolean(),
   },
   handler: async (ctx, { jobId, newDate, reason, autoRescheduled }) => {
+    const user = await getAuthenticatedUser(ctx);
+    requireRole(user, "dispatcher");
+
     const job = await ctx.db.get(jobId);
     if (!job) throw new Error(`Job ${jobId} not found`);
 
+    // Verify business access
+    if (user.businessId !== (job.businessId as string)) {
+      throw new Error("Access denied.");
+    }
+
     const originalDate = job.originalDate || job.date;
 
-    // Update job
     await ctx.db.patch(jobId, {
       date: newDate,
       originalDate,
       status: "rescheduled",
     });
 
-    // Update weather status
     const weatherStatus = await ctx.db
       .query("jobWeatherStatus")
       .withIndex("by_job", (q) => q.eq("jobId", jobId))
@@ -289,7 +321,6 @@ export const rescheduleJob = mutation({
       });
     }
 
-    // Log action
     await ctx.db.insert("weatherActions", {
       jobId,
       businessId: job.businessId,
@@ -297,7 +328,7 @@ export const rescheduleJob = mutation({
       fromDate: originalDate,
       toDate: newDate,
       reason,
-      notificationsSent: 0, // Updated after notifications sent
+      notificationsSent: 0,
       revenueProtected: job.estimatedRevenue,
       wasAutomatic: autoRescheduled,
       timestamp: Date.now(),
@@ -320,6 +351,8 @@ export const logWeatherAction = mutation({
     wasAutomatic: v.boolean(),
   },
   handler: async (ctx, args) => {
+    await authenticateAndAuthorize(ctx, args.businessId as string);
+
     return await ctx.db.insert("weatherActions", {
       ...args,
       timestamp: Date.now(),
@@ -336,7 +369,13 @@ export const logWeatherCheck = mutation({
     forecastHours: v.number(),
   },
   handler: async (ctx, args) => {
-    const cacheTtlMs = 2 * 60 * 60 * 1000; // 2 hours
+    if (args.businessId) {
+      await authenticateAndAuthorize(ctx, args.businessId as string);
+    } else {
+      await getAuthenticatedUser(ctx);
+    }
+
+    const cacheTtlMs = 2 * 60 * 60 * 1000;
     return await ctx.db.insert("weatherChecks", {
       ...args,
       timestamp: Date.now(),
@@ -359,6 +398,8 @@ export const logNotification = mutation({
     wasAiGenerated: v.boolean(),
   },
   handler: async (ctx, args) => {
+    await authenticateAndAuthorize(ctx, args.businessId as string);
+
     return await ctx.db.insert("notifications", {
       ...args,
       timestamp: Date.now(),
@@ -395,6 +436,9 @@ export const upsertWeatherRules = mutation({
     riskTolerance: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    const user = await authenticateAndAuthorize(ctx, args.businessId as string);
+    requireRole(user, "admin"); // Only admin+ can modify rules
+
     const existing = await ctx.db
       .query("weatherRules")
       .withIndex("by_business_trade", (q) =>
@@ -424,6 +468,9 @@ export const overrideJobStatus = mutation({
     overriddenBy: v.string(),
   },
   handler: async (ctx, { jobId, newStatus, overriddenBy }) => {
+    const user = await getAuthenticatedUser(ctx);
+    requireRole(user, "dispatcher"); // Dispatcher+ can override
+
     const weatherStatus = await ctx.db
       .query("jobWeatherStatus")
       .withIndex("by_job", (q) => q.eq("jobId", jobId))
@@ -431,13 +478,17 @@ export const overrideJobStatus = mutation({
 
     if (!weatherStatus) throw new Error(`No weather status for job ${jobId}`);
 
+    // Verify business access via the weather status record
+    if (user.businessId !== (weatherStatus.businessId as string)) {
+      throw new Error("Access denied.");
+    }
+
     await ctx.db.patch(weatherStatus._id, {
       status: newStatus,
       overriddenBy,
       recommendation: "proceed",
     });
 
-    // Log the override
     const job = await ctx.db.get(jobId);
     if (job) {
       await ctx.db.insert("weatherActions", {
@@ -475,7 +526,8 @@ export const cacheWeatherWindows = mutation({
     ),
   },
   handler: async (ctx, args) => {
-    // Replace existing windows for this business/location/trade
+    await authenticateAndAuthorize(ctx, args.businessId as string);
+
     const existing = await ctx.db
       .query("weatherWindows")
       .withIndex("by_business_location", (q) =>

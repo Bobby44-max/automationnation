@@ -1,5 +1,7 @@
 import { WeatherSchedulingClient } from "./WeatherSchedulingClient";
 
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: "Weather Scheduling | Apex AI",
   description:

@@ -5,13 +5,29 @@ export default defineSchema({
   // --- Business Profile ---
   businesses: defineTable({
     name: v.string(),
+    ownerId: v.string(), // Clerk user ID
     timezone: v.string(),
     primaryTrade: v.string(),
     planTier: v.string(), // "free", "starter", "pro", "business"
     ownerEmail: v.string(),
     ownerPhone: v.optional(v.string()),
     isActive: v.boolean(),
-  }).index("by_active", ["isActive"]),
+  })
+    .index("by_owner", ["ownerId"])
+    .index("by_active", ["isActive"]),
+
+  // --- Users (Team Members) ---
+  users: defineTable({
+    clerkId: v.string(), // Clerk user ID
+    businessId: v.id("businesses"),
+    role: v.string(), // "owner", "admin", "dispatcher", "crew_lead"
+    name: v.string(),
+    email: v.string(),
+    phone: v.optional(v.string()),
+    isActive: v.boolean(),
+  })
+    .index("by_clerk", ["clerkId"])
+    .index("by_business", ["businessId"]),
 
   // --- Clients ---
   clients: defineTable({
