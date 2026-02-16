@@ -1,0 +1,46 @@
+{
+  "name": "apex-weather-scheduling",
+  "version": "1.0.0",
+  "private": true,
+  "description": "AI-powered weather scheduling automation for 5,000+ service businesses",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "remotion:studio": "remotion studio",
+    "remotion:render": "remotion render"
+  },
+  "dependencies": {
+    "next": "^15.1.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "@clerk/nextjs": "^6.12.0",
+    "convex": "^1.17.0",
+    "convex-helpers": "^0.1.0",
+    "@stripe/stripe-js": "^5.5.0",
+    "stripe": "^17.5.0",
+    "twilio": "^5.4.0",
+    "@sendgrid/mail": "^8.1.0",
+    "remotion": "^4.0.0",
+    "@remotion/cli": "^4.0.0",
+    "@remotion/player": "^4.0.0",
+    "@remotion/lambda": "^4.0.0",
+    "framer-motion": "^12.0.0",
+    "tailwindcss": "^4.0.0",
+    "@tailwindcss/postcss": "^4.0.0",
+    "lucide-react": "^0.469.0",
+    "date-fns": "^4.1.0",
+    "react-hot-toast": "^2.4.1",
+    "clsx": "^2.1.0",
+    "tailwind-merge": "^3.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@types/node": "^22.0.0",
+    "eslint": "^9.0.0",
+    "eslint-config-next": "^15.1.0"
+  }
+}
