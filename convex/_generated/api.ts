@@ -20,6 +20,7 @@ export const api = {
     getDashboardStats: {} as AnyFn,
     getNotificationLog: {} as AnyFn,
     getAllTradePresets: {} as AnyFn,
+    getActiveBusinesses: {} as AnyFn,
     updateJobWeatherStatus: {} as AnyFn,
     rescheduleJob: {} as AnyFn,
     logWeatherAction: {} as AnyFn,
@@ -31,6 +32,23 @@ export const api = {
   },
   seedData: {
     seedDefaultPresets: {} as AnyFn,
+  },
+  actions: {
+    runWeatherCheck: {
+      runWeatherCheck: {} as AnyFn,
+    },
+    batchWeatherCheck: {
+      batchWeatherCheck: {} as AnyFn,
+    },
+    sendSms: {
+      sendSms: {} as AnyFn,
+    },
+    sendEmail: {
+      sendEmail: {} as AnyFn,
+    },
+    sendNotifications: {
+      sendRescheduleNotifications: {} as AnyFn,
+    },
   },
 };
 
