@@ -1,8 +1,8 @@
 # Apex Weather Scheduling — Project Brain
 
-> **Product**: AI-powered weather scheduling automation for service businesses
-> **Stack**: Next.js (App Router) + Convex (backend) + Ollama (local LLM) + n8n (orchestration)
-> **Repo**: `automationnation` — monorepo with `apex-ui/` as the main application
+> **Product**: AI-powered weather scheduling automation for 5,000+ service businesses
+> **Stack**: Next.js 15 (App Router) + Convex (backend) + Clerk (auth) + Stripe (billing)
+> **Repo**: `automationnation` — production-ready monorepo
 
 ---
 
@@ -14,91 +14,95 @@ automationnation/
 ├── .claude/
 │   ├── settings.json                  ← MCP servers, permissions
 │   └── commands/                      ← Phase agents + utility commands
-├── apex-ui/
-│   ├── app/(console)/scheduling/weather/  ← Next.js frontend
-│   │   ├── page.tsx
-│   │   ├── WeatherSchedulingClient.tsx
-│   │   ├── settings/page.tsx
-│   │   └── components/                ← JobCard, AiChat, BulkAction, etc.
-│   ├── convex/                        ← Convex backend
-│   │   ├── schema.ts                  ← Tables: weatherRules, jobWeatherStatus, weatherActions, weatherWindows
-│   │   ├── weatherScheduling.ts       ← Queries, mutations, actions
-│   │   ├── seedData.ts                ← Dev seed data
-│   │   └── aifCompiler/workflows/     ← AIF workflow definitions
-│   ├── cloud/aif-executor/            ← AIF execution engine
-│   │   ├── aifExecutor.js
-│   │   ├── stepHandlers/weather.js
-│   │   └── services/                  ← Weather, notifications, Ollama
-│   └── n8n-workflows/                 ← n8n automation JSONs
-└── research/                          ← Market research & strategy docs
+├── app/
+│   ├── layout.tsx                     ← Root layout with ClerkProvider + ConvexProvider
+│   ├── page.tsx                       ← Landing page
+│   ├── providers.tsx                  ← Auth + DB providers
+│   ├── error.tsx                      ← Global error boundary
+│   ├── not-found.tsx                  ← 404 page
+│   ├── (console)/                     ← Authenticated app shell
+│   │   ├── layout.tsx                 ← Sidebar + Topbar (force-dynamic)
+│   │   ├── dashboard/page.tsx         ← Today's weather overview
+│   │   ├── scheduling/weather/        ← Weather scheduling pages
+│   │   │   ├── page.tsx + WeatherSchedulingClient.tsx
+│   │   │   ├── settings/page.tsx      ← Weather rules editor
+│   │   │   └── components/            ← JobCard, WeatherStatsBar, etc.
+│   │   ├── notifications/page.tsx     ← Notification history
+│   │   ├── settings/page.tsx          ← Business profile
+│   │   └── billing/page.tsx           ← Stripe subscription management
+│   ├── sign-in/                       ← Clerk sign-in
+│   ├── sign-up/                       ← Clerk sign-up
+│   └── api/
+│       ├── health/route.ts            ← Health check endpoint
+│       └── webhooks/stripe/route.ts   ← Stripe webhook handler
+├── convex/
+│   ├── schema.ts                      ← 10 tables, 22+ indexes
+│   ├── weatherScheduling.ts           ← 9 queries + 8 mutations
+│   ├── seedData.ts                    ← 5 trade preset seeder
+│   ├── crons.ts                       ← Daily 5 AM weather check
+│   ├── auth.config.ts                 ← Clerk JWT integration
+│   ├── lib/
+│   │   ├── auth.ts                    ← getAuthenticatedBusinessId()
+│   │   ├── weatherEngine.ts           ← Deterministic rule evaluation
+│   │   ├── weatherApi.ts              ← Tomorrow.io + OWM with fallback
+│   │   ├── notificationTemplates.ts   ← 7 template types
+│   │   └── entitlements.ts            ← 4-tier feature gating
+│   └── actions/
+│       ├── runWeatherCheck.ts         ← Master check per business
+│       ├── batchWeatherCheck.ts       ← Scale: 50 businesses per batch
+│       ├── sendSms.ts                 ← Twilio with 3-retry backoff
+│       ├── sendEmail.ts               ← SendGrid
+│       └── sendNotifications.ts       ← Chain dispatcher
+├── components/
+│   ├── console/                       ← Sidebar, Topbar
+│   └── ui/                            ← Button, Card, Badge, Input, etc.
+├── lib/
+│   ├── utils.ts                       ← cn() utility
+│   ├── ui/theme.ts                    ← Design system tokens
+│   └── cloud/aif-executor-ref/        ← Original JS code (reference only)
+├── middleware.ts                       ← Clerk auth middleware
+├── research/                          ← Market research & strategy docs
+└── n8n-workflows/                     ← Legacy n8n JSONs (reference)
 ```
 
 ## CORE DOMAIN
 
 **Weather rule engine**: Deterministic (no LLM) — `if wind >= 25mph → cancel`.
-**Ollama layer**: Smart notifications, AI chat, weekly summaries. Always has template fallback.
-**Trade presets**: Roofing, exterior painting, landscaping (with real industry thresholds).
+**Template notifications**: 7 types, no AI dependency in critical path.
+**Trade presets**: Roofing, exterior painting, landscaping, concrete, pressure washing.
 **Status system**: GREEN (proceed) / YELLOW (warn) / RED (cancel + auto-reschedule).
+**Scale**: 5,000+ businesses via zip code dedup + batch processing.
 
 ## KEY TABLES (Convex)
 
 | Table | Purpose |
 |---|---|
+| `businesses` | Business profile + clerkOrgId + planTier |
 | `weatherRules` | Trade presets + custom overrides per business |
 | `jobWeatherStatus` | Current green/yellow/red per job |
 | `weatherActions` | Log of reschedules, notifications, overrides |
 | `weatherWindows` | Cached optimal work windows for the week |
+| `weatherChecks` | Weather API call cache (2hr TTL) |
+| `notifications` | SMS/email send log with status tracking |
 
-## BUILD PHASES
-
-| Phase | Command | Focus |
-|---|---|---|
-| 0 | `/phase-0-spec` | Complete PRD before any code |
-| 1 | `/phase-1-scaffold` | All deps, config, structure |
-| 2 | `/phase-2-schema` | Data layer, types, validators, RLS |
-| 3 | `/phase-3-auth` | Middleware, RBAC, sign-in/up |
-| 4 | `/phase-4-api` | Server functions with tenant isolation |
-| 5 | `/phase-5-ui` | Pages consuming real APIs (no mocks) |
-| 6 | `/phase-6-integrations` | Stripe, email, external APIs |
-| 7 | `/phase-7-polish` | SEO, error boundaries, accessibility |
-| 8 | `/phase-8-validate` | Security audit + build checks |
-| 9 | `/phase-9-deploy` | Env vars, ship, smoke test |
-
-## UTILITY COMMANDS
-
-| Command | Purpose |
-|---|---|
-| `/weather-check` | Validate weather API integration end-to-end |
-| `/seed-data` | Generate or refresh Convex seed data |
-| `/project-status` | Audit current state vs. build phases |
-
-## CONVENTIONS
-
-- **No mocks in production code.** All UI must consume real Convex queries/mutations.
-- **Tenant isolation is mandatory.** Every query/mutation filters by `businessId`.
-- **Ollama always has a template fallback.** If Ollama is down, notifications still send.
-- **Trade presets are data, not code.** Store in `weatherRules` table, not hardcoded.
-- **Weather engine is deterministic.** Rule evaluation is pure JS — no LLM in the critical path.
-- **Status colors are semantic:** GREEN = proceed, YELLOW = warn crew lead, RED = auto-reschedule + notify all.
-
-## PRICING TIERS (for feature gating)
+## PRICING TIERS
 
 | Tier | Name | Price | Key Limits |
 |---|---|---|---|
 | Free | Storm Watch | $0/mo | 1 trade, 5 jobs/week, email only |
-| Starter | Clear Day | $29/mo | 1 trade, unlimited checks, SMS + email |
-| Pro | All Clear | $79/mo | Unlimited trades, bulk actions, radar |
+| Starter | Clear Day | $29/mo | 1 trade, 10 jobs/day, 50 SMS/mo |
+| Pro | All Clear | $79/mo | Unlimited trades, 500 SMS/mo, bulk actions |
 | Business | Storm Command | $149/mo | Weather windows, revenue scoring, API |
 
-## TECH DECISIONS
+## CONVENTIONS
 
-- **Auth**: Clerk (multi-tenant, RBAC-ready)
-- **Database**: Convex (real-time, serverless, TypeScript-native)
-- **Weather APIs**: Tomorrow.io (primary) + OpenWeatherMap (fallback)
-- **Notifications**: Twilio (SMS) + SendGrid (email)
-- **LLM**: Ollama (local, free, privacy-first)
-- **Orchestration**: n8n (self-hosted, visual workflows)
-- **Payments**: Stripe (subscription billing per tier)
+- **No mocks in production code.** All UI consumes real Convex queries/mutations.
+- **Tenant isolation is mandatory.** Every query/mutation filters by businessId.
+- **Weather engine is deterministic.** Rule evaluation is pure TS — no LLM in critical path.
+- **Template notifications always work.** No AI dependency for sending notifications.
+- **Trade presets are data, not code.** Stored in weatherRules table, not hardcoded.
+- **Contractor-first design.** Solid dark backgrounds, high contrast, large touch targets. No Glass UI.
+- **Status colors are semantic:** GREEN = proceed, YELLOW = warn, RED = reschedule.
 
 ## ENVIRONMENT VARIABLES
 
@@ -113,8 +117,7 @@ TWILIO_ACCOUNT_SID=
 TWILIO_AUTH_TOKEN=
 TWILIO_PHONE_NUMBER=
 SENDGRID_API_KEY=
-OLLAMA_BASE_URL=http://localhost:11434
-N8N_WEBHOOK_URL=
+SENDGRID_FROM_EMAIL=
 STRIPE_SECRET_KEY=
 STRIPE_WEBHOOK_SECRET=
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=
@@ -122,9 +125,8 @@ NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=
 
 ## CRITICAL RULES
 
-1. **Never skip a phase.** Each phase builds on the previous. Run `/project-status` to verify.
-2. **Never deploy without Phase 8.** Security audit is mandatory before shipping.
-3. **Never hardcode business logic.** Weather rules, trade presets, and thresholds live in the database.
-4. **Never call Ollama without a fallback.** Template-based notifications must always work.
-5. **Never expose API keys client-side.** All external API calls go through Convex actions or server routes.
-6. **Always filter by businessId.** Multi-tenant isolation is non-negotiable.
+1. **Never expose API keys client-side.** All external API calls go through Convex actions.
+2. **Never hardcode business logic.** Weather rules and thresholds live in the database.
+3. **Never query without businessId.** Multi-tenant isolation is non-negotiable.
+4. **Never deploy without build check.** Run `npm run build` before push.
+5. **Always filter by businessId.** Every query/mutation must scope to the authenticated business.

@@ -4,14 +4,19 @@ import { v } from "convex/values";
 export default defineSchema({
   // --- Business Profile ---
   businesses: defineTable({
+    clerkOrgId: v.string(), // Clerk organization ID for multi-tenancy
     name: v.string(),
     timezone: v.string(),
     primaryTrade: v.string(),
     planTier: v.string(), // "free", "starter", "pro", "business"
     ownerEmail: v.string(),
     ownerPhone: v.optional(v.string()),
+    stripeCustomerId: v.optional(v.string()),
+    stripeSubscriptionId: v.optional(v.string()),
     isActive: v.boolean(),
-  }).index("by_active", ["isActive"]),
+  })
+    .index("by_active", ["isActive"])
+    .index("by_clerkOrgId", ["clerkOrgId"]),
 
   // --- Clients ---
   clients: defineTable({
