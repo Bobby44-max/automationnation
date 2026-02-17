@@ -149,7 +149,7 @@ export function evaluateWeatherRules(
       // Handle compound rules (AND/OR logic across multiple variables)
       if (rule.type === "compound" && rule.conditions) {
         const conditionResults = rule.conditions.map((cond) => {
-          const actual = (hourData as Record<string, unknown>)[
+          const actual = (hourData as unknown as Record<string, unknown>)[
             cond.variable
           ] as number | undefined;
           if (actual === undefined) return false;
@@ -168,7 +168,7 @@ export function evaluateWeatherRules(
             actual: rule.conditions
               .map(
                 (c) =>
-                  (hourData as Record<string, unknown>)[c.variable] as number
+                  (hourData as unknown as Record<string, unknown>)[c.variable] as number
               )
               .reduce((a, b) => a + b, 0),
             threshold: rule.conditions
@@ -182,7 +182,7 @@ export function evaluateWeatherRules(
       }
 
       // Handle simple rules
-      const actual = (hourData as Record<string, unknown>)[
+      const actual = (hourData as unknown as Record<string, unknown>)[
         rule.variable
       ] as number | undefined;
       if (actual === undefined) continue;
@@ -421,7 +421,7 @@ function scoreWindow(
   for (const hour of block) {
     for (const rule of tradePreset.rules) {
       if (rule.type === "compound") continue;
-      const actual = (hour as Record<string, unknown>)[rule.variable] as
+      const actual = (hour as unknown as Record<string, unknown>)[rule.variable] as
         | number
         | undefined;
       if (actual === undefined) continue;

@@ -5,6 +5,19 @@ import { v } from "convex/values";
 // QUERIES
 // ============================================================
 
+/**
+ * Get all active businesses — used by the daily batch weather check cron.
+ */
+export const getActiveBusinesses = query({
+  args: {},
+  handler: async (ctx) => {
+    return await ctx.db
+      .query("businesses")
+      .withIndex("by_active", (q) => q.eq("isActive", true))
+      .collect();
+  },
+});
+
 export const getJobsForDate = query({
   args: { businessId: v.id("businesses"), date: v.string() },
   handler: async (ctx, { businessId, date }) => {

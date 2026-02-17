@@ -1,4 +1,4 @@
-import { QueryCtx, MutationCtx, ActionCtx } from "convex/server";
+import { QueryCtx, MutationCtx, ActionCtx } from "../_generated/server";
 import { Id } from "../_generated/dataModel";
 
 /**

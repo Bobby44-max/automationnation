@@ -32,7 +32,7 @@ export const sendRescheduleNotifications = action({
     oldDate: v.string(),
     startTime: v.string(),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<{ sent: number; failed: number; total: number }> => {
     let sent = 0;
     let failed = 0;
 

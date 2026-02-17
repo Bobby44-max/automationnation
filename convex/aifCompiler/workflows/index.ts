@@ -71,7 +71,7 @@ export function getWorkflowsByTrigger(
 ) {
   return Object.entries(workflows)
     .filter(([, wf]) => wf.triggers.some((t: any) => t.type === triggerType))
-    .map(([id, wf]) => ({ id, ...wf }));
+    .map(([registryId, wf]) => ({ registryId, ...wf }));
 }
 
 /**
@@ -84,5 +84,5 @@ export function getWeatherWorkflows() {
         id.includes("weather") ||
         id.includes("calendar-sync")
     )
-    .map(([id, wf]) => ({ id, ...wf }));
+    .map(([registryId, wf]) => ({ registryId, ...wf }));
 }

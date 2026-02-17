@@ -15,21 +15,21 @@ import { api, internal } from "../_generated/api";
  */
 export const batchWeatherCheck = action({
   args: {},
-  handler: async (ctx) => {
+  handler: async (ctx): Promise<{ processed: number; batches: number; total?: number }> => {
     // Get all active businesses (paginated)
     // In production, this would use a cursor-based approach
     // For now, we fetch all active businesses and process in batches
     const businesses = await ctx.runQuery(
-      api.weatherScheduling.getActiveBusinesses as any,
+      api.weatherScheduling.getActiveBusinesses,
       {}
     );
 
-    if (!businesses || (businesses as any[]).length === 0) {
+    if (!businesses || businesses.length === 0) {
       return { processed: 0, batches: 0 };
     }
 
     const BATCH_SIZE = 50;
-    const businessList = businesses as any[];
+    const businessList = businesses;
     const totalBatches = Math.ceil(businessList.length / BATCH_SIZE);
     let processed = 0;
 
@@ -41,8 +41,8 @@ export const batchWeatherCheck = action({
 
       // Process each business in the batch
       const results = await Promise.allSettled(
-        batch.map((biz: any) =>
-          ctx.runAction(api.actions.runWeatherCheck.runWeatherCheck as any, {
+        batch.map((biz) =>
+          ctx.runAction(api.actions.runWeatherCheck.runWeatherCheck, {
             businessId: biz._id,
           })
         )

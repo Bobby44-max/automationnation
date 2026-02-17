@@ -23,7 +23,7 @@ export const runWeatherCheck = action({
   args: {
     businessId: v.id("businesses"),
   },
-  handler: async (ctx, { businessId }) => {
+  handler: async (ctx, { businessId }): Promise<{ checked: number; results: Array<{ jobId: string; status: string; recommendation: string; newDate?: string }> }> => {
     const tomorrowIoKey = process.env.TOMORROW_IO_API_KEY || "";
     const owmKey = process.env.OPENWEATHERMAP_API_KEY || "";
 
