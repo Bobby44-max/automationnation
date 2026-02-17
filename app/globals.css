@@ -1,44 +1,50 @@
 @import "tailwindcss";
 
-/* Apex Weather Scheduling — Contractor-First Dark Theme */
+/* ─── Rain Check Design System ─── */
 
 @theme {
-  /* Solid backgrounds — no blur, no transparency */
-  --color-surface-primary: #030712;    /* gray-950 */
-  --color-surface-secondary: #111827;  /* gray-900 */
-  --color-surface-tertiary: #1f2937;   /* gray-800 */
-  --color-surface-elevated: #374151;   /* gray-700 */
+  /* Typography — Space Grotesk headings, Plus Jakarta Sans body */
+  --font-sans: var(--font-plus-jakarta), "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+  --font-heading: var(--font-space-grotesk), "Space Grotesk", system-ui, sans-serif;
 
-  /* Semantic status colors */
-  --color-status-green: #22c55e;
-  --color-status-yellow: #eab308;
-  --color-status-red: #ef4444;
-  --color-status-blue: #3b82f6;
+  /* Surface palette — zinc foundation */
+  --color-surface-primary: #09090B;
+  --color-surface-secondary: #18181B;
+  --color-surface-tertiary: #27272A;
+  --color-surface-elevated: #3F3F46;
+
+  /* Semantic status */
+  --color-status-green: #22C55E;
+  --color-status-yellow: #EAB308;
+  --color-status-red: #EF4444;
+  --color-status-blue: #3B82F6;
 
   /* Text */
-  --color-text-primary: #ffffff;
-  --color-text-secondary: #d1d5db;     /* gray-300 */
-  --color-text-muted: #9ca3af;         /* gray-400 */
-  --color-text-dim: #6b7280;           /* gray-500 */
+  --color-text-primary: #FAFAFA;
+  --color-text-secondary: #A1A1AA;
+  --color-text-muted: #71717A;
+  --color-text-dim: #52525B;
 
-  /* Accent */
-  --color-accent: #3b82f6;
-  --color-accent-hover: #2563eb;
-
-  /* Font */
-  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  /* Accent — emerald (maps to "proceed/clear" in the product) */
+  --color-accent: #10B981;
+  --color-accent-hover: #059669;
 }
 
-/* Base styles */
+/* ─── Base ─── */
+
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   background-color: var(--color-surface-primary);
   color: var(--color-text-primary);
-  font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Scrollbar — dark, subtle */
+/* ─── Scrollbar ─── */
+
 ::-webkit-scrollbar {
   width: 6px;
 }
@@ -53,7 +59,8 @@ body {
   background: var(--color-surface-elevated);
 }
 
-/* Focus ring for accessibility */
+/* ─── Focus ─── */
+
 :focus-visible {
   outline: 2px solid var(--color-accent);
   outline-offset: 2px;
