@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import {
@@ -12,7 +13,6 @@ import {
   CreditCard,
   Menu,
   X,
-  Zap,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -58,9 +58,14 @@ export function Sidebar() {
       >
         {/* Logo */}
         <div className="flex items-center justify-between px-6 py-5 border-b border-gray-800">
-          <Link href="/dashboard" className="flex items-center gap-2">
-            <Zap className="h-6 w-6 text-blue-500" />
-            <span className="text-lg font-bold text-white">Apex Weather</span>
+          <Link href="/dashboard" className="flex items-center">
+            <Image
+              src="/logo.jpg"
+              alt="Rain Check"
+              width={140}
+              height={35}
+              className="h-7 w-auto"
+            />
           </Link>
           <button
             onClick={() => setMobileOpen(false)}
@@ -100,7 +105,7 @@ export function Sidebar() {
 
         {/* Footer */}
         <div className="px-4 py-4 border-t border-gray-800">
-          <p className="text-xs text-gray-600">Apex Weather Scheduling v1.0</p>
+          <p className="text-xs text-gray-600">Rain Check v1.0</p>
         </div>
       </aside>
     </>
