@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import {
   Cloud,
   Shield,
@@ -101,13 +102,17 @@ export default function LandingPage() {
         <nav className="mx-auto max-w-7xl px-6 h-16 flex items-center justify-between">
           <Link
             href="/"
-            className="flex items-center gap-2.5"
+            className="flex items-center"
             aria-label="Rain Check home"
           >
-            <Cloud className="h-6 w-6 text-emerald-500" />
-            <span className="text-lg font-heading font-bold tracking-tight">
-              Rain Check
-            </span>
+            <Image
+              src="/logo.jpg"
+              alt="Rain Check"
+              width={160}
+              height={40}
+              className="h-8 w-auto"
+              priority
+            />
           </Link>
 
           <div className="hidden md:flex items-center gap-8">
@@ -613,12 +618,13 @@ export default function LandingPage() {
       {/* ═══════════ FOOTER ═══════════ */}
       <footer className="border-t border-zinc-800/50 py-12 px-6">
         <div className="mx-auto max-w-7xl flex flex-col sm:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-2">
-            <Cloud className="h-5 w-5 text-emerald-500" />
-            <span className="text-sm font-heading font-semibold">
-              Rain Check
-            </span>
-          </div>
+          <Image
+            src="/logo.jpg"
+            alt="Rain Check"
+            width={120}
+            height={30}
+            className="h-6 w-auto"
+          />
           <div className="text-xs text-zinc-600">
             &copy; {new Date().getFullYear()} Rain Check. All rights reserved.
           </div>
