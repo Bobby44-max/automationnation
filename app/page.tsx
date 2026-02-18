@@ -106,11 +106,11 @@ export default function LandingPage() {
             aria-label="Rain Check home"
           >
             <Image
-              src="/logo.jpg"
+              src="/logo-large.jpg"
               alt="Rain Check"
-              width={160}
-              height={40}
-              className="h-8 w-auto"
+              width={180}
+              height={50}
+              className="h-9 w-auto"
               priority
             />
           </Link>
@@ -179,8 +179,18 @@ export default function LandingPage() {
           <div className="mx-auto max-w-7xl grid lg:grid-cols-12 gap-12 lg:gap-20 items-center">
             {/* Copy — 7 cols */}
             <div className="lg:col-span-7">
+              {/* Big Rain Check Logo */}
+              <Image
+                src="/logo-large.jpg"
+                alt="Rain Check"
+                width={600}
+                height={200}
+                className="h-auto w-[340px] sm:w-[420px] lg:w-[480px] mb-6"
+                priority
+              />
+
               <div className="inline-flex items-center gap-2 rounded border border-white/[0.06] bg-[#0E1216] px-3.5 py-1.5 text-[11px] text-[#5A6370] mb-8">
-                <span className="h-1.5 w-1.5 rounded-full bg-[#19AFFF]" />
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
                 Trusted by 5,000+ contractors
               </div>
 

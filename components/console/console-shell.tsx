@@ -11,9 +11,16 @@ function ShellInner({ children }: { children: ReactNode }) {
   return (
     <div className="flex min-h-screen bg-[#0A0D10]">
       <Sidebar />
-      <div className="flex-1 flex flex-col min-w-0">
-        <Topbar businessName={businessName} />
-        <main className="flex-1">{children}</main>
+      <div className="flex-1 flex flex-col min-w-0 relative">
+        {/* Rain backdrop */}
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-[0.07] pointer-events-none"
+          style={{ backgroundImage: "url('/rain-backdrop.jpg')" }}
+        />
+        <div className="relative flex-1 flex flex-col">
+          <Topbar businessName={businessName} />
+          <main className="flex-1">{children}</main>
+        </div>
       </div>
     </div>
   );
