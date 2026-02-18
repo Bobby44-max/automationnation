@@ -1,12 +1,29 @@
 "use client";
 
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { useDemoBusiness } from "@/lib/demo-context";
 import { WeatherStatsBar } from "../scheduling/weather/components/WeatherStatsBar";
 import { WeatherStrip } from "../scheduling/weather/components/WeatherStrip";
+import { JobCard } from "../scheduling/weather/components/JobCard";
 import { Card, CardTitle, CardContent } from "@/components/ui/card";
 import { CloudSun, Calendar, Bell, TrendingUp } from "lucide-react";
 import Link from "next/link";
 
 export default function DashboardPage() {
+  const { businessId } = useDemoBusiness();
+  const today = new Date().toISOString().split("T")[0];
+
+  const stats = useQuery(
+    api.weatherScheduling.getDashboardStats,
+    businessId ? { businessId, date: today } : "skip"
+  );
+
+  const jobs = useQuery(
+    api.weatherScheduling.getJobsForDate,
+    businessId ? { businessId, date: today } : "skip"
+  );
+
   return (
     <div className="space-y-6 p-6">
       {/* Page Header */}
@@ -19,15 +36,15 @@ export default function DashboardPage() {
 
       {/* Stats Bar */}
       <WeatherStatsBar
-        rescheduled={0}
-        proceeding={0}
-        warnings={0}
-        revenueProtected={0}
-        lastChecked={null}
+        rescheduled={stats?.rescheduled ?? 0}
+        proceeding={stats?.proceeding ?? 0}
+        warnings={stats?.warnings ?? 0}
+        revenueProtected={stats?.revenueProtected ?? 0}
+        lastChecked={stats?.lastChecked ?? null}
       />
 
       {/* Weather Strip */}
-      <WeatherStrip />
+      <WeatherStrip businessId={businessId} />
 
       {/* Quick Actions */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -62,14 +79,24 @@ export default function DashboardPage() {
         <h2 className="text-lg font-semibold text-white mb-4">
           Today&apos;s Jobs
         </h2>
-        <Card>
-          <CardContent className="py-10 text-center">
-            <p className="text-gray-500">No jobs scheduled for today</p>
-            <p className="text-xs text-gray-600 mt-1">
-              Jobs will appear here once added to the schedule.
-            </p>
-          </CardContent>
-        </Card>
+        {jobs && jobs.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {jobs.map((job) => (
+              <JobCard key={job._id} job={job} />
+            ))}
+          </div>
+        ) : (
+          <Card>
+            <CardContent className="py-10 text-center">
+              <p className="text-gray-500">
+                {businessId ? "No jobs scheduled for today" : "Loading..."}
+              </p>
+              <p className="text-xs text-gray-600 mt-1">
+                Jobs will appear here once added to the schedule.
+              </p>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );

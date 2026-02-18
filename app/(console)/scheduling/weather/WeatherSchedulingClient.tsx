@@ -3,53 +3,53 @@
 import { useState } from "react";
 import { useQuery, useAction } from "convex/react";
 import { api } from "@/convex/_generated/api";
+import { useDemoBusiness } from "@/lib/demo-context";
 import { WeatherStatsBar } from "./components/WeatherStatsBar";
 import { WeatherStrip } from "./components/WeatherStrip";
-import { JobCardGrid } from "./components/JobCardGrid";
 import { TradeSelector } from "./components/TradeSelector";
+import { JobCard } from "./components/JobCard";
 import { BulkActionBar } from "./components/BulkActionBar";
-import { Skeleton } from "@/components/ui/skeleton";
 
 export function WeatherSchedulingClient() {
+  const { businessId, businessName } = useDemoBusiness();
   const [selectedTrade, setSelectedTrade] = useState<string>("all");
   const [isChecking, setIsChecking] = useState(false);
 
-  // TODO: Replace with actual authenticated business ID from Clerk org
-  const businessId = "placeholder_business_id";
   const today = new Date().toISOString().split("T")[0];
 
-  // Real-time Convex queries — auto-update when data changes
-  const jobs = useQuery(api.weatherScheduling.getJobsForDate, {
-    businessId: businessId as any,
-    date: today,
-  });
-
-  const stats = useQuery(api.weatherScheduling.getDashboardStats, {
-    businessId: businessId as any,
-    date: today,
-  });
-
-  // Weather check via Convex action (replaces n8n webhook)
-  const runWeatherCheck = useAction(
-    api.actions.runWeatherCheck.runWeatherCheck as any
+  const stats = useQuery(
+    api.weatherScheduling.getDashboardStats,
+    businessId ? { businessId, date: today } : "skip"
   );
 
-  // Filter jobs by trade
-  const filteredJobs =
-    selectedTrade === "all"
-      ? jobs
-      : jobs?.filter((j: any) => j.trade === selectedTrade);
+  const jobs = useQuery(
+    api.weatherScheduling.getJobsForDate,
+    businessId ? { businessId, date: today } : "skip"
+  );
+
+  const runWeatherCheck = useAction(api.actions.runWeatherCheck.runWeatherCheck);
 
   async function handleCheckWeatherNow() {
+    if (!businessId) return;
     setIsChecking(true);
     try {
-      await runWeatherCheck({ businessId: businessId as any });
+      await runWeatherCheck({ businessId });
     } catch (err) {
       console.error("Weather check failed:", err);
     } finally {
       setIsChecking(false);
     }
   }
+
+  const filteredJobs = jobs
+    ? selectedTrade === "all"
+      ? jobs
+      : jobs.filter((j) => j.trade === selectedTrade)
+    : [];
+
+  const redJobs = filteredJobs.filter(
+    (j) => j.weatherStatus?.status === "red"
+  );
 
   return (
     <div className="space-y-0">
@@ -74,7 +74,7 @@ export function WeatherSchedulingClient() {
             />
             <button
               onClick={handleCheckWeatherNow}
-              disabled={isChecking}
+              disabled={isChecking || !businessId}
               className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors min-h-[44px]"
             >
               {isChecking ? "Checking..." : "Check Weather Now"}
@@ -94,24 +94,28 @@ export function WeatherSchedulingClient() {
 
       {/* Weather Strip */}
       <div className="px-6 py-4">
-        <WeatherStrip />
+        <WeatherStrip businessId={businessId} />
       </div>
 
       {/* Job Cards */}
-      <div className="px-6 py-4 flex-1">
-        {!jobs ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {Array.from({ length: 8 }).map((_, i) => (
-              <Skeleton key={i} className="h-40" />
+      <div className="px-6 py-4 flex-1 pb-20">
+        {filteredJobs.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {filteredJobs.map((job) => (
+              <JobCard key={job._id} job={job} />
             ))}
           </div>
-        ) : filteredJobs && filteredJobs.length > 0 ? (
-          <JobCardGrid jobs={filteredJobs} />
         ) : (
           <div className="text-center text-gray-500 py-20">
-            <p className="text-lg">No jobs scheduled for today</p>
+            <p className="text-lg">
+              {businessId
+                ? "No jobs scheduled for today"
+                : "Loading..."}
+            </p>
             <p className="text-sm mt-2">
-              Jobs will appear here once they&apos;re added to the schedule.
+              {businessId
+                ? "Jobs will appear here once they're added to the schedule."
+                : "Connecting to database..."}
             </p>
           </div>
         )}
@@ -119,14 +123,11 @@ export function WeatherSchedulingClient() {
 
       {/* Bulk Action Bar */}
       <BulkActionBar
-        jobCount={filteredJobs?.length ?? 0}
-        redCount={
-          filteredJobs?.filter((j: any) => j.weatherStatus?.status === "red")
-            .length ?? 0
-        }
-        businessId={businessId}
+        jobCount={filteredJobs.length}
+        redCount={redJobs.length}
+        redJobIds={redJobs.map((j) => j._id)}
+        businessName={businessName}
         date={today}
-        onChatOpen={() => {}}
       />
     </div>
   );

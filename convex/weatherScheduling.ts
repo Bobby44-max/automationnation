@@ -6,6 +6,65 @@ import { v } from "convex/values";
 // ============================================================
 
 /**
+ * Get the first active business — auth replacement for demo mode.
+ * Returns null if no businesses exist yet (pre-seed).
+ */
+export const getDemoBusiness = query({
+  args: {},
+  handler: async (ctx) => {
+    return await ctx.db
+      .query("businesses")
+      .withIndex("by_active", (q) => q.eq("isActive", true))
+      .first();
+  },
+});
+
+/**
+ * Get weather summary for a business's primary zip code.
+ * Returns the most recent weatherCheck's parsed forecast, or null if none cached.
+ */
+export const getWeatherSummary = query({
+  args: { businessId: v.id("businesses") },
+  handler: async (ctx, { businessId }) => {
+    const business = await ctx.db.get(businessId);
+    if (!business) return null;
+
+    // Get jobs to find primary zip codes
+    const today = new Date().toISOString().split("T")[0];
+    const jobs = await ctx.db
+      .query("jobs")
+      .withIndex("by_business_date", (q) =>
+        q.eq("businessId", businessId).eq("date", today)
+      )
+      .collect();
+
+    const primaryZip = jobs[0]?.zipCode;
+    if (!primaryZip) return null;
+
+    // Find most recent weather check for this zip
+    const check = await ctx.db
+      .query("weatherChecks")
+      .withIndex("by_location_time", (q) => q.eq("location", primaryZip))
+      .order("desc")
+      .first();
+
+    if (!check || !check.rawResponse) return null;
+
+    try {
+      const summary = JSON.parse(check.rawResponse);
+      return {
+        location: primaryZip,
+        provider: check.provider,
+        timestamp: check.timestamp,
+        summary,
+      };
+    } catch {
+      return null;
+    }
+  },
+});
+
+/**
  * Get all active businesses — used by the daily batch weather check cron.
  */
 export const getActiveBusinesses = query({

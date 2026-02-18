@@ -1,12 +1,9 @@
 // Clerk JWT configuration for Convex auth
-// The Clerk JWT template must be named "convex" and include:
-// { "orgId": "{{org.id}}" }
+// Auth is disabled for demo mode — no Clerk dependency.
+// To re-enable, add a provider with your CLERK_JWT_ISSUER_DOMAIN:
+//
+//   providers: [{ domain: "https://your-clerk-domain.clerk.accounts.dev", applicationID: "convex" }]
 
 export default {
-  providers: [
-    {
-      domain: process.env.CLERK_JWT_ISSUER_DOMAIN,
-      applicationID: "convex",
-    },
-  ],
+  providers: [],
 };

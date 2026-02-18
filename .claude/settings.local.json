@@ -13,7 +13,9 @@
       "Bash(dig:*)",
       "Bash(nslookup:*)",
       "Bash(claude plugin install:*)",
-      "Bash(start \"\" \"C:\\\\Users\\\\Bobby\\\\Documents\\\\GitHub\\\\automationnation\\\\automationnation-code-map.html\")"
+      "Bash(start \"\" \"C:\\\\Users\\\\Bobby\\\\Documents\\\\GitHub\\\\automationnation\\\\automationnation-code-map.html\")",
+      "Bash(curl:*)",
+      "Bash(npx convex deploy:*)"
     ]
   }
 }

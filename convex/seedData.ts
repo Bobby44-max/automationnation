@@ -238,3 +238,377 @@ export const seedDefaultPresets = mutation({
     return { status: "seeded", count: 5 };
   },
 });
+
+/**
+ * Seed a complete demo business with realistic data.
+ * Idempotent — skips if a business with clerkOrgId "demo_org" already exists.
+ */
+export const seedDemoData = mutation({
+  handler: async (ctx) => {
+    // Idempotency check
+    const existing = await ctx.db
+      .query("businesses")
+      .withIndex("by_clerkOrgId", (q) => q.eq("clerkOrgId", "demo_org"))
+      .first();
+
+    if (existing) {
+      return { status: "already_seeded", businessId: existing._id };
+    }
+
+    // --- 1. Business ---
+    const businessId = await ctx.db.insert("businesses", {
+      clerkOrgId: "demo_org",
+      name: "Apex Roofing & Exteriors",
+      timezone: "America/Chicago",
+      primaryTrade: "roofing",
+      planTier: "pro",
+      ownerEmail: "demo@apexroofing.com",
+      ownerPhone: "+13125550100",
+      isActive: true,
+    });
+
+    // --- 2. Clients (5 Chicago addresses) ---
+    const client1 = await ctx.db.insert("clients", {
+      businessId,
+      name: "Margaret Chen",
+      email: "mchen@example.com",
+      phone: "+13125550101",
+      address: "1420 S Michigan Ave",
+      city: "Chicago",
+      state: "IL",
+      zipCode: "60601",
+    });
+    const client2 = await ctx.db.insert("clients", {
+      businessId,
+      name: "David & Sarah Park",
+      email: "parks@example.com",
+      phone: "+13125550102",
+      address: "2140 N Lincoln Ave",
+      city: "Chicago",
+      state: "IL",
+      zipCode: "60614",
+    });
+    const client3 = await ctx.db.insert("clients", {
+      businessId,
+      name: "Riverside Condos HOA",
+      email: "board@riversidecondos.com",
+      phone: "+13125550103",
+      address: "333 N Canal St",
+      city: "Chicago",
+      state: "IL",
+      zipCode: "60654",
+    });
+    const client4 = await ctx.db.insert("clients", {
+      businessId,
+      name: "Tom Bradley",
+      email: "tbradley@example.com",
+      phone: "+13125550104",
+      address: "500 W Madison St",
+      city: "Chicago",
+      state: "IL",
+      zipCode: "60661",
+    });
+    const client5 = await ctx.db.insert("clients", {
+      businessId,
+      name: "Lincoln Park Dental",
+      email: "office@lpd.com",
+      phone: "+13125550105",
+      address: "2543 N Halsted St",
+      city: "Chicago",
+      state: "IL",
+      zipCode: "60614",
+    });
+
+    // --- 3. Crew Members ---
+    const crewLead = await ctx.db.insert("crewMembers", {
+      businessId,
+      name: "Mike Torres",
+      phone: "+13125550110",
+      email: "mike@apexroofing.com",
+      role: "crew_lead",
+      isActive: true,
+    });
+    await ctx.db.insert("crewMembers", {
+      businessId,
+      name: "Jake Wilson",
+      phone: "+13125550111",
+      email: "jake@apexroofing.com",
+      role: "member",
+      isActive: true,
+    });
+
+    // --- 4. Jobs (5 for today across 4 trades) ---
+    const today = new Date().toISOString().split("T")[0];
+
+    const job1 = await ctx.db.insert("jobs", {
+      businessId,
+      clientId: client1,
+      crewLeadId: crewLead,
+      trade: "roofing",
+      jobType: "exterior",
+      title: "Full roof replacement — tear-off + install",
+      date: today,
+      startTime: "07:00",
+      endTime: "17:00",
+      address: "1420 S Michigan Ave",
+      zipCode: "60601",
+      status: "scheduled",
+      estimatedRevenue: 14500,
+      notes: "30-square asphalt shingle replacement",
+    });
+
+    const job2 = await ctx.db.insert("jobs", {
+      businessId,
+      clientId: client2,
+      crewLeadId: crewLead,
+      trade: "exterior_painting",
+      jobType: "exterior",
+      title: "Exterior repaint — Victorian 3-flat",
+      date: today,
+      startTime: "08:00",
+      endTime: "16:00",
+      address: "2140 N Lincoln Ave",
+      zipCode: "60614",
+      status: "scheduled",
+      estimatedRevenue: 6500,
+    });
+
+    const job3 = await ctx.db.insert("jobs", {
+      businessId,
+      clientId: client3,
+      crewLeadId: crewLead,
+      trade: "concrete",
+      jobType: "exterior",
+      title: "Parking garage deck seal coat",
+      date: today,
+      startTime: "06:00",
+      endTime: "14:00",
+      address: "333 N Canal St",
+      zipCode: "60654",
+      status: "scheduled",
+      estimatedRevenue: 8200,
+    });
+
+    const job4 = await ctx.db.insert("jobs", {
+      businessId,
+      clientId: client4,
+      crewLeadId: crewLead,
+      trade: "pressure_washing",
+      jobType: "exterior",
+      title: "Storefront & sidewalk pressure wash",
+      date: today,
+      startTime: "09:00",
+      endTime: "13:00",
+      address: "500 W Madison St",
+      zipCode: "60661",
+      status: "scheduled",
+      estimatedRevenue: 1800,
+    });
+
+    const job5 = await ctx.db.insert("jobs", {
+      businessId,
+      clientId: client5,
+      crewLeadId: crewLead,
+      trade: "roofing",
+      jobType: "exterior",
+      title: "Emergency leak repair — flat roof section",
+      date: today,
+      startTime: "10:00",
+      endTime: "15:00",
+      address: "2543 N Halsted St",
+      zipCode: "60614",
+      status: "scheduled",
+      estimatedRevenue: 3200,
+    });
+
+    // --- 5. Job Weather Statuses ---
+    const now = Date.now();
+
+    // RED — auto-rescheduled (roofing job — high winds)
+    await ctx.db.insert("jobWeatherStatus", {
+      jobId: job1,
+      businessId,
+      date: today,
+      status: "red",
+      triggeredRules: [
+        {
+          variable: "wind_speed_mph",
+          actual: 32,
+          threshold: 25,
+          action: "cancel",
+          reason: "Safety — materials become projectiles above 25mph",
+          hour: "11:00",
+        },
+        {
+          variable: "rain_probability_pct",
+          actual: 78,
+          threshold: 70,
+          action: "cancel",
+          reason: "Water intrusion risk during roof tear-off",
+          hour: "13:00",
+        },
+      ],
+      worstHour: "11:00",
+      worstVariable: "wind_speed_mph",
+      recommendation: "reschedule",
+      confidence: 92,
+      summary: "Sustained 32mph winds + 78% rain probability — unsafe for roofing",
+      lastChecked: now,
+      autoRescheduled: true,
+      newDate: (() => {
+        const d = new Date();
+        d.setDate(d.getDate() + 2);
+        return d.toISOString().split("T")[0];
+      })(),
+    });
+
+    // RED — auto-rescheduled (concrete — rain)
+    await ctx.db.insert("jobWeatherStatus", {
+      jobId: job3,
+      businessId,
+      date: today,
+      status: "red",
+      triggeredRules: [
+        {
+          variable: "rain_probability_pct",
+          actual: 85,
+          threshold: 50,
+          action: "cancel",
+          reason: "Rain damages uncured concrete surface finish",
+          hour: "10:00",
+        },
+      ],
+      worstHour: "10:00",
+      worstVariable: "rain_probability_pct",
+      recommendation: "reschedule",
+      confidence: 88,
+      summary: "85% rain probability — concrete pour will be ruined",
+      lastChecked: now,
+      autoRescheduled: true,
+      newDate: (() => {
+        const d = new Date();
+        d.setDate(d.getDate() + 3);
+        return d.toISOString().split("T")[0];
+      })(),
+    });
+
+    // YELLOW — proceed with caution (painting — humidity)
+    await ctx.db.insert("jobWeatherStatus", {
+      jobId: job2,
+      businessId,
+      date: today,
+      status: "yellow",
+      triggeredRules: [
+        {
+          variable: "humidity_pct",
+          actual: 74,
+          threshold: 70,
+          action: "warn",
+          reason: "Extended dry time — plan for 50% longer cure",
+          hour: "14:00",
+        },
+      ],
+      worstHour: "14:00",
+      worstVariable: "humidity_pct",
+      recommendation: "proceed_with_caution",
+      confidence: 75,
+      summary: "Humidity 74% — paint will cure slowly, plan extra dry time",
+      lastChecked: now,
+      autoRescheduled: false,
+    });
+
+    // GREEN — clear (pressure washing)
+    await ctx.db.insert("jobWeatherStatus", {
+      jobId: job4,
+      businessId,
+      date: today,
+      status: "green",
+      triggeredRules: [],
+      recommendation: "proceed",
+      confidence: 95,
+      summary: "All conditions within safe limits",
+      lastChecked: now,
+      autoRescheduled: false,
+    });
+
+    // GREEN — clear (roofing leak repair — morning window)
+    await ctx.db.insert("jobWeatherStatus", {
+      jobId: job5,
+      businessId,
+      date: today,
+      status: "green",
+      triggeredRules: [],
+      recommendation: "proceed",
+      confidence: 90,
+      summary: "Morning window clear — complete before afternoon storms",
+      lastChecked: now,
+      autoRescheduled: false,
+    });
+
+    // --- 6. Weather Actions (revenue protected) ---
+    await ctx.db.insert("weatherActions", {
+      jobId: job1,
+      businessId,
+      actionType: "rescheduled",
+      fromDate: today,
+      toDate: (() => {
+        const d = new Date();
+        d.setDate(d.getDate() + 2);
+        return d.toISOString().split("T")[0];
+      })(),
+      reason: "Sustained 32mph winds + 78% rain probability — unsafe for roofing",
+      notificationsSent: 2,
+      revenueProtected: 14500,
+      wasAutomatic: true,
+      timestamp: now,
+    });
+
+    await ctx.db.insert("weatherActions", {
+      jobId: job3,
+      businessId,
+      actionType: "rescheduled",
+      fromDate: today,
+      toDate: (() => {
+        const d = new Date();
+        d.setDate(d.getDate() + 3);
+        return d.toISOString().split("T")[0];
+      })(),
+      reason: "85% rain probability — concrete pour will be ruined",
+      notificationsSent: 2,
+      revenueProtected: 8200,
+      wasAutomatic: true,
+      timestamp: now,
+    });
+
+    // --- 7. Notifications ---
+    await ctx.db.insert("notifications", {
+      jobId: job1,
+      businessId,
+      recipientType: "crew_lead",
+      recipientName: "Mike Torres",
+      channel: "sms",
+      to: "+13125550110",
+      message:
+        "Weather alert: Tomorrow's roof job at 1420 S Michigan Ave has been rescheduled due to 32mph winds. New date will be confirmed shortly.",
+      status: "delivered",
+      wasAiGenerated: false,
+      timestamp: now - 60000,
+    });
+
+    await ctx.db.insert("notifications", {
+      jobId: job1,
+      businessId,
+      recipientType: "client",
+      recipientName: "Margaret Chen",
+      channel: "email",
+      to: "mchen@example.com",
+      message:
+        "Hi Margaret, due to forecasted high winds (32mph) and rain, your roof replacement at 1420 S Michigan Ave has been rescheduled. We'll confirm the new date within 24 hours. Your safety and quality come first. — Apex Roofing",
+      status: "delivered",
+      wasAiGenerated: false,
+      timestamp: now - 30000,
+    });
+
+    return { status: "seeded", businessId };
+  },
+});

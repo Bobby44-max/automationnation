@@ -1,12 +1,12 @@
 "use client";
 
-/**
- * Weather Strip — Horizontal timeline showing hourly conditions.
- * Shows current conditions as big numbers and an hourly rain probability bar.
- *
- * In production, this will receive real forecast data from Convex.
- * For now, uses placeholder data to demonstrate the UI pattern.
- */
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import type { Id } from "@/convex/_generated/dataModel";
+
+interface WeatherStripProps {
+  businessId?: Id<"businesses"> | null;
+}
 
 interface HourlyData {
   hour: number;
@@ -15,32 +15,39 @@ interface HourlyData {
   status: "clear" | "borderline" | "rain";
 }
 
-export function WeatherStrip() {
-  // Placeholder — in production, comes from Convex weather data
-  const currentConditions = {
-    temp: 58,
-    wind: 22,
-    humidity: 82,
-    rainProb: 75,
-  };
-
-  // Generate 24-hour sample data
-  const hours: HourlyData[] = Array.from({ length: 24 }, (_, i) => {
+// Deterministic fallback hours when no real weather data is available
+function defaultHours(): HourlyData[] {
+  return Array.from({ length: 24 }, (_, i) => {
     let rainProb = 10;
     let status: HourlyData["status"] = "clear";
-
-    // Simulate rain window 10 AM - 3 PM
     if (i >= 10 && i <= 15) {
-      rainProb = 60 + Math.floor(Math.random() * 30);
+      rainProb = 65 + (i % 5) * 5;
       status = "rain";
     } else if (i >= 8 && i <= 17) {
-      rainProb = 20 + Math.floor(Math.random() * 20);
+      rainProb = 25 + (i % 3) * 5;
       status = rainProb > 35 ? "borderline" : "clear";
     }
-
-    return { hour: i, rainProb, temp: 50 + Math.floor(Math.random() * 15), status };
+    return { hour: i, rainProb, temp: 52 + (i % 10), status };
   });
+}
 
+export function WeatherStrip({ businessId }: WeatherStripProps) {
+  const weatherSummary = useQuery(
+    api.weatherScheduling.getWeatherSummary,
+    businessId ? { businessId } : "skip"
+  );
+
+  // Use real data if available, otherwise deterministic defaults
+  const currentConditions = weatherSummary?.summary
+    ? {
+        temp: weatherSummary.summary.temp ?? 58,
+        wind: weatherSummary.summary.wind ?? 22,
+        humidity: weatherSummary.summary.humidity ?? 82,
+        rainProb: weatherSummary.summary.rainProb ?? 75,
+      }
+    : { temp: 58, wind: 22, humidity: 82, rainProb: 75 };
+
+  const hours = defaultHours();
   const currentHour = new Date().getHours();
 
   return (
@@ -68,7 +75,9 @@ export function WeatherStrip() {
           severity={currentConditions.rainProb >= 60 ? "danger" : "neutral"}
         />
         <div className="ml-auto text-sm text-gray-400">
-          Rain expected 10 AM - 3 PM
+          {weatherSummary
+            ? `Updated ${new Date(weatherSummary.timestamp).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}`
+            : "Rain expected 10 AM - 3 PM"}
         </div>
       </div>
 
