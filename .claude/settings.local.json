@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git ls-tree:*)",
+      "Bash(git commit:*)",
+      "Bash(gh pr:*)",
+      "Bash(npx vercel:*)",
+      "Bash(dir:*)",
+      "Bash(test:*)",
+      "Bash(git checkout:*)",
+      "Bash(git merge:*)",
+      "Bash(npx convex dev:*)",
+      "Bash(dig:*)",
+      "Bash(nslookup:*)",
+      "Bash(claude plugin install:*)",
+      "Bash(start \"\" \"C:\\\\Users\\\\Bobby\\\\Documents\\\\GitHub\\\\automationnation\\\\automationnation-code-map.html\")"
+    ]
+  }
+}

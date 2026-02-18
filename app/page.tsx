@@ -129,16 +129,10 @@ export default function LandingPage() {
 
           <div className="hidden md:flex items-center gap-4">
             <Link
-              href="/sign-in"
-              className="text-sm text-zinc-400 hover:text-zinc-50 transition-colors"
-            >
-              Sign in
-            </Link>
-            <Link
-              href="/sign-up"
+              href="/dashboard"
               className="text-sm font-medium bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg transition-colors"
             >
-              Start free trial
+              Go to Dashboard
             </Link>
           </div>
 
@@ -169,16 +163,10 @@ export default function LandingPage() {
             ))}
             <div className="mt-4 pt-4 border-t border-zinc-800/50 space-y-2">
               <Link
-                href="/sign-in"
-                className="block text-zinc-400 hover:text-zinc-50 py-2"
-              >
-                Sign in
-              </Link>
-              <Link
-                href="/sign-up"
+                href="/dashboard"
                 className="block text-center bg-emerald-600 hover:bg-emerald-500 text-white font-medium py-2.5 rounded-lg transition-colors"
               >
-                Start free trial
+                Go to Dashboard
               </Link>
             </div>
           </div>
@@ -210,7 +198,7 @@ export default function LandingPage() {
 
               <div className="flex flex-col sm:flex-row gap-3">
                 <Link
-                  href="/sign-up"
+                  href="/dashboard"
                   className="inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
                 >
                   Start free trial
@@ -605,7 +593,7 @@ export default function LandingPage() {
               weather intelligence. 30-day free trial, no card required.
             </p>
             <Link
-              href="/sign-up"
+              href="/dashboard"
               className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white px-8 py-3.5 rounded-lg font-semibold text-lg transition-colors"
             >
               Start free trial

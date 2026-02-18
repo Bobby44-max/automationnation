@@ -1,7 +1,5 @@
 "use client";
 
-import { UserButton } from "@clerk/nextjs";
-
 interface TopbarProps {
   businessName?: string;
 }
@@ -24,13 +22,9 @@ export function Topbar({ businessName }: TopbarProps) {
           <p className="text-xs text-gray-500">{today}</p>
         </div>
         <div className="flex items-center gap-4">
-          <UserButton
-            appearance={{
-              elements: {
-                avatarBox: "h-8 w-8",
-              },
-            }}
-          />
+          <div className="h-8 w-8 rounded-full bg-emerald-600 flex items-center justify-center text-white text-sm font-bold">
+            RC
+          </div>
         </div>
       </div>
     </header>

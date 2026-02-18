@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Automationnation — Architecture Code Map</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; background: #0f1117; color: #e2e8f0; height: 100vh; overflow: hidden; }
+
+  .layout { display: flex; height: 100vh; }
+
+  /* Left Panel */
+  .panel { width: 300px; min-width: 300px; background: #161822; border-right: 1px solid #2d3148; display: flex; flex-direction: column; overflow-y: auto; }
+  .panel-section { padding: 16px; border-bottom: 1px solid #2d3148; }
+  .panel-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: #64748b; margin-bottom: 10px; }
+  .panel-heading { font-size: 15px; font-weight: 700; color: #f1f5f9; margin-bottom: 4px; }
+  .panel-sub { font-size: 12px; color: #64748b; margin-bottom: 14px; }
+
+  /* Presets */
+  .preset-grid { display: flex; flex-wrap: wrap; gap: 6px; }
+  .preset-btn { padding: 6px 12px; font-size: 12px; font-weight: 600; border: 1px solid #2d3148; border-radius: 6px; background: #1e2030; color: #94a3b8; cursor: pointer; transition: all 0.15s; }
+  .preset-btn:hover { border-color: #4f6fff; color: #c7d2fe; }
+  .preset-btn.active { background: #1e3a5f; border-color: #3b82f6; color: #93c5fd; }
+
+  /* Layer toggles */
+  .layer-toggle { display: flex; align-items: center; gap: 8px; padding: 6px 0; cursor: pointer; }
+  .layer-toggle input { accent-color: #3b82f6; width: 15px; height: 15px; cursor: pointer; }
+  .layer-dot { width: 10px; height: 10px; border-radius: 3px; }
+  .layer-label { font-size: 13px; color: #cbd5e1; }
+  .layer-count { font-size: 11px; color: #475569; margin-left: auto; }
+
+  /* Connection toggles */
+  .conn-toggle { display: flex; align-items: center; gap: 8px; padding: 5px 0; cursor: pointer; }
+  .conn-toggle input { width: 15px; height: 15px; cursor: pointer; }
+  .conn-line { width: 24px; height: 3px; border-radius: 2px; }
+  .conn-label { font-size: 13px; color: #cbd5e1; }
+  .conn-count { font-size: 11px; color: #475569; margin-left: auto; }
+
+  /* Comments */
+  .comments-section { flex: 1; overflow-y: auto; }
+  .comment-card { background: #1e2030; border: 1px solid #2d3148; border-radius: 8px; padding: 10px 12px; margin-bottom: 8px; }
+  .comment-target { font-size: 12px; font-weight: 600; color: #93c5fd; }
+  .comment-file { font-size: 10px; color: #475569; font-family: 'SF Mono', 'Cascadia Code', monospace; margin-bottom: 4px; }
+  .comment-text { font-size: 12px; color: #cbd5e1; line-height: 1.4; }
+  .comment-delete { background: none; border: none; color: #64748b; cursor: pointer; font-size: 12px; float: right; padding: 0 4px; }
+  .comment-delete:hover { color: #ef4444; }
+  .no-comments { font-size: 12px; color: #475569; font-style: italic; padding: 8px 0; }
+
+  /* Canvas area */
+  .canvas-area { flex: 1; display: flex; flex-direction: column; }
+  .canvas-toolbar { display: flex; align-items: center; justify-content: space-between; padding: 8px 16px; background: #161822; border-bottom: 1px solid #2d3148; }
+  .zoom-controls { display: flex; gap: 4px; }
+  .zoom-btn { width: 32px; height: 32px; border: 1px solid #2d3148; border-radius: 6px; background: #1e2030; color: #94a3b8; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  .zoom-btn:hover { border-color: #4f6fff; color: #e2e8f0; }
+  .zoom-label { font-size: 12px; color: #64748b; margin: 0 8px; }
+  .canvas-stats { font-size: 12px; color: #475569; }
+
+  .svg-container { flex: 1; overflow: hidden; position: relative; }
+  .svg-container svg { width: 100%; height: 100%; cursor: grab; }
+  .svg-container svg:active { cursor: grabbing; }
+
+  /* Legend */
+  .legend { position: absolute; bottom: 12px; left: 12px; background: #161822ee; border: 1px solid #2d3148; border-radius: 8px; padding: 10px 14px; }
+  .legend-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #475569; margin-bottom: 6px; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: #94a3b8; margin-bottom: 3px; }
+  .legend-swatch { width: 24px; height: 3px; border-radius: 2px; }
+
+  /* Prompt area */
+  .prompt-area { background: #161822; border-top: 1px solid #2d3148; padding: 12px 16px; max-height: 200px; overflow-y: auto; }
+  .prompt-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+  .prompt-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #64748b; }
+  .copy-btn { padding: 5px 14px; font-size: 12px; font-weight: 600; border: 1px solid #2d3148; border-radius: 6px; background: #1e2030; color: #94a3b8; cursor: pointer; transition: all 0.15s; }
+  .copy-btn:hover { border-color: #10b981; color: #6ee7b7; }
+  .copy-btn.copied { border-color: #10b981; color: #10b981; background: #10b98118; }
+  .prompt-text { font-family: 'SF Mono', 'Cascadia Code', 'Consolas', monospace; font-size: 12px; color: #cbd5e1; line-height: 1.6; white-space: pre-wrap; }
+
+  /* Modal */
+  .modal-overlay { position: fixed; inset: 0; background: #000000aa; display: none; align-items: center; justify-content: center; z-index: 100; }
+  .modal-overlay.open { display: flex; }
+  .modal { background: #1e2030; border: 1px solid #2d3148; border-radius: 12px; padding: 20px 24px; width: 420px; max-width: 90vw; }
+  .modal-title { font-size: 16px; font-weight: 700; color: #f1f5f9; margin-bottom: 2px; }
+  .modal-file { font-size: 11px; color: #475569; font-family: monospace; margin-bottom: 12px; }
+  .modal textarea { width: 100%; height: 80px; background: #161822; border: 1px solid #2d3148; border-radius: 8px; color: #e2e8f0; font-family: inherit; font-size: 13px; padding: 10px; resize: vertical; outline: none; }
+  .modal textarea:focus { border-color: #3b82f6; }
+  .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 12px; }
+  .modal-btn { padding: 7px 16px; font-size: 13px; font-weight: 600; border-radius: 6px; cursor: pointer; border: 1px solid transparent; }
+  .modal-btn.cancel { background: #2d3148; color: #94a3b8; border-color: #2d3148; }
+  .modal-btn.cancel:hover { background: #374151; }
+  .modal-btn.save { background: #2563eb; color: #fff; }
+  .modal-btn.save:hover { background: #1d4ed8; }
+
+  /* Node hover effect */
+  .node-group { cursor: pointer; }
+  .node-group:hover .node-rect { filter: brightness(1.25); }
+  .node-group .node-rect { transition: filter 0.1s; }
+  .commented-ring { stroke-dasharray: 4 2; animation: dash-spin 8s linear infinite; }
+  @keyframes dash-spin { to { stroke-dashoffset: -60; } }
+</style>
+</head>
+<body>
+
+<div class="layout">
+  <!-- Left Panel -->
+  <div class="panel">
+    <div class="panel-section">
+      <div class="panel-heading">Automationnation</div>
+      <div class="panel-sub">AI Weather Scheduling Architecture</div>
+      <div class="panel-title">View Presets</div>
+      <div class="preset-grid" id="presets"></div>
+    </div>
+
+    <div class="panel-section">
+      <div class="panel-title">Layers</div>
+      <div id="layer-toggles"></div>
+    </div>
+
+    <div class="panel-section">
+      <div class="panel-title">Connections</div>
+      <div id="conn-toggles"></div>
+    </div>
+
+    <div class="panel-section comments-section">
+      <div class="panel-title">Comments (<span id="comment-count">0</span>)</div>
+      <div id="comments-list"><div class="no-comments">Click a node to add feedback</div></div>
+    </div>
+  </div>
+
+  <!-- Canvas + Prompt -->
+  <div class="canvas-area">
+    <div class="canvas-toolbar">
+      <div class="zoom-controls">
+        <button class="zoom-btn" onclick="zoomIn()">+</button>
+        <span class="zoom-label" id="zoom-label">100%</span>
+        <button class="zoom-btn" onclick="zoomOut()">&minus;</button>
+        <button class="zoom-btn" onclick="zoomReset()" style="width:auto;padding:0 10px;font-size:12px;">Fit</button>
+      </div>
+      <div class="canvas-stats" id="canvas-stats"></div>
+    </div>
+
+    <div class="svg-container">
+      <svg id="diagram" xmlns="http://www.w3.org/2000/svg"></svg>
+      <div class="legend" id="legend"></div>
+    </div>
+
+    <div class="prompt-area">
+      <div class="prompt-header">
+        <span class="prompt-label">Generated Prompt</span>
+        <button class="copy-btn" id="copy-btn" onclick="copyPrompt()">Copy</button>
+      </div>
+      <div class="prompt-text" id="prompt-output">Adjust the view or click nodes to generate architecture feedback.</div>
+    </div>
+  </div>
+</div>
+
+<!-- Comment Modal -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <div class="modal-title" id="modal-title"></div>
+    <div class="modal-file" id="modal-file"></div>
+    <textarea id="modal-input" placeholder="What changes or feedback do you have for this component?"></textarea>
+    <div class="modal-actions">
+      <button class="modal-btn cancel" onclick="closeModal()">Cancel</button>
+      <button class="modal-btn save" onclick="saveComment()">Add Comment</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Architecture Data ──────────────────────────────────────────────
+
+const LAYERS = {
+  presentation: { label: 'Presentation', color: '#3b82f6', fill: '#1e3a5f', text: '#93c5fd', stroke: '#2563eb' },
+  logic:        { label: 'Business Logic', color: '#a855f7', fill: '#2e1065', text: '#c4b5fd', stroke: '#7c3aed' },
+  action:       { label: 'Actions',  color: '#10b981', fill: '#064e3b', text: '#6ee7b7', stroke: '#059669' },
+  data:         { label: 'Data Layer',  color: '#f59e0b', fill: '#451a03', text: '#fcd34d', stroke: '#d97706' },
+  external:     { label: 'External Services', color: '#ef4444', fill: '#450a0a', text: '#fca5a5', stroke: '#dc2626' },
+  trigger:      { label: 'Triggers', color: '#06b6d4', fill: '#083344', text: '#67e8f9', stroke: '#0891b2' }
+};
+
+const nodes = [
+  // Presentation (y ~55)
+  { id: 'providers',         label: 'Providers',           subtitle: 'app/providers.tsx',                      x: 60,   y: 55, w: 140, h: 48, layer: 'presentation' },
+  { id: 'console-layout',   label: 'Console Layout',      subtitle: 'app/(console)/layout.tsx',               x: 230,  y: 55, w: 150, h: 48, layer: 'presentation' },
+  { id: 'dashboard',        label: 'Dashboard',           subtitle: 'app/(console)/dashboard/page.tsx',       x: 420,  y: 35, w: 140, h: 48, layer: 'presentation' },
+  { id: 'weather-sched',    label: 'Weather Scheduling',  subtitle: 'WeatherSchedulingClient.tsx',            x: 600,  y: 35, w: 175, h: 48, layer: 'presentation' },
+  { id: 'rules-editor',     label: 'Rules Editor',        subtitle: 'scheduling/weather/settings/page.tsx',   x: 810,  y: 35, w: 140, h: 48, layer: 'presentation' },
+  { id: 'notif-page',       label: 'Notifications',       subtitle: 'app/(console)/notifications/page.tsx',   x: 420,  y: 95, w: 140, h: 48, layer: 'presentation' },
+  { id: 'billing-page',     label: 'Billing',             subtitle: 'app/(console)/billing/page.tsx',         x: 600,  y: 95, w: 120, h: 48, layer: 'presentation' },
+  { id: 'stripe-webhook',   label: 'Stripe Webhook',      subtitle: 'api/webhooks/stripe/route.ts',           x: 990,  y: 55, w: 155, h: 48, layer: 'presentation' },
+
+  // Business Logic (y ~210)
+  { id: 'scheduling-api',   label: 'Scheduling API',      subtitle: 'convex/weatherScheduling.ts (9Q + 8M)',  x: 350,  y: 210, w: 195, h: 48, layer: 'logic' },
+  { id: 'weather-engine',   label: 'Weather Engine',      subtitle: 'convex/lib/weatherEngine.ts',            x: 590,  y: 210, w: 165, h: 48, layer: 'logic' },
+  { id: 'auth',             label: 'Auth / Tenancy',      subtitle: 'convex/lib/auth.ts',                     x: 130,  y: 210, w: 155, h: 48, layer: 'logic' },
+  { id: 'templates',        label: 'Notif Templates',     subtitle: 'convex/lib/notificationTemplates.ts',    x: 800,  y: 210, w: 165, h: 48, layer: 'logic' },
+  { id: 'entitlements',     label: 'Entitlements',        subtitle: 'convex/lib/entitlements.ts',             x: 1005, y: 210, w: 150, h: 48, layer: 'logic' },
+
+  // Trigger (y ~335)
+  { id: 'cron',             label: 'Daily Cron',          subtitle: 'convex/crons.ts (5 AM EST)',             x: 60,   y: 335, w: 145, h: 48, layer: 'trigger' },
+
+  // Actions (y ~335)
+  { id: 'batch-check',      label: 'Batch Check',         subtitle: 'actions/batchWeatherCheck.ts',           x: 250,  y: 335, w: 150, h: 48, layer: 'action' },
+  { id: 'run-check',        label: 'Run Weather Check',   subtitle: 'actions/runWeatherCheck.ts',             x: 450,  y: 335, w: 175, h: 48, layer: 'action' },
+  { id: 'weather-api',      label: 'Weather API Client',  subtitle: 'convex/lib/weatherApi.ts',               x: 680,  y: 335, w: 170, h: 48, layer: 'action' },
+  { id: 'send-notif',       label: 'Send Notifications',  subtitle: 'actions/sendNotifications.ts',           x: 900,  y: 335, w: 175, h: 48, layer: 'action' },
+  { id: 'send-sms',         label: 'Send SMS',            subtitle: 'actions/sendSms.ts (3-retry)',           x: 830,  y: 405, w: 140, h: 44, layer: 'action' },
+  { id: 'send-email',       label: 'Send Email',          subtitle: 'actions/sendEmail.ts',                   x: 1010, y: 405, w: 140, h: 44, layer: 'action' },
+
+  // Data Layer (y ~500)
+  { id: 'biz-tables',       label: 'businesses / clients',subtitle: 'convex/schema.ts',                       x: 100,  y: 500, w: 175, h: 48, layer: 'data' },
+  { id: 'job-tables',       label: 'jobs / jobWeatherStatus', subtitle: 'convex/schema.ts',                   x: 340,  y: 500, w: 195, h: 48, layer: 'data' },
+  { id: 'rule-tables',      label: 'weatherRules / Checks', subtitle: 'convex/schema.ts',                    x: 600,  y: 500, w: 190, h: 48, layer: 'data' },
+  { id: 'log-tables',       label: 'actions / notifications', subtitle: 'convex/schema.ts',                   x: 855,  y: 500, w: 195, h: 48, layer: 'data' },
+
+  // External Services (y ~610)
+  { id: 'tomorrow-io',      label: 'Tomorrow.io',         subtitle: 'Primary weather forecast API',           x: 520,  y: 610, w: 145, h: 48, layer: 'external' },
+  { id: 'owm',              label: 'OpenWeatherMap',       subtitle: 'Geocoding + forecast fallback',          x: 700,  y: 610, w: 170, h: 48, layer: 'external' },
+  { id: 'twilio',           label: 'Twilio',              subtitle: 'SMS delivery',                           x: 830,  y: 610, w: 120, h: 48, layer: 'external' },
+  { id: 'sendgrid',         label: 'SendGrid',            subtitle: 'Email delivery',                         x: 980,  y: 610, w: 130, h: 48, layer: 'external' },
+  { id: 'stripe',           label: 'Stripe',              subtitle: 'Subscription billing',                   x: 130,  y: 610, w: 120, h: 48, layer: 'external' },
+  { id: 'clerk',            label: 'Clerk',               subtitle: 'Auth + org management',                  x: 290,  y: 610, w: 130, h: 48, layer: 'external' },
+];
+
+const CONN_TYPES = {
+  'data-flow':   { label: 'Data Flow',    color: '#3b82f6', dash: '' },
+  'action-call': { label: 'Action Call',   color: '#10b981', dash: '6,3' },
+  'external':    { label: 'External API',  color: '#f97316', dash: '8,4' },
+  'event':       { label: 'Event / Cron',  color: '#06b6d4', dash: '4,4' },
+  'dependency':  { label: 'Dependency',    color: '#6b7280', dash: '2,2' },
+};
+
+const connections = [
+  // Presentation → Logic (data flow via useQuery/useMutation)
+  { from: 'providers',       to: 'console-layout',  type: 'dependency',  label: 'wraps' },
+  { from: 'dashboard',       to: 'scheduling-api',  type: 'data-flow',   label: 'useQuery' },
+  { from: 'weather-sched',   to: 'scheduling-api',  type: 'data-flow',   label: 'useQuery' },
+  { from: 'rules-editor',    to: 'scheduling-api',  type: 'data-flow',   label: 'useQuery + useMutation' },
+  { from: 'notif-page',      to: 'scheduling-api',  type: 'data-flow',   label: 'useQuery' },
+  { from: 'weather-sched',   to: 'run-check',       type: 'action-call', label: 'useAction (manual)' },
+
+  // Logic internal dependencies
+  { from: 'scheduling-api',  to: 'auth',            type: 'dependency',  label: 'getAuthenticatedBusinessId' },
+  { from: 'scheduling-api',  to: 'entitlements',    type: 'dependency',  label: 'checkEntitlement' },
+
+  // Cron → Actions pipeline
+  { from: 'cron',            to: 'batch-check',     type: 'event',       label: 'daily trigger' },
+  { from: 'batch-check',     to: 'run-check',       type: 'action-call', label: 'per business (50/batch)' },
+  { from: 'run-check',       to: 'scheduling-api',  type: 'data-flow',   label: 'runQuery + runMutation' },
+  { from: 'run-check',       to: 'weather-engine',  type: 'action-call', label: 'evaluateWeatherRules' },
+  { from: 'run-check',       to: 'weather-api',     type: 'action-call', label: 'fetchForecastByZip' },
+  { from: 'run-check',       to: 'send-notif',      type: 'action-call', label: 'after reschedule' },
+  { from: 'send-notif',      to: 'templates',       type: 'dependency',  label: 'renderTemplate' },
+  { from: 'send-notif',      to: 'send-sms',        type: 'action-call', label: 'crew + client' },
+  { from: 'send-notif',      to: 'send-email',      type: 'action-call', label: 'client email' },
+
+  // Logic → Data
+  { from: 'scheduling-api',  to: 'biz-tables',      type: 'data-flow',   label: 'db.query' },
+  { from: 'scheduling-api',  to: 'job-tables',      type: 'data-flow',   label: 'db.query + patch' },
+  { from: 'scheduling-api',  to: 'rule-tables',     type: 'data-flow',   label: 'db.query' },
+  { from: 'scheduling-api',  to: 'log-tables',      type: 'data-flow',   label: 'db.insert' },
+
+  // External API calls
+  { from: 'weather-api',     to: 'tomorrow-io',     type: 'external',    label: 'HTTP (primary)' },
+  { from: 'weather-api',     to: 'owm',             type: 'external',    label: 'HTTP (fallback)' },
+  { from: 'send-sms',        to: 'twilio',          type: 'external',    label: 'REST + retry' },
+  { from: 'send-email',      to: 'sendgrid',        type: 'external',    label: 'REST' },
+  { from: 'stripe-webhook',  to: 'stripe',          type: 'external',    label: 'webhook verify' },
+  { from: 'auth',            to: 'clerk',            type: 'external',    label: 'JWT validation' },
+  { from: 'billing-page',    to: 'stripe',          type: 'external',    label: 'Stripe checkout' },
+];
+
+// ── State ──────────────────────────────────────────────────────────
+
+const DEFAULTS = {
+  layers: Object.fromEntries(Object.keys(LAYERS).map(k => [k, true])),
+  connTypes: Object.fromEntries(Object.keys(CONN_TYPES).map(k => [k, true])),
+  preset: 'full',
+};
+
+const state = {
+  layers: { ...DEFAULTS.layers },
+  connTypes: { ...DEFAULTS.connTypes },
+  preset: 'full',
+  zoom: 1,
+  panX: 0, panY: 0,
+  comments: [],
+  modalNode: null,
+};
+
+const PRESETS = {
+  full:            { label: 'Full System',      layers: { presentation: true, logic: true, action: true, data: true, external: true, trigger: true }, conns: { 'data-flow': true, 'action-call': true, 'external': true, 'event': true, 'dependency': true } },
+  'weather-pipe':  { label: 'Weather Pipeline', layers: { presentation: false, logic: true, action: true, data: true, external: true, trigger: true }, conns: { 'data-flow': true, 'action-call': true, 'external': true, 'event': true, 'dependency': false } },
+  'frontend':      { label: 'Frontend',         layers: { presentation: true, logic: true, action: false, data: false, external: false, trigger: false }, conns: { 'data-flow': true, 'action-call': false, 'external': false, 'event': false, 'dependency': true } },
+  'backend':       { label: 'Backend',          layers: { presentation: false, logic: true, action: true, data: true, external: false, trigger: true }, conns: { 'data-flow': true, 'action-call': true, 'external': false, 'event': true, 'dependency': true } },
+  'integrations':  { label: 'Integrations',     layers: { presentation: false, logic: false, action: true, data: false, external: true, trigger: false }, conns: { 'data-flow': false, 'action-call': true, 'external': true, 'event': false, 'dependency': false } },
+};
+
+// ── SVG Pan/Zoom ───────────────────────────────────────────────────
+
+let isPanning = false, panStartX = 0, panStartY = 0;
+const svg = document.getElementById('diagram');
+
+function updateViewBox() {
+  const cw = 1200, ch = 700;
+  const vw = cw / state.zoom, vh = ch / state.zoom;
+  svg.setAttribute('viewBox', `${state.panX} ${state.panY} ${vw} ${vh}`);
+  document.getElementById('zoom-label').textContent = Math.round(state.zoom * 100) + '%';
+}
+
+function zoomIn()  { state.zoom = Math.min(state.zoom * 1.2, 4); updateViewBox(); }
+function zoomOut() { state.zoom = Math.max(state.zoom / 1.2, 0.3); updateViewBox(); }
+function zoomReset() { state.zoom = 1; state.panX = 0; state.panY = 0; updateViewBox(); }
+
+svg.addEventListener('mousedown', e => {
+  if (e.target.closest('.node-group')) return;
+  isPanning = true; panStartX = e.clientX; panStartY = e.clientY;
+});
+svg.addEventListener('mousemove', e => {
+  if (!isPanning) return;
+  const dx = (e.clientX - panStartX) / state.zoom;
+  const dy = (e.clientY - panStartY) / state.zoom;
+  state.panX -= dx; state.panY -= dy;
+  panStartX = e.clientX; panStartY = e.clientY;
+  updateViewBox();
+});
+svg.addEventListener('mouseup', () => isPanning = false);
+svg.addEventListener('mouseleave', () => isPanning = false);
+svg.addEventListener('wheel', e => {
+  e.preventDefault();
+  if (e.deltaY < 0) zoomIn(); else zoomOut();
+}, { passive: false });
+
+// ── Rendering ──────────────────────────────────────────────────────
+
+function getNodeCenter(n) {
+  return { x: n.x + n.w / 2, y: n.y + n.h / 2 };
+}
+
+function buildPath(fromN, toN) {
+  const f = getNodeCenter(fromN), t = getNodeCenter(toN);
+  const dx = t.x - f.x, dy = t.y - f.y;
+
+  // Determine connection points on node edges
+  let fx, fy, tx, ty;
+  if (Math.abs(dy) > Math.abs(dx) * 0.4) {
+    // Mostly vertical
+    if (dy > 0) { fy = fromN.y + fromN.h; ty = toN.y; }
+    else        { fy = fromN.y;            ty = toN.y + toN.h; }
+    fx = f.x; tx = t.x;
+  } else {
+    // Mostly horizontal
+    if (dx > 0) { fx = fromN.x + fromN.w; tx = toN.x; }
+    else        { fx = fromN.x;            tx = toN.x + toN.w; }
+    fy = f.y; ty = t.y;
+  }
+
+  const mx = (fx + tx) / 2, my = (fy + ty) / 2;
+  // Use a quadratic bezier for a gentle curve
+  const cpx = mx, cpy1 = fy, cpy2 = ty;
+  return `M${fx},${fy} C${fx},${my} ${tx},${my} ${tx},${ty}`;
+}
+
+function renderDiagram() {
+  const nodeMap = Object.fromEntries(nodes.map(n => [n.id, n]));
+  const visibleNodeIds = new Set(nodes.filter(n => state.layers[n.layer]).map(n => n.id));
+  const visibleConns = connections.filter(c =>
+    state.connTypes[c.type] && visibleNodeIds.has(c.from) && visibleNodeIds.has(c.to)
+  );
+
+  // Build SVG
+  let defs = '<defs>';
+  for (const [type, cfg] of Object.entries(CONN_TYPES)) {
+    defs += `<marker id="arrow-${type}" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="${cfg.color}" opacity="0.8"/>
+    </marker>`;
+  }
+  defs += '</defs>';
+
+  // Layer bands (background)
+  const layerBands = [
+    { layer: 'presentation', y1: 20, y2: 155 },
+    { layer: 'logic', y1: 185, y2: 270 },
+    { layer: 'trigger', y1: 305, y2: 395 },
+    { layer: 'action', y1: 305, y2: 460 },
+    { layer: 'data', y1: 475, y2: 560 },
+    { layer: 'external', y1: 585, y2: 670 },
+  ];
+
+  let bands = '';
+  for (const b of layerBands) {
+    if (!state.layers[b.layer]) continue;
+    const cfg = LAYERS[b.layer];
+    bands += `<rect x="20" y="${b.y1}" width="1160" height="${b.y2 - b.y1}" rx="8" fill="${cfg.color}" opacity="0.04" stroke="${cfg.color}" stroke-opacity="0.1"/>`;
+    bands += `<text x="35" y="${b.y1 + 16}" font-size="10" fill="${cfg.color}" opacity="0.4" font-weight="700" text-transform="uppercase" letter-spacing="1">${cfg.label.toUpperCase()}</text>`;
+  }
+
+  // Connections
+  let paths = '';
+  for (const c of visibleConns) {
+    const cfg = CONN_TYPES[c.type];
+    const fromN = nodeMap[c.from], toN = nodeMap[c.to];
+    const d = buildPath(fromN, toN);
+    const dashAttr = cfg.dash ? `stroke-dasharray="${cfg.dash}"` : '';
+    paths += `<path d="${d}" fill="none" stroke="${cfg.color}" stroke-width="1.5" opacity="0.5" ${dashAttr} marker-end="url(#arrow-${c.type})"/>`;
+
+    // Label at midpoint
+    if (c.label) {
+      const fc = getNodeCenter(fromN), tc = getNodeCenter(toN);
+      const lx = (fc.x + tc.x) / 2, ly = (fc.y + tc.y) / 2 - 4;
+      paths += `<text x="${lx}" y="${ly}" font-size="8" fill="${cfg.color}" opacity="0.6" text-anchor="middle" font-weight="500">${c.label}</text>`;
+    }
+  }
+
+  // Nodes
+  let nodesSvg = '';
+  const commentedIds = new Set(state.comments.map(c => c.target));
+  for (const n of nodes) {
+    if (!state.layers[n.layer]) continue;
+    const L = LAYERS[n.layer];
+    const hasComment = commentedIds.has(n.id);
+    const ring = hasComment ? `<rect x="${n.x - 3}" y="${n.y - 3}" width="${n.w + 6}" height="${n.h + 6}" rx="10" fill="none" stroke="#f59e0b" stroke-width="2" class="commented-ring"/>` : '';
+
+    nodesSvg += `<g class="node-group" data-id="${n.id}" onclick="openModal('${n.id}')">
+      ${ring}
+      <rect class="node-rect" x="${n.x}" y="${n.y}" width="${n.w}" height="${n.h}" rx="8" fill="${L.fill}" stroke="${L.stroke}" stroke-width="1.5"/>
+      <text x="${n.x + n.w / 2}" y="${n.y + 20}" font-size="12" fill="${L.text}" text-anchor="middle" font-weight="700">${n.label}</text>
+      <text x="${n.x + n.w / 2}" y="${n.y + 34}" font-size="9" fill="${L.text}" text-anchor="middle" opacity="0.55" font-family="monospace">${truncate(n.subtitle, 30)}</text>
+    </g>`;
+  }
+
+  svg.innerHTML = defs + bands + paths + nodesSvg;
+  updateStats(visibleNodeIds.size, visibleConns.length);
+  updateViewBox();
+}
+
+function truncate(str, max) {
+  return str.length > max ? str.slice(0, max - 1) + '\u2026' : str;
+}
+
+function updateStats(nodeCount, connCount) {
+  document.getElementById('canvas-stats').textContent = `${nodeCount} nodes \u00b7 ${connCount} connections`;
+}
+
+// ── Controls ───────────────────────────────────────────────────────
+
+function renderPresets() {
+  const el = document.getElementById('presets');
+  el.innerHTML = '';
+  for (const [key, p] of Object.entries(PRESETS)) {
+    const btn = document.createElement('button');
+    btn.className = 'preset-btn' + (state.preset === key ? ' active' : '');
+    btn.textContent = p.label;
+    btn.onclick = () => applyPreset(key);
+    el.appendChild(btn);
+  }
+}
+
+function applyPreset(key) {
+  const p = PRESETS[key];
+  state.preset = key;
+  state.layers = { ...p.layers };
+  state.connTypes = { ...p.conns };
+  renderPresets();
+  renderLayerToggles();
+  renderConnToggles();
+  renderDiagram();
+  updatePrompt();
+}
+
+function renderLayerToggles() {
+  const el = document.getElementById('layer-toggles');
+  el.innerHTML = '';
+  for (const [key, cfg] of Object.entries(LAYERS)) {
+    const count = nodes.filter(n => n.layer === key).length;
+    const div = document.createElement('label');
+    div.className = 'layer-toggle';
+    div.innerHTML = `<input type="checkbox" ${state.layers[key] ? 'checked' : ''} data-layer="${key}">
+      <span class="layer-dot" style="background:${cfg.color}"></span>
+      <span class="layer-label">${cfg.label}</span>
+      <span class="layer-count">${count}</span>`;
+    div.querySelector('input').addEventListener('change', e => {
+      state.layers[key] = e.target.checked;
+      state.preset = '';
+      renderPresets();
+      renderDiagram();
+      updatePrompt();
+    });
+    el.appendChild(div);
+  }
+}
+
+function renderConnToggles() {
+  const el = document.getElementById('conn-toggles');
+  el.innerHTML = '';
+  for (const [key, cfg] of Object.entries(CONN_TYPES)) {
+    const count = connections.filter(c => c.type === key).length;
+    const div = document.createElement('label');
+    div.className = 'conn-toggle';
+    const dashStyle = cfg.dash ? `background: repeating-linear-gradient(90deg, ${cfg.color} 0, ${cfg.color} 4px, transparent 4px, transparent 7px);` : `background:${cfg.color};`;
+    div.innerHTML = `<input type="checkbox" ${state.connTypes[key] ? 'checked' : ''} style="accent-color:${cfg.color}">
+      <span class="conn-line" style="${dashStyle}"></span>
+      <span class="conn-label">${cfg.label}</span>
+      <span class="conn-count">${count}</span>`;
+    div.querySelector('input').addEventListener('change', e => {
+      state.connTypes[key] = e.target.checked;
+      state.preset = '';
+      renderPresets();
+      renderDiagram();
+      updatePrompt();
+    });
+    el.appendChild(div);
+  }
+}
+
+function renderLegend() {
+  const el = document.getElementById('legend');
+  let html = '<div class="legend-title">Connection Types</div>';
+  for (const [key, cfg] of Object.entries(CONN_TYPES)) {
+    const dashStyle = cfg.dash ? `background: repeating-linear-gradient(90deg, ${cfg.color} 0, ${cfg.color} 4px, transparent 4px, transparent 7px);` : `background:${cfg.color};`;
+    html += `<div class="legend-item"><span class="legend-swatch" style="${dashStyle}"></span>${cfg.label}</div>`;
+  }
+  el.innerHTML = html;
+}
+
+// ── Comments ───────────────────────────────────────────────────────
+
+function openModal(nodeId) {
+  const n = nodes.find(n => n.id === nodeId);
+  if (!n) return;
+  state.modalNode = n;
+  document.getElementById('modal-title').textContent = n.label;
+  document.getElementById('modal-file').textContent = n.subtitle;
+  document.getElementById('modal-input').value = '';
+  document.getElementById('modal').classList.add('open');
+  setTimeout(() => document.getElementById('modal-input').focus(), 50);
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+  state.modalNode = null;
+}
+
+function saveComment() {
+  const text = document.getElementById('modal-input').value.trim();
+  if (!text || !state.modalNode) return;
+  state.comments.push({
+    id: Date.now(),
+    target: state.modalNode.id,
+    targetLabel: state.modalNode.label,
+    targetFile: state.modalNode.subtitle,
+    text
+  });
+  closeModal();
+  renderComments();
+  renderDiagram();
+  updatePrompt();
+}
+
+function deleteComment(id) {
+  state.comments = state.comments.filter(c => c.id !== id);
+  renderComments();
+  renderDiagram();
+  updatePrompt();
+}
+
+function renderComments() {
+  const el = document.getElementById('comments-list');
+  document.getElementById('comment-count').textContent = state.comments.length;
+  if (state.comments.length === 0) {
+    el.innerHTML = '<div class="no-comments">Click a node to add feedback</div>';
+    return;
+  }
+  el.innerHTML = state.comments.map(c => `
+    <div class="comment-card">
+      <button class="comment-delete" onclick="deleteComment(${c.id})">&times;</button>
+      <div class="comment-target">${c.targetLabel}</div>
+      <div class="comment-file">${c.targetFile}</div>
+      <div class="comment-text">${escapeHtml(c.text)}</div>
+    </div>
+  `).join('');
+}
+
+function escapeHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// Listen for Escape key
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal();
+  if (e.key === 'Enter' && e.ctrlKey && document.getElementById('modal').classList.contains('open')) saveComment();
+});
+
+// ── Prompt ─────────────────────────────────────────────────────────
+
+function updatePrompt() {
+  const el = document.getElementById('prompt-output');
+  const visibleLayers = Object.entries(state.layers).filter(([,v]) => v).map(([k]) => LAYERS[k].label);
+  const presetLabel = state.preset ? PRESETS[state.preset]?.label : 'Custom view';
+
+  let parts = [];
+  parts.push(`This is the Automationnation architecture (AI weather scheduling for 5,000+ service businesses), showing the ${presetLabel.toLowerCase()} view.`);
+
+  if (visibleLayers.length < Object.keys(LAYERS).length) {
+    parts.push(`Visible layers: ${visibleLayers.join(', ')}.`);
+  }
+
+  parts.push('');
+  parts.push('Stack: Next.js 15 (App Router) + Convex (real-time backend) + Clerk (auth) + Stripe (billing).');
+  parts.push('Core pipeline: Cron trigger \u2192 batch weather check \u2192 fetch forecast (Tomorrow.io/OWM) \u2192 deterministic rule engine \u2192 auto-reschedule RED jobs \u2192 notify via SMS/email.');
+
+  if (state.comments.length > 0) {
+    parts.push('');
+    parts.push('Feedback on specific components:');
+    parts.push('');
+    for (const c of state.comments) {
+      parts.push(`**${c.targetLabel}** (${c.targetFile}):`);
+      parts.push(c.text);
+      parts.push('');
+    }
+  }
+
+  el.textContent = parts.join('\n');
+}
+
+function copyPrompt() {
+  const text = document.getElementById('prompt-output').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('copy-btn');
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1500);
+  });
+}
+
+// ── Init ───────────────────────────────────────────────────────────
+
+renderPresets();
+renderLayerToggles();
+renderConnToggles();
+renderLegend();
+renderComments();
+renderDiagram();
+updatePrompt();
+</script>
+</body>
+</html>
