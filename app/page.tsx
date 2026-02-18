@@ -96,7 +96,14 @@ export default function LandingPage() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-[#0A0D10]">
+    <div className="min-h-screen bg-[#0A0D10] relative">
+      {/* Rain backdrop */}
+      <div
+        className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat pointer-events-none"
+        style={{ backgroundImage: "url('/rain-backdrop.jpg')", opacity: 0.06 }}
+        aria-hidden="true"
+      />
+
       {/* ═══════════ NAV ═══════════ */}
       <header className="fixed top-0 inset-x-0 z-50 border-b border-white/[0.04] bg-[#0A0D10]/90 backdrop-blur-md">
         <nav className="mx-auto max-w-7xl px-6 h-16 flex items-center justify-between">
