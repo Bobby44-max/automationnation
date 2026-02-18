@@ -570,3 +570,122 @@ export const cacheWeatherWindows = mutation({
     });
   },
 });
+
+// ============================================================
+// CLIENT / CREW / JOB CRUD
+// ============================================================
+
+export const getClients = query({
+  args: { businessId: v.id("businesses") },
+  handler: async (ctx, { businessId }) => {
+    return await ctx.db
+      .query("clients")
+      .withIndex("by_business", (q) => q.eq("businessId", businessId))
+      .collect();
+  },
+});
+
+export const getCrewMembers = query({
+  args: { businessId: v.id("businesses") },
+  handler: async (ctx, { businessId }) => {
+    return await ctx.db
+      .query("crewMembers")
+      .withIndex("by_business", (q) => q.eq("businessId", businessId))
+      .collect();
+  },
+});
+
+export const createClient = mutation({
+  args: {
+    businessId: v.id("businesses"),
+    name: v.string(),
+    email: v.optional(v.string()),
+    phone: v.optional(v.string()),
+    address: v.optional(v.string()),
+    city: v.optional(v.string()),
+    state: v.optional(v.string()),
+    zipCode: v.string(),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db.insert("clients", args);
+  },
+});
+
+export const deleteClient = mutation({
+  args: { clientId: v.id("clients"), businessId: v.id("businesses") },
+  handler: async (ctx, { clientId, businessId }) => {
+    const client = await ctx.db.get(clientId);
+    if (!client || client.businessId !== businessId) {
+      throw new Error("Client not found");
+    }
+    await ctx.db.delete(clientId);
+  },
+});
+
+export const createCrewMember = mutation({
+  args: {
+    businessId: v.id("businesses"),
+    name: v.string(),
+    phone: v.string(),
+    email: v.optional(v.string()),
+    role: v.string(),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db.insert("crewMembers", {
+      ...args,
+      isActive: true,
+    });
+  },
+});
+
+export const deleteCrewMember = mutation({
+  args: { crewMemberId: v.id("crewMembers"), businessId: v.id("businesses") },
+  handler: async (ctx, { crewMemberId, businessId }) => {
+    const member = await ctx.db.get(crewMemberId);
+    if (!member || member.businessId !== businessId) {
+      throw new Error("Crew member not found");
+    }
+    await ctx.db.delete(crewMemberId);
+  },
+});
+
+export const createJob = mutation({
+  args: {
+    businessId: v.id("businesses"),
+    clientId: v.id("clients"),
+    crewLeadId: v.optional(v.id("crewMembers")),
+    trade: v.string(),
+    jobType: v.string(),
+    title: v.string(),
+    date: v.string(),
+    startTime: v.string(),
+    endTime: v.string(),
+    address: v.string(),
+    zipCode: v.string(),
+    estimatedRevenue: v.optional(v.number()),
+    notes: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db.insert("jobs", {
+      ...args,
+      status: "scheduled",
+    });
+  },
+});
+
+export const deleteJob = mutation({
+  args: { jobId: v.id("jobs"), businessId: v.id("businesses") },
+  handler: async (ctx, { jobId, businessId }) => {
+    const job = await ctx.db.get(jobId);
+    if (!job || job.businessId !== businessId) {
+      throw new Error("Job not found");
+    }
+    // Also clean up weather status
+    const status = await ctx.db
+      .query("jobWeatherStatus")
+      .withIndex("by_job", (q) => q.eq("jobId", jobId))
+      .first();
+    if (status) await ctx.db.delete(status._id);
+    await ctx.db.delete(jobId);
+  },
+});

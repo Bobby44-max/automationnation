@@ -9,11 +9,14 @@ import { WeatherStrip } from "./components/WeatherStrip";
 import { TradeSelector } from "./components/TradeSelector";
 import { JobCard } from "./components/JobCard";
 import { BulkActionBar } from "./components/BulkActionBar";
+import { AddJobModal } from "./components/AddJobModal";
+import { Plus } from "lucide-react";
 
 export function WeatherSchedulingClient() {
   const { businessId, businessName } = useDemoBusiness();
   const [selectedTrade, setSelectedTrade] = useState<string>("all");
   const [isChecking, setIsChecking] = useState(false);
+  const [showAddJob, setShowAddJob] = useState(false);
 
   const today = new Date().toISOString().split("T")[0];
 
@@ -67,11 +70,19 @@ export function WeatherSchedulingClient() {
               })}
             </p>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             <TradeSelector
               selected={selectedTrade}
               onChange={setSelectedTrade}
             />
+            <button
+              onClick={() => setShowAddJob(true)}
+              disabled={!businessId}
+              className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium hover:bg-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors min-h-[44px] inline-flex items-center gap-2"
+            >
+              <Plus className="h-4 w-4" />
+              Add Job
+            </button>
             <button
               onClick={handleCheckWeatherNow}
               disabled={isChecking || !businessId}
@@ -113,9 +124,19 @@ export function WeatherSchedulingClient() {
                 : "Loading..."}
             </p>
             <p className="text-sm mt-2">
-              {businessId
-                ? "Jobs will appear here once they're added to the schedule."
-                : "Connecting to database..."}
+              {businessId ? (
+                <>
+                  <button
+                    onClick={() => setShowAddJob(true)}
+                    className="text-blue-400 hover:text-blue-300 underline"
+                  >
+                    Add a job
+                  </button>
+                  {" "}to get started with weather monitoring.
+                </>
+              ) : (
+                "Connecting to database..."
+              )}
             </p>
           </div>
         )}
@@ -129,6 +150,15 @@ export function WeatherSchedulingClient() {
         businessName={businessName}
         date={today}
       />
+
+      {/* Add Job Modal */}
+      {businessId && (
+        <AddJobModal
+          open={showAddJob}
+          onClose={() => setShowAddJob(false)}
+          businessId={businessId}
+        />
+      )}
     </div>
   );
 }
