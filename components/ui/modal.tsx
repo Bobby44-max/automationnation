@@ -26,14 +26,14 @@ export function Modal({ open, onClose, children, className }: ModalProps) {
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-black/60"
+        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
         onClick={onClose}
         aria-hidden="true"
       />
       {/* Content */}
       <div
         className={cn(
-          "relative z-10 w-full max-w-lg rounded-xl border border-gray-800 bg-gray-900 p-6 shadow-2xl",
+          "relative z-10 w-full max-w-lg rounded border border-white/[0.06] bg-[#0E1216] p-6 shadow-2xl shadow-black/40",
           className
         )}
         role="dialog"

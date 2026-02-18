@@ -3,10 +3,10 @@
 const TRADES = [
   { value: "all", label: "All Trades" },
   { value: "roofing", label: "Roofing" },
-  { value: "exterior_painting", label: "Ext. Painting" },
-  { value: "landscaping", label: "Landscaping" },
+  { value: "exterior_painting", label: "Painting" },
+  { value: "landscaping", label: "Landscape" },
   { value: "concrete", label: "Concrete" },
-  { value: "pressure_washing", label: "Pressure Wash" },
+  { value: "pressure_washing", label: "Pressure" },
 ];
 
 interface TradeSelectorProps {
@@ -19,7 +19,7 @@ export function TradeSelector({ selected, onChange }: TradeSelectorProps) {
     <select
       value={selected}
       onChange={(e) => onChange(e.target.value)}
-      className="rounded-lg bg-gray-800 border border-gray-700 px-3 py-2 text-sm text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      className="rounded bg-[#151A1F] border border-white/[0.06] px-3 py-2 text-[13px] text-[#8B939E] min-h-[40px] focus:outline-none focus:ring-1 focus:ring-[#19AFFF] transition-colors"
     >
       {TRADES.map((t) => (
         <option key={t.value} value={t.value}>

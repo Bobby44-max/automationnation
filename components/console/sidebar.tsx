@@ -34,7 +34,7 @@ export function Sidebar() {
       {/* Mobile hamburger */}
       <button
         onClick={() => setMobileOpen(true)}
-        className="fixed top-4 left-4 z-50 lg:hidden rounded-lg bg-gray-900 border border-gray-800 p-2 text-gray-400 hover:text-white"
+        className="fixed top-4 left-4 z-50 lg:hidden rounded bg-[#0E1216] border border-white/[0.06] p-2 text-[#5A6370] hover:text-white transition-colors"
         aria-label="Open navigation"
       >
         <Menu className="h-5 w-5" />
@@ -43,7 +43,7 @@ export function Sidebar() {
       {/* Mobile overlay */}
       {mobileOpen && (
         <div
-          className="fixed inset-0 z-40 bg-black/50 lg:hidden"
+          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden"
           onClick={() => setMobileOpen(false)}
         />
       )}
@@ -51,33 +51,33 @@ export function Sidebar() {
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed top-0 left-0 z-50 h-full w-64 bg-gray-950 border-r border-gray-800 flex flex-col transition-transform duration-200",
+          "fixed top-0 left-0 z-50 h-full w-56 bg-[#0A0D10] border-r border-white/[0.06] flex flex-col transition-transform duration-200",
           "lg:translate-x-0 lg:static lg:z-auto",
           mobileOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
         {/* Logo */}
-        <div className="flex items-center justify-between px-6 py-5 border-b border-gray-800">
+        <div className="flex items-center justify-between px-5 py-6 border-b border-white/[0.04]">
           <Link href="/dashboard" className="flex items-center">
             <Image
               src="/logo.jpg"
               alt="Rain Check"
-              width={140}
-              height={35}
-              className="h-7 w-auto"
+              width={120}
+              height={30}
+              className="h-6 w-auto"
             />
           </Link>
           <button
             onClick={() => setMobileOpen(false)}
-            className="lg:hidden text-gray-500 hover:text-white"
+            className="lg:hidden text-[#5A6370] hover:text-white"
             aria-label="Close navigation"
           >
-            <X className="h-5 w-5" />
+            <X className="h-4 w-4" />
           </button>
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 px-3 py-4 space-y-1">
+        <nav className="flex-1 px-3 py-6 space-y-0.5">
           {NAV_ITEMS.map((item) => {
             const isActive =
               pathname === item.href ||
@@ -90,13 +90,13 @@ export function Sidebar() {
                 href={item.href}
                 onClick={() => setMobileOpen(false)}
                 className={cn(
-                  "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors min-h-[44px]",
+                  "flex items-center gap-3 rounded px-3 py-2.5 text-[13px] font-medium transition-all duration-150 min-h-[40px]",
                   isActive
-                    ? "bg-blue-600/10 text-blue-400"
-                    : "text-gray-400 hover:text-white hover:bg-gray-900"
+                    ? "bg-[#19AFFF]/[0.08] text-[#19AFFF]"
+                    : "text-[#5A6370] hover:text-[#8B939E] hover:bg-white/[0.02]"
                 )}
               >
-                <Icon className="h-5 w-5 shrink-0" />
+                <Icon className="h-[18px] w-[18px] shrink-0" />
                 {item.label}
               </Link>
             );
@@ -104,8 +104,8 @@ export function Sidebar() {
         </nav>
 
         {/* Footer */}
-        <div className="px-4 py-4 border-t border-gray-800">
-          <p className="text-xs text-gray-600">Rain Check v1.0</p>
+        <div className="px-5 py-5 border-t border-white/[0.04]">
+          <p className="text-[11px] text-[#3A424D] tracking-wide">Rain Check v1.0</p>
         </div>
       </aside>
     </>

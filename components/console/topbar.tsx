@@ -1,5 +1,7 @@
 "use client";
 
+import { CloudSun } from "lucide-react";
+
 interface TopbarProps {
   businessName?: string;
 }
@@ -7,22 +9,25 @@ interface TopbarProps {
 export function Topbar({ businessName }: TopbarProps) {
   const today = new Date().toLocaleDateString("en-US", {
     weekday: "long",
-    year: "numeric",
-    month: "long",
+    month: "short",
     day: "numeric",
   });
 
   return (
-    <header className="sticky top-0 z-30 border-b border-gray-800 bg-gray-950/95 px-6 py-3">
+    <header className="sticky top-0 z-30 border-b border-white/[0.04] bg-[#0A0D10]/90 backdrop-blur-md px-8 py-4">
       <div className="flex items-center justify-between">
         <div className="pl-12 lg:pl-0">
-          <h2 className="text-sm font-semibold text-white">
+          <h2 className="text-[13px] font-semibold text-white tracking-tight">
             {businessName || "My Business"}
           </h2>
-          <p className="text-xs text-gray-500">{today}</p>
+          <p className="text-[11px] text-[#5A6370] mt-0.5">{today}</p>
         </div>
         <div className="flex items-center gap-4">
-          <div className="h-8 w-8 rounded-full bg-emerald-600 flex items-center justify-center text-white text-sm font-bold">
+          <div className="flex items-center gap-2 text-[11px] text-[#5A6370]">
+            <CloudSun className="h-3.5 w-3.5 text-[#19AFFF]" />
+            <span>Weather Active</span>
+          </div>
+          <div className="h-7 w-7 rounded bg-[#19AFFF]/10 flex items-center justify-center text-[#19AFFF] text-[11px] font-bold">
             RC
           </div>
         </div>

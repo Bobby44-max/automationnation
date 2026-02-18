@@ -10,7 +10,7 @@ import { TradeSelector } from "./components/TradeSelector";
 import { JobCard } from "./components/JobCard";
 import { BulkActionBar } from "./components/BulkActionBar";
 import { AddJobModal } from "./components/AddJobModal";
-import { Plus } from "lucide-react";
+import { Plus, RefreshCw } from "lucide-react";
 
 export function WeatherSchedulingClient() {
   const { businessId, businessName } = useDemoBusiness();
@@ -57,11 +57,11 @@ export function WeatherSchedulingClient() {
   return (
     <div className="space-y-0">
       {/* Header */}
-      <header className="border-b border-gray-800 px-6 py-4">
+      <header className="border-b border-white/[0.04] px-8 py-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold">Weather Scheduling</h1>
-            <p className="text-sm text-gray-400">
+            <h1 className="text-xl font-bold tracking-tight">Weather Scheduling</h1>
+            <p className="text-[12px] text-[#5A6370] mt-1">
               {new Date().toLocaleDateString("en-US", {
                 weekday: "long",
                 year: "numeric",
@@ -70,7 +70,7 @@ export function WeatherSchedulingClient() {
               })}
             </p>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <TradeSelector
               selected={selectedTrade}
               onChange={setSelectedTrade}
@@ -78,17 +78,18 @@ export function WeatherSchedulingClient() {
             <button
               onClick={() => setShowAddJob(true)}
               disabled={!businessId}
-              className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium hover:bg-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors min-h-[44px] inline-flex items-center gap-2"
+              className="rounded bg-[#19AFFF] px-3.5 py-2 text-[13px] font-medium text-white hover:bg-[#0D9AEB] disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-150 min-h-[40px] inline-flex items-center gap-2"
             >
-              <Plus className="h-4 w-4" />
+              <Plus className="h-3.5 w-3.5" />
               Add Job
             </button>
             <button
               onClick={handleCheckWeatherNow}
               disabled={isChecking || !businessId}
-              className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors min-h-[44px]"
+              className="rounded bg-[#151A1F] border border-white/[0.06] px-3.5 py-2 text-[13px] font-medium text-[#8B939E] hover:text-white hover:bg-[#1C2228] disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-150 min-h-[40px] inline-flex items-center gap-2"
             >
-              {isChecking ? "Checking..." : "Check Weather Now"}
+              <RefreshCw className={`h-3.5 w-3.5 ${isChecking ? "animate-spin" : ""}`} />
+              {isChecking ? "Checking" : "Check Weather"}
             </button>
           </div>
         </div>
@@ -104,38 +105,38 @@ export function WeatherSchedulingClient() {
       />
 
       {/* Weather Strip */}
-      <div className="px-6 py-4">
+      <div className="px-8 py-6">
         <WeatherStrip businessId={businessId} />
       </div>
 
       {/* Job Cards */}
-      <div className="px-6 py-4 flex-1 pb-20">
+      <div className="px-8 pb-24">
         {filteredJobs.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
             {filteredJobs.map((job) => (
               <JobCard key={job._id} job={job} />
             ))}
           </div>
         ) : (
-          <div className="text-center text-gray-500 py-20">
-            <p className="text-lg">
+          <div className="text-center py-24">
+            <p className="text-[15px] text-[#5A6370]">
               {businessId
                 ? "No jobs scheduled for today"
                 : "Loading..."}
             </p>
-            <p className="text-sm mt-2">
+            <p className="text-[12px] text-[#3A424D] mt-2">
               {businessId ? (
                 <>
                   <button
                     onClick={() => setShowAddJob(true)}
-                    className="text-blue-400 hover:text-blue-300 underline"
+                    className="text-[#19AFFF] hover:text-[#0D9AEB] transition-colors"
                   >
                     Add a job
                   </button>
-                  {" "}to get started with weather monitoring.
+                  {" "}to start weather monitoring.
                 </>
               ) : (
-                "Connecting to database..."
+                "Connecting..."
               )}
             </p>
           </div>

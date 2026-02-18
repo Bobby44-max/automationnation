@@ -20,39 +20,39 @@ export function WeatherStatsBar({
         hour: "numeric",
         minute: "2-digit",
       })
-    : "Not yet";
+    : "—";
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-5 gap-4 px-6 py-4 border-b border-gray-800">
+    <div className="grid grid-cols-2 md:grid-cols-5 gap-3 px-8 py-6 border-b border-white/[0.04]">
       <StatCard
         label="Rescheduled"
         value={rescheduled}
         color="text-red-400"
-        bgColor="bg-red-400/10"
+        accent="bg-red-400"
       />
       <StatCard
         label="Proceeding"
         value={proceeding}
-        color="text-green-400"
-        bgColor="bg-green-400/10"
+        color="text-emerald-400"
+        accent="bg-emerald-400"
       />
       <StatCard
         label="Warnings"
         value={warnings}
-        color="text-yellow-400"
-        bgColor="bg-yellow-400/10"
+        color="text-amber-400"
+        accent="bg-amber-400"
       />
       <StatCard
         label="Revenue Protected"
         value={`$${revenueProtected.toLocaleString()}`}
-        color="text-blue-400"
-        bgColor="bg-blue-400/10"
+        color="text-[#19AFFF]"
+        accent="bg-[#19AFFF]"
       />
-      <div className="flex flex-col items-center justify-center rounded-xl bg-gray-900 p-3">
-        <span className="text-xs text-gray-500 uppercase tracking-wide">
+      <div className="flex flex-col justify-center rounded bg-[#0E1216] border border-white/[0.04] px-4 py-3">
+        <span className="text-[10px] text-[#5A6370] uppercase tracking-widest">
           Last Check
         </span>
-        <span className="text-lg font-semibold text-gray-300">
+        <span className="text-lg font-semibold text-[#8B939E] mt-1">
           {lastCheckTime}
         </span>
       </div>
@@ -64,21 +64,22 @@ function StatCard({
   label,
   value,
   color,
-  bgColor,
+  accent,
 }: {
   label: string;
   value: string | number;
   color: string;
-  bgColor: string;
+  accent: string;
 }) {
   return (
-    <div
-      className={`flex flex-col items-center justify-center rounded-xl ${bgColor} p-3`}
-    >
-      <span className="text-xs text-gray-500 uppercase tracking-wide">
-        {label}
-      </span>
-      <span className={`text-2xl font-bold ${color}`}>{value}</span>
+    <div className="flex flex-col justify-center rounded bg-[#0E1216] border border-white/[0.04] px-4 py-3">
+      <div className="flex items-center gap-2 mb-1">
+        <div className={`h-1 w-1 rounded-full ${accent}`} />
+        <span className="text-[10px] text-[#5A6370] uppercase tracking-widest">
+          {label}
+        </span>
+      </div>
+      <span className={`text-2xl font-bold tracking-tight ${color}`}>{value}</span>
     </div>
   );
 }

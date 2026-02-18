@@ -34,31 +34,34 @@ interface JobCardProps {
 
 const STATUS_STYLES = {
   green: {
-    dot: "bg-green-500",
-    border: "border-green-500/20",
-    bg: "bg-green-500/5",
+    accent: "bg-emerald-400",
+    border: "border-emerald-400/10",
+    bg: "bg-emerald-400/[0.03]",
     label: "Clear",
+    labelColor: "text-emerald-400",
   },
   yellow: {
-    dot: "bg-yellow-500",
-    border: "border-yellow-500/20",
-    bg: "bg-yellow-500/5",
+    accent: "bg-amber-400",
+    border: "border-amber-400/10",
+    bg: "bg-amber-400/[0.03]",
     label: "Watch",
+    labelColor: "text-amber-400",
   },
   red: {
-    dot: "bg-red-500",
-    border: "border-red-500/20",
-    bg: "bg-red-500/5",
+    accent: "bg-red-400",
+    border: "border-red-400/10",
+    bg: "bg-red-400/[0.03]",
     label: "Reschedule",
+    labelColor: "text-red-400",
   },
 };
 
-const TRADE_ICONS: Record<string, string> = {
-  roofing: "^",
-  exterior_painting: "~",
-  landscaping: "#",
-  concrete: "=",
-  pressure_washing: "%",
+const TRADE_LABELS: Record<string, string> = {
+  roofing: "Roofing",
+  exterior_painting: "Painting",
+  landscaping: "Landscape",
+  concrete: "Concrete",
+  pressure_washing: "Pressure",
 };
 
 export function JobCard({ job }: JobCardProps) {
@@ -69,37 +72,48 @@ export function JobCard({ job }: JobCardProps) {
 
   return (
     <div
-      className={`rounded-xl border ${styles.border} ${styles.bg} p-4 cursor-pointer hover:border-gray-600 transition-colors`}
+      className={`rounded border ${styles.border} ${styles.bg} p-5 cursor-pointer hover:border-white/[0.08] transition-all duration-150`}
       onClick={() => setExpanded(!expanded)}
     >
       {/* Header */}
-      <div className="flex items-start justify-between mb-2">
-        <div className="flex items-center gap-2">
-          <div className={`w-3 h-3 rounded-full ${styles.dot}`} />
-          <span className="text-sm font-medium text-gray-300">
-            {job.startTime}
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-2.5">
+          <div className={`w-2 h-2 rounded-full ${styles.accent}`} />
+          <span className={`text-[11px] font-medium uppercase tracking-wider ${styles.labelColor}`}>
+            {styles.label}
           </span>
         </div>
-        <span className="text-xs text-gray-500 font-mono">
-          {TRADE_ICONS[job.trade] || "?"} {job.trade.replace("_", " ")}
+        <span className="text-[11px] text-[#5A6370] font-medium">
+          {job.startTime}
         </span>
       </div>
 
       {/* Client Name */}
-      <h3 className="text-lg font-semibold text-white mb-1">
+      <h3 className="text-[15px] font-semibold text-white tracking-tight mb-1">
         {job.client?.name || "Unknown Client"}
       </h3>
 
-      {/* Crew */}
-      {job.crewLead && (
-        <p className="text-xs text-gray-500 mb-2">
-          Crew: {job.crewLead.name}
-        </p>
-      )}
+      {/* Meta row */}
+      <div className="flex items-center gap-3 text-[11px] text-[#5A6370]">
+        <span>{TRADE_LABELS[job.trade] || job.trade}</span>
+        {job.crewLead && (
+          <>
+            <span className="text-[#3A424D]">/</span>
+            <span>{job.crewLead.name}</span>
+          </>
+        )}
+        {job.estimatedRevenue && (
+          <>
+            <span className="text-[#3A424D]">/</span>
+            <span className="text-[#19AFFF]">${job.estimatedRevenue.toLocaleString()}</span>
+          </>
+        )}
+      </div>
 
       {/* Status Message */}
       {status === "red" && job.weatherStatus?.newDate && (
-        <div className="text-sm text-red-400 mt-2">
+        <div className="text-[12px] text-red-400/80 mt-3 flex items-center gap-1.5">
+          <span className="text-[10px]">&rarr;</span>
           Moved to{" "}
           {new Date(job.weatherStatus.newDate + "T12:00:00").toLocaleDateString(
             "en-US",
@@ -108,31 +122,31 @@ export function JobCard({ job }: JobCardProps) {
         </div>
       )}
       {status === "yellow" && job.weatherStatus?.summary && (
-        <div className="text-sm text-yellow-400 mt-2">
+        <div className="text-[12px] text-amber-400/80 mt-3">
           {job.weatherStatus.summary}
         </div>
       )}
       {job.weatherStatus?.overriddenBy && (
-        <div className="text-xs text-blue-400 mt-1">
-          Override by {job.weatherStatus.overriddenBy}
+        <div className="text-[11px] text-[#19AFFF]/60 mt-1.5">
+          Override: {job.weatherStatus.overriddenBy}
         </div>
       )}
 
       {/* Expanded Detail */}
       {expanded && job.weatherStatus?.triggeredRules && (
-        <div className="mt-3 pt-3 border-t border-gray-800">
-          <div className="text-xs text-gray-500 uppercase mb-2">
+        <div className="mt-4 pt-4 border-t border-white/[0.04]">
+          <div className="text-[10px] text-[#5A6370] uppercase tracking-widest mb-2">
             Weather Detail
           </div>
           {job.weatherStatus.triggeredRules.length > 0 ? (
-            <div className="space-y-1">
+            <div className="space-y-1.5">
               {job.weatherStatus.triggeredRules.map((rule, i) => (
                 <div
                   key={i}
-                  className="flex items-center justify-between text-xs"
+                  className="flex items-center justify-between text-[11px]"
                 >
-                  <span className="text-gray-400">{rule.reason}</span>
-                  <span className="text-gray-500 font-mono">
+                  <span className="text-[#8B939E]">{rule.reason}</span>
+                  <span className="text-[#5A6370] font-mono text-[10px]">
                     {rule.actual} / {rule.threshold}
                     {rule.hour && ` @ ${rule.hour}`}
                   </span>
@@ -140,12 +154,12 @@ export function JobCard({ job }: JobCardProps) {
               ))}
             </div>
           ) : (
-            <p className="text-xs text-green-400">
+            <p className="text-[11px] text-emerald-400/60">
               All conditions within safe limits
             </p>
           )}
-          <div className="mt-2 text-xs text-gray-600">
-            Confidence: {job.weatherStatus.confidence}%
+          <div className="mt-2.5 text-[10px] text-[#3A424D]">
+            Confidence {job.weatherStatus.confidence}%
           </div>
         </div>
       )}

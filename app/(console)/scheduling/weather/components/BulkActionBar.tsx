@@ -18,7 +18,6 @@ export function BulkActionBar({
   redCount,
   redJobIds,
   businessName,
-  date,
 }: BulkActionBarProps) {
   const [notifying, setNotifying] = useState(false);
   const [overriding, setOverriding] = useState(false);
@@ -29,26 +28,21 @@ export function BulkActionBar({
   async function handleNotifyAll() {
     if (
       !confirm(
-        `This will send weather reschedule notifications to all ${redCount} affected clients. Continue?`
+        `Send weather reschedule notifications to all ${redCount} affected clients?`
       )
     )
       return;
-
     setNotifying(true);
-    // In production, this would call sendNotifications action.
-    // For demo, we show the UX flow with a delay.
     setTimeout(() => setNotifying(false), 3000);
   }
 
   async function handleOverrideAll() {
     if (
       !confirm(
-        "This will override all weather holds and mark jobs as proceeding. " +
-          "Use only if you're confident conditions are safe. Continue?"
+        "Override all weather holds and mark jobs as proceeding?"
       )
     )
       return;
-
     setOverriding(true);
     try {
       for (const jobId of redJobIds) {
@@ -68,9 +62,9 @@ export function BulkActionBar({
   if (jobCount === 0) return null;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-gray-900/95 backdrop-blur border-t border-gray-800 px-6 py-3 z-40">
+    <div className="fixed bottom-0 left-0 right-0 bg-[#0A0D10]/95 backdrop-blur-md border-t border-white/[0.04] px-8 py-3 z-40">
       <div className="flex items-center justify-between max-w-7xl mx-auto">
-        <div className="text-sm text-gray-400">
+        <div className="text-[13px] text-[#5A6370]">
           {jobCount} jobs today
           {redCount > 0 && (
             <span className="text-red-400 ml-2">
@@ -79,24 +73,24 @@ export function BulkActionBar({
           )}
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           {redCount > 0 && (
             <>
               <button
                 onClick={handleNotifyAll}
                 disabled={notifying}
-                className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium hover:bg-red-500 disabled:opacity-50 transition-colors"
+                className="rounded bg-red-400/10 text-red-400 px-3.5 py-2 text-[13px] font-medium hover:bg-red-400/20 disabled:opacity-40 transition-all duration-150"
               >
                 {notifying
                   ? "Sending..."
-                  : `Notify All Clients (${redCount})`}
+                  : `Notify Clients (${redCount})`}
               </button>
               <button
                 onClick={handleOverrideAll}
                 disabled={overriding}
-                className="rounded-lg border border-gray-600 px-4 py-2 text-sm font-medium text-gray-300 hover:bg-gray-800 disabled:opacity-50 transition-colors"
+                className="rounded bg-[#151A1F] border border-white/[0.06] px-3.5 py-2 text-[13px] font-medium text-[#8B939E] hover:text-white hover:bg-[#1C2228] disabled:opacity-40 transition-all duration-150"
               >
-                {overriding ? "Overriding..." : "Override: Send Crews"}
+                {overriding ? "Overriding..." : "Override All"}
               </button>
             </>
           )}
