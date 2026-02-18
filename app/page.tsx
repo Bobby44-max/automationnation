@@ -241,7 +241,9 @@ export default function LandingPage() {
                   <span className="text-[13px] font-semibold">
                     Today&apos;s Schedule
                   </span>
-                  <span className="text-[11px] text-[#5A6370]">Tue, Feb 18</span>
+                  <span className="text-[11px] text-[#5A6370]">
+                    {new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
+                  </span>
                 </div>
                 <div className="p-4 space-y-1.5">
                   {/* GREEN */}
