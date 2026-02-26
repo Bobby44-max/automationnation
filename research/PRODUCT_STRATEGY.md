@@ -140,21 +140,24 @@ This is critical — don't compete with Jobber/ServiceTitan on scheduling. Be th
 
 | Tier | Name | Price | Target | Includes |
 |------|------|-------|--------|----------|
-| Free | **Storm Watch** | $0/mo | Solo operators, tire-kickers | 1 trade preset, 5 jobs/week weather check, email notifications only |
-| Starter | **Clear Day** | $29/mo | 1-2 person crews | 1 trade, unlimited weather checks, SMS + email, auto-reschedule up to 10 jobs/day |
-| Pro | **All Clear** | $79/mo | 3-10 crew company | Unlimited trades, auto-reschedule, bulk route actions, radar overlay, Jobber/HCP integration |
-| Business | **Storm Command** | $149/mo | 10+ crews, multi-trade | Everything + weather window optimization, revenue impact scoring, API access, priority support |
+| Trial | **14-Day Trial** | $0 × 14 days | All tiers, prove the value | All Solo features, 50 SMS, no credit card required |
+| Solo | **Solo** | $59/mo | Solo operators, 1-2 person crews | 1 trade, 15 jobs/day, 500 SMS/mo + email, auto-reschedule, AI messages |
+| Team | **Team** | $149/mo | 3-10 crew company | 3 trades, unlimited jobs, 2,000 SMS/mo, bulk route actions, radar overlay, integrations |
+| Business | **Business** | $299/mo | 10+ crews, multi-trade | Unlimited everything, weather windows, revenue scoring, API access, dedicated support |
 
-**Why this works:**
-- $29 undercuts every competitor and the pain point (5 AM phone calls) is worth way more than $29
-- $79 is where the real money is — businesses scaling past 3 crews are the buying signal
-- $149 captures multi-trade operations who'd otherwise need ServiceTitan ($$$)
-- Free tier generates word-of-mouth in tight trade communities (LawnSite, ContractorTalk)
+**Why this works (updated with real COGS analysis):**
+- No free tier = no money pit. 14-day trial proves value, then converts or expires
+- $59 covers real SMS costs ($4-5/mo COGS) with 75%+ margin at scale
+- $149 is the sweet spot — businesses scaling past 3 crews pay happily when they see $47K/yr saved
+- $299 captures enterprise-adjacent operations; weather windows alone justify the upgrade
+- SMS included (not metered) = predictable bills for contractors who hate surprises
+- Overage: $0.01/SMS after plan limit — transparent, no bill shock
 
-### Alternative: Usage-Based Add-On
-If selling as an add-on to existing FSM tools:
-- $0.10 per weather check / auto-reschedule event
-- Cap at $79/mo (predictability matters to small biz owners)
+**Unit Economics (at 100 customers):**
+- Solo (60% of customers): 60 × $59 = $3,540/mo revenue, ~$300 COGS = **$3,240 margin**
+- Team (30% of customers): 30 × $149 = $4,470/mo revenue, ~$300 COGS = **$4,170 margin**
+- Business (10% of customers): 10 × $299 = $2,990/mo revenue, ~$150 COGS = **$2,840 margin**
+- **Total: $11,000/mo revenue, ~$860 COGS + $112 infra = ~$10,000/mo gross margin (91%)**
 
 ---
 

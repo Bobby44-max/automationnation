@@ -18,9 +18,9 @@ const ROLE_HIERARCHY: Record<string, number> = {
 
 // --- Plan Hierarchy ---
 const PLAN_HIERARCHY: Record<string, number> = {
-  free: 0,
-  starter: 10,
-  pro: 20,
+  trial: 0,
+  solo: 10,
+  team: 20,
   business: 30,
 };
 

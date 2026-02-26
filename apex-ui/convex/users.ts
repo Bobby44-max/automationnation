@@ -36,7 +36,7 @@ export const createBusinessAndOwner = mutation({
       ownerId: clerkId,
       timezone: "America/New_York",
       primaryTrade: "roofing",
-      planTier: "free",
+      planTier: "trial",
       ownerEmail: email,
       ownerPhone: phone,
       isActive: true,

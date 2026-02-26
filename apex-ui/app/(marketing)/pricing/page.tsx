@@ -2,51 +2,48 @@ import Link from "next/link";
 
 const tiers = [
   {
-    name: "Storm Watch",
-    price: "Free",
-    description: "Get started with basic weather alerts",
-    features: ["1 trade preset", "5 jobs/week", "Email notifications"],
-    cta: "Start Free",
-    highlight: false,
-  },
-  {
-    name: "Clear Day",
-    price: "$29/mo",
-    description: "For solo operators who need reliability",
+    name: "Solo",
+    price: "$59/mo",
+    description: "For solo operators who can't afford weather surprises",
     features: [
       "1 trade preset",
-      "Unlimited weather checks",
-      "SMS + email notifications",
+      "15 jobs/day weather checks",
+      "500 SMS + unlimited email",
       "AI-generated messages",
+      "Auto-reschedule",
     ],
-    cta: "Start Trial",
+    cta: "Start 14-Day Free Trial",
     highlight: false,
   },
   {
-    name: "All Clear",
-    price: "$79/mo",
-    description: "For growing crews with multiple trades",
+    name: "Team",
+    price: "$149/mo",
+    description: "For growing crews running multiple trades",
     features: [
-      "Unlimited trade presets",
+      "3 trade presets",
+      "Unlimited jobs",
+      "2,000 SMS/mo included",
       "Bulk reschedule actions",
       "Weather radar overlay",
       "Priority support",
     ],
-    cta: "Start Trial",
+    cta: "Start 14-Day Free Trial",
     highlight: true,
   },
   {
-    name: "Storm Command",
-    price: "$149/mo",
-    description: "For multi-crew operations",
+    name: "Business",
+    price: "$299/mo",
+    description: "For multi-crew operations at scale",
     features: [
+      "Unlimited trades + jobs",
+      "Unlimited SMS",
       "Weather windows optimizer",
       "Revenue scoring",
       "API access",
       "Custom integrations",
       "Dedicated support",
     ],
-    cta: "Contact Sales",
+    cta: "Start 14-Day Free Trial",
     highlight: false,
   },
 ];
@@ -57,10 +54,13 @@ export default function PricingPage() {
       <div className="mx-auto max-w-6xl text-center">
         <h1 className="text-4xl font-bold">Simple, transparent pricing</h1>
         <p className="mt-4 text-lg text-gray-400">
-          Start free. Upgrade when your business grows.
+          One cancelled job costs more than a year of Rain Check.
+        </p>
+        <p className="mt-2 text-sm text-gray-500">
+          14-day free trial on every plan. No credit card required.
         </p>
 
-        <div className="mt-16 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-16 grid grid-cols-1 gap-6 md:grid-cols-3">
           {tiers.map((tier) => (
             <div
               key={tier.name}

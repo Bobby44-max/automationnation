@@ -106,10 +106,10 @@ Browser (Terminal UI at /terminal)
 
 | Tier | Name | Price | Key Limits |
 |---|---|---|---|
-| Free | Storm Watch | $0/mo | 1 trade, 5 jobs/week, email only |
-| Starter | Clear Day | $29/mo | 1 trade, unlimited checks, SMS + email |
-| Pro | All Clear | $79/mo | Unlimited trades, bulk actions, radar |
-| Business | Storm Command | $149/mo | Weather windows, revenue scoring, API |
+| Trial | 14-Day Trial | $0 × 14 days | All Solo features, 50 SMS |
+| Solo | Solo | $59/mo | 1 trade, 15 jobs/day, 500 SMS/mo |
+| Team | Team | $149/mo | 3 trades, unlimited jobs, 2,000 SMS/mo |
+| Business | Business | $299/mo | Unlimited trades + jobs + SMS, API, weather windows |
 
 ## TECH DECISIONS
 

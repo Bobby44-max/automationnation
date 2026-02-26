@@ -111,7 +111,7 @@ export const createCustomRule = mutation({
   handler: async (ctx, args) => {
     const user = await authenticateAndAuthorize(ctx, args.businessId as string);
     requireRole(user, "admin");
-    await requirePlan(ctx, args.businessId as string, "starter");
+    await requirePlan(ctx, args.businessId as string, "solo");
 
     // Check if custom rule already exists for this trade
     const existing = await ctx.db

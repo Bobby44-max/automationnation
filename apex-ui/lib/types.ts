@@ -15,7 +15,7 @@ export type RuleOperator = ">=" | "<=" | ">" | "<";
 export type RuleAction = "cancel" | "warn" | "reschedule_route" | "cancel_chemical";
 export type RiskTolerance = "conservative" | "moderate" | "aggressive";
 
-export type PlanTier = "free" | "starter" | "pro" | "business";
+export type PlanTier = "trial" | "solo" | "team" | "business";
 export type UserRole = "owner" | "admin" | "dispatcher" | "crew_lead";
 export type CrewRole = "crew_lead" | "member";
 export type JobStatus = "scheduled" | "rescheduled" | "completed" | "cancelled";

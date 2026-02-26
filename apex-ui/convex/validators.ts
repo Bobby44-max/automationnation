@@ -47,9 +47,9 @@ export const ruleActionValidator = v.union(
 
 // --- Plan Tiers ---
 export const planValidator = v.union(
-  v.literal("free"),
-  v.literal("starter"),
-  v.literal("pro"),
+  v.literal("trial"),
+  v.literal("solo"),
+  v.literal("team"),
   v.literal("business")
 );
 

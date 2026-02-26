@@ -51,14 +51,15 @@ Files:
 **Webhook events to handle:**
 - `checkout.session.completed` → Update business plan in Convex
 - `customer.subscription.updated` → Sync plan changes
-- `customer.subscription.deleted` → Downgrade to free
+- `customer.subscription.deleted` → Expire to trial
 - `invoice.payment_failed` → Flag account, send warning email
+- `customer.subscription.created` → Start 14-day trial (no charge)
 
 **Plan pricing (Stripe Price IDs):**
-- Free: No Stripe interaction needed
-- Starter ($29/mo): `price_starter_monthly`
-- Pro ($79/mo): `price_pro_monthly`
-- Business ($149/mo): `price_business_monthly`
+- Trial: 14-day free trial via `trial_period_days: 14` on subscription
+- Solo ($59/mo): `price_solo_monthly`
+- Team ($149/mo): `price_team_monthly`
+- Business ($299/mo): `price_business_monthly`
 
 **Customer portal:**
 ```typescript

@@ -299,7 +299,7 @@ export const bulkReschedule = mutation({
   handler: async (ctx, { businessId, jobIds, newDate, reason }) => {
     const user = await authenticateAndAuthorize(ctx, businessId as string);
     requireRole(user, "dispatcher");
-    await requirePlan(ctx, businessId as string, "pro");
+    await requirePlan(ctx, businessId as string, "team");
 
     const results = [];
 
