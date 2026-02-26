@@ -1,7 +1,7 @@
 # Apex Weather Scheduling — Project Brain
 
 > **Product**: AI-powered weather scheduling automation for service businesses
-> **Stack**: Next.js (App Router) + Convex (backend) + Ollama (local LLM) + n8n (orchestration)
+> **Stack**: Next.js (App Router) + Convex (backend) + Ollama (local LLM) + Claude Code Agent (orchestration)
 > **Repo**: `automationnation` — monorepo with `apex-ui/` as the main application
 
 ---
@@ -15,23 +15,44 @@ automationnation/
 │   ├── settings.json                  ← MCP servers, permissions
 │   └── commands/                      ← Phase agents + utility commands
 ├── apex-ui/
-│   ├── app/(console)/scheduling/weather/  ← Next.js frontend
-│   │   ├── page.tsx
-│   │   ├── WeatherSchedulingClient.tsx
-│   │   ├── settings/page.tsx
-│   │   └── components/                ← JobCard, AiChat, BulkAction, etc.
+│   ├── app/(console)/
+│   │   ├── scheduling/weather/        ← Weather dashboard + settings
+│   │   ├── terminal/                  ← Agent Terminal UI
+│   │   │   ├── page.tsx
+│   │   │   └── AgentTerminal.tsx      ← React terminal component
+│   │   └── ...                        ← Dashboard, notifications, settings
+│   ├── app/api/agent/run/route.ts     ← Vercel SSE endpoint (auth + poll + stream)
 │   ├── convex/                        ← Convex backend
-│   │   ├── schema.ts                  ← Tables: weatherRules, jobWeatherStatus, weatherActions, weatherWindows
+│   │   ├── schema.ts                  ← Tables: weatherRules, jobWeatherStatus, etc.
 │   │   ├── weatherScheduling.ts       ← Queries, mutations, actions
 │   │   ├── seedData.ts                ← Dev seed data
 │   │   └── aifCompiler/workflows/     ← AIF workflow definitions
-│   ├── cloud/aif-executor/            ← AIF execution engine
-│   │   ├── aifExecutor.js
-│   │   ├── stepHandlers/weather.js
-│   │   └── services/                  ← Weather, notifications, Ollama
-│   └── n8n-workflows/                 ← n8n automation JSONs
+│   ├── cloud/
+│   │   ├── agent-server/              ← Claude Code Agent Server (replaces n8n)
+│   │   │   ├── agent-server.js        ← 4 actions: start, approve, poll, cancel
+│   │   │   └── deploy/               ← Traefik config, systemd service, setup script
+│   │   └── aif-executor/             ← AIF execution engine (legacy, being replaced)
+│   └── n8n-workflows/                ← n8n automation JSONs (legacy, being replaced)
 └── research/                          ← Market research & strategy docs
 ```
+
+## AGENT TERMINAL ARCHITECTURE
+
+```
+Browser (Terminal UI at /terminal)
+  → Vercel API (/api/agent/run) [auth + SSE streaming]
+    → HTTPS POST → Traefik (:443, Hostinger VPS)
+      → agent-server.js (:3847)
+        → Claude Code CLI (spawned process)
+          → reads codebase, weather APIs, Convex
+          → writes output to /tmp/agent-sessions/{id}.jsonl
+      → Vercel polls JSONL every 1.5s
+    → SSE streams back to Terminal UI
+```
+
+**Two-Phase Security:**
+- **Phase 1 (Investigate):** Read-only — Claude can read files, search, analyze
+- **Phase 2 (Approve):** Write access granted only after explicit user approval in terminal
 
 ## CORE DOMAIN
 
@@ -97,7 +118,7 @@ automationnation/
 - **Weather APIs**: Tomorrow.io (primary) + OpenWeatherMap (fallback)
 - **Notifications**: Twilio (SMS) + SendGrid (email)
 - **LLM**: Ollama (local, free, privacy-first)
-- **Orchestration**: n8n (self-hosted, visual workflows)
+- **Orchestration**: Claude Code Agent Server (custom Node.js, replaces n8n)
 - **Payments**: Stripe (subscription billing per tier)
 
 ## ENVIRONMENT VARIABLES
@@ -114,7 +135,8 @@ TWILIO_AUTH_TOKEN=
 TWILIO_PHONE_NUMBER=
 SENDGRID_API_KEY=
 OLLAMA_BASE_URL=http://localhost:11434
-N8N_WEBHOOK_URL=
+AGENT_WEBHOOK_URL=
+AGENT_SHARED_SECRET=
 STRIPE_SECRET_KEY=
 STRIPE_WEBHOOK_SECRET=
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=

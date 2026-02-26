@@ -1,0 +1,49 @@
+# Traefik Dynamic Config — Agent Webhook Route
+#
+# Place this file in your Traefik dynamic config directory, e.g.:
+#   /etc/traefik/dynamic/agent-webhook.yml
+#
+# This routes incoming HTTPS requests at /agent-webhook to the
+# local agent-server.js running on port 3847.
+#
+# Hostinger VPS blocks custom ports, so Traefik on :443 proxies
+# the request through to the local Node.js server.
+
+http:
+  routers:
+    agent-webhook:
+      rule: "PathPrefix(`/agent-webhook`)"
+      service: agent-server
+      entryPoints:
+        - websecure
+      tls:
+        certResolver: letsencrypt
+      middlewares:
+        - agent-strip-prefix
+        - agent-cors
+
+  middlewares:
+    agent-strip-prefix:
+      stripPrefix:
+        prefixes:
+          - "/agent-webhook"
+
+    agent-cors:
+      headers:
+        accessControlAllowMethods:
+          - "POST"
+          - "OPTIONS"
+        accessControlAllowHeaders:
+          - "Content-Type"
+          - "Authorization"
+        accessControlAllowOriginList:
+          - "https://eduprephub.com"
+          - "https://www.eduprephub.com"
+          - "http://localhost:3000"
+        accessControlMaxAge: 86400
+
+  services:
+    agent-server:
+      loadBalancer:
+        servers:
+          - url: "http://127.0.0.1:3847"

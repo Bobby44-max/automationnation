@@ -10,12 +10,14 @@ import {
   Settings,
   Menu,
   X,
+  Terminal,
 } from "lucide-react";
 import { useState } from "react";
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/scheduling/weather", label: "Weather", icon: Cloud },
+  { href: "/terminal", label: "Terminal", icon: Terminal },
   { href: "/notifications", label: "Notifications", icon: Bell },
   { href: "/settings", label: "Settings", icon: Settings },
 ];

@@ -1,0 +1,44 @@
+# systemd service for the Claude Code Agent Server
+#
+# Install:
+#   sudo cp agent-server.service /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable agent-server
+#   sudo systemctl start agent-server
+#
+# Logs:
+#   journalctl -u agent-server -f
+
+[Unit]
+Description=Claude Code Agent Server
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/home/user/automationnation/apex-ui/cloud/agent-server
+ExecStart=/usr/bin/node agent-server.js
+Restart=on-failure
+RestartSec=5
+
+# Environment
+Environment=NODE_ENV=production
+Environment=AGENT_SERVER_PORT=3847
+Environment=AGENT_PROJECT_ROOT=/home/user/automationnation
+# Set AGENT_SHARED_SECRET in a .env file or systemd override:
+#   systemctl edit agent-server
+#   [Service]
+#   Environment=AGENT_SHARED_SECRET=your-secret-here
+
+# Security hardening
+NoNewPrivileges=true
+ProtectSystem=strict
+ReadWritePaths=/tmp/agent-sessions /home/user/automationnation
+
+# Resource limits
+LimitNOFILE=4096
+MemoryMax=512M
+CPUQuota=80%
+
+[Install]
+WantedBy=multi-user.target
