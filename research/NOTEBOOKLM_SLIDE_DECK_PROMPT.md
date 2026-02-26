@@ -1,4 +1,4 @@
-SYSTEM PROMPT — ELITE SLIDE DECK GENERATION v2
+SYSTEM PROMPT — ELITE SLIDE DECK GENERATION v3
 ═══════════════════════════════════════════════════
 
 You are a world-class pitch deck designer and visual storyteller. Generate a stunning, investor-grade slide deck for "Rain Check" — the first AI-powered weather automation platform built specifically for outdoor service businesses.
@@ -7,280 +7,527 @@ You are a world-class pitch deck designer and visual storyteller. Generate a stu
 
 BRAND IDENTITY:
 
-- Logo: Rain Check — lightning bolt icon (electric blue) next to "Rain Check" wordmark in clean white sans-serif. The bolt has a slight curve suggesting both weather and speed. Logo always sits bottom-left on slides, glowing subtly against the dark background.
-- Product URL: automationnation.wtf (shown on closing slide only)
-- Voice: Contractor-first. Direct. Never corporate. "We move your jobs before it rains" not "We leverage meteorological data to optimize field service scheduling."
+- Logo: "Rain Check" — a curved lightning bolt icon in electric blue (#3B82F6) next to the "Rain Check" wordmark in clean white Inter Bold. The bolt suggests both weather and speed. Logo sits bottom-left on every slide, small, glowing softly against the dark background. Never center the logo except on Slide 1 and Slide 14.
+- Product URL: automationnation.wtf (closing slide only)
+- Voice: Contractor-first. Direct. Never corporate.
 
 ---
 
-DESIGN LANGUAGE:
+DESIGN LANGUAGE (apply to EVERY slide consistently):
 
-- Style: Dark premium glassmorphism. Think Linear.app meets Stripe Atlas meets a Bloomberg weather terminal
-- Primary background: Deep navy (#0A0F1E) with subtle gradient mesh overlays in storm blue and electric cyan. Some slides use a rain/storm particle texture in the background — visible but not distracting
-- Accent palette:
-  - Electric blue (#3B82F6) — CTAs, highlights, the Rain Check brand color
-  - Emerald (#10B981) — "GREEN" status, positive metrics, the hero color from the landing page
-  - Amber (#F59E0B) — "YELLOW" status, warnings, caution
-  - Rose (#F43F5E) — "RED" status, danger, cancellations
-- Typography: Clean sans-serif (Inter or similar). Titles bold and punchy (3-6 words max). Body text minimal — let visuals and data speak
-- Visual motifs: Weather radar concentric rings, status traffic lights (green/yellow/red), notification cascade animations, calendar heat maps, frosted glass panels
-- Every slide feels like a premium SaaS product screenshot — not a PowerPoint
-- Data visualization over bullet lists. Always. Charts, comparisons, matrices, pipelines
-- White space is a feature. Let the content breathe. Never cram
+- Background: Deep navy (#0A0F1E) with a subtle radial gradient mesh — the center is slightly lighter (#0F1629), edges fade to near-black. A faint diagonal rain particle texture sits in the background at ~5% opacity on every slide — just enough to feel atmospheric, never distracting.
+- Glass cards: Every content block uses frosted glassmorphism — background: rgba(255,255,255,0.04), border: 1px solid rgba(255,255,255,0.08), backdrop-blur: 12px, border-radius: 16px. Cards have a subtle inner shadow at the top edge to simulate light catch.
+- Typography hierarchy:
+  - Slide titles: Inter Bold, 48-56px, pure white (#FFFFFF), tracking tight (-0.02em). Max 6 words.
+  - Subtitle/tagline: Inter Medium, 20-24px, muted gray (#94A3B8), 60% opacity.
+  - Stat numbers: Inter Black, 72-96px, white or accent color depending on context.
+  - Body text: Inter Regular, 16-18px, light gray (#CBD5E1).
+  - Labels/badges: Inter SemiBold, 11-13px, ALL CAPS, letter-spacing 0.05em.
+- Status colors (used consistently everywhere):
+  - GREEN: Emerald (#10B981) with a soft emerald glow (box-shadow: 0 0 20px rgba(16,185,129,0.3))
+  - YELLOW: Amber (#F59E0B) with amber glow
+  - RED: Rose (#F43F5E) with rose glow
+- Accent: Electric blue (#3B82F6) for CTAs, highlights, the Rain Check brand. Blue glow on interactive elements.
+- Spacing: Generous. 80px+ margins on all sides. Cards have 32px internal padding. 24px gap between cards. Never cram. If content doesn't fit with breathing room, cut content.
+- Transitions: Each slide has a subtle entrance — cards fade in from bottom with 200ms stagger. Stats count up. Status dots pulse once on appear.
 
 ---
-
-SLIDE STRUCTURE (14 slides):
 
 SLIDE 1 — TITLE
-"Rain Check"
-Tagline in large type: "Stop being your own weather dispatcher."
-Subtitle: AI-powered weather automation for outdoor service businesses
-Visual: Deep navy background with animated radar sweep emanating from center. Subtle rain particle effect falling diagonally. The Rain Check lightning bolt logo glowing center, large, confident. Below: a faint silhouette of a job schedule with green/yellow/red status dots — hinting at what's coming.
+Layout: Centered single-focus. No cards. Pure atmosphere.
+Content:
+- "Rain Check" in massive type (Inter Black, 80px) centered vertically, pure white
+- Lightning bolt icon to the left of the wordmark, 64px, electric blue, soft pulsing glow animation
+- Below the logo, 40px gap, tagline: "Stop being your own weather dispatcher." (Inter Medium, 28px, #94A3B8)
+- Below tagline, 16px gap, subtitle: "AI-powered weather automation for outdoor service businesses" (Inter Regular, 18px, #64748B)
+Background treatment: Concentric radar sweep rings emanating from behind the logo — three rings, each a slightly different shade of blue (#1E3A5F, #1E40AF, #3B82F6) at 8% opacity, expanding outward. Subtle diagonal rain particles at 5%. The overall effect: you're looking at the eye of a weather radar, calm and controlled.
+Bottom edge: A faint row of 8 small circles — 3 green, 2 yellow, 3 red — hinting at the status system. 30% opacity. Just a whisper of what's coming.
+
+---
 
 SLIDE 2 — THE PROBLEM
-Title: "5 AM. Every Rain Day."
-Show the owner's morning hell as a vertical timeline, each step adding stress:
-5:00 AM — Check 3 weather apps (phone icon, multiple tabs)
-5:15 AM — Cross-reference with 12 jobs on the calendar (paper calendar, squinting)
-5:30 AM — Decide: go or cancel? (coin flip icon)
-5:45 AM — Text 4 crew leads individually (texting frantically)
-6:00 AM — Call 8 clients to reschedule (phone, anger emojis)
-6:30 AM — Scramble to find open days that work (calendar chaos)
-7:00 AM — Finally start actual work (exhausted)
-Visual: Timeline flowing downward with clock icons at each step, red glow intensifying as it progresses. At the bottom, a quote in a frosted glass bubble: "I spend more time managing weather than managing my business." — ContractorTalk forum member. The timeline background subtly shows rain drops.
+Layout: Vertical timeline on the left (40% width), contextual quote card on the right (50% width), centered vertically.
+Title: "5 AM. Every Rain Day." (top-left, white, 48px)
+
+Left column — Timeline:
+Seven steps, each a horizontal row inside its own mini frosted glass card (height: 48px, full-width of column):
+  5:00 AM — "Check 3 weather apps" — phone icon — card has subtle green-to-neutral left border
+  5:15 AM — "Cross-reference 12 jobs" — calendar icon — neutral left border
+  5:30 AM — "Decide: go or cancel?" — dice/coin icon — yellow left border, ambient glow starting
+  5:45 AM — "Text 4 crew leads" — message bubble icon — amber left border
+  6:00 AM — "Call 8 clients to reschedule" — phone-ring icon — red left border, glow intensifying
+  6:30 AM — "Scramble for open days" — calendar-shuffle icon — deep red left border, strong glow
+  7:00 AM — "Finally start actual work" — exhausted-face icon — red pulsing left border
+
+The left-border color gradient from top to bottom tells the story visually: calm → stress → chaos. Each card slightly larger/bolder than the one above it.
+
+Right column — Quote card:
+A single large frosted glass card with a left border in amber (#F59E0B, 3px solid). Inside:
+  Large open-quote mark (", 48px, amber, 30% opacity) top-left
+  "I spend more time managing weather than managing my business."
+  (Inter Medium, 22px, white, italic)
+  Below: "— ContractorTalk forum member" (Inter Regular, 14px, #64748B)
+  The card has a subtle amber ambient glow behind it (box-shadow: 0 0 40px rgba(245,158,11,0.1))
+
+---
 
 SLIDE 3 — THE COST OF DOING NOTHING
-Title: "$8,000 Callbacks. Lost Crews. Angry Clients."
-Three devastating stats displayed HUGE, each in its own frosted glass card:
-$8,000+ — Average rework cost when roofers push through bad weather. Shingle adhesive strips fail below 40°F. One callback wipes a month of profit.
-47 minutes — Average time spent per weather event on rescheduling calls, texts, and calendar shuffling.
-3.2 jobs/week — Average weather cancellations for outdoor trades. That's 166 cancelled jobs per year.
-Below the three cards, a single line in muted text: "A $59/month tool that prevents ONE callback pays for itself for 11 years."
-Visual: Dark, high contrast. Each stat card has a subtle red ambient glow. Broken dollar sign, cracked calendar, and frustrated contractor icons (abstract, not clip-art). This slide should make you wince.
+Layout: Three stat cards in a row (equal width, 24px gap), anchored vertically center. Punchline text below.
+Title: "$8,000 Callbacks. Lost Crews. Angry Clients." (top-left, white, 48px)
+
+Card 1 — frosted glass, left-border: 3px solid rose (#F43F5E), rose ambient glow:
+  "$8,000+" (Inter Black, 72px, white)
+  "Average rework cost when roofers push through bad weather" (Inter Regular, 16px, #CBD5E1)
+  "Shingle adhesive fails below 40°F. One callback wipes a month of profit." (Inter Regular, 14px, #64748B)
+  Icon: Abstract broken dollar sign, rose colored, 40% opacity, top-right corner of card
+
+Card 2 — frosted glass, left-border: 3px solid amber (#F59E0B), amber ambient glow:
+  "47 min" (Inter Black, 72px, white)
+  "Per weather event on rescheduling" (Inter Regular, 16px, #CBD5E1)
+  "Calls, texts, calendar shuffling. Every single rain day." (Inter Regular, 14px, #64748B)
+  Icon: Abstract clock with crack, amber colored, 40% opacity, top-right
+
+Card 3 — frosted glass, left-border: 3px solid amber, amber ambient glow:
+  "3.2/wk" (Inter Black, 72px, white)
+  "Weather cancellations for outdoor trades" (Inter Regular, 16px, #CBD5E1)
+  "That's 166 cancelled jobs per year." (Inter Regular, 14px, #64748B)
+  Icon: Abstract calendar with X marks, amber colored, 40% opacity, top-right
+
+Below all three cards, centered, 40px gap:
+"A $59/month tool that prevents ONE callback pays for itself for 11 years." (Inter Medium, 18px, #64748B)
+
+---
 
 SLIDE 4 — THE SOLUTION
-Title: "Rain Check Does It All. Before You Wake Up."
-Show the automated flow as a sleek horizontal pipeline with glowing nodes:
-5:00 AM → Rain Check auto-checks forecast for every job on the schedule
-5:01 AM → Deterministic rule engine evaluates each job against trade-specific thresholds
-5:02 AM → 4 exterior jobs flagged RED — auto-moved to next clear day
-5:03 AM → Clients + crews get SMS with plain-English explanation
-7:00 AM → Owner opens app. Dashboard reads: "4 rescheduled. 8 proceeding. $0 lost."
-The pipeline flows left to right with green checkmarks cascading at each node. At the far right, the punchline in oversized bold text: "The owner didn't do anything."
-Visual: Each node is a frosted glass circle with an icon. Emerald green connection lines pulse between them. The final node (owner's phone) shows the actual Rain Check dashboard mockup.
+Layout: Horizontal pipeline spanning full width, vertically centered. Punchline text below.
+Title: "Rain Check Does It All. Before You Wake Up." (top-left, white, 48px)
 
-SLIDE 5 — HOW IT WORKS (Technical Beauty)
-Title: "Deterministic Engine. AI Intelligence."
-Show the two-layer architecture as a split screen:
+Pipeline: Five nodes connected by glowing emerald (#10B981) lines. Each node is a frosted glass circle (80px diameter) with an icon inside and a timestamp above and description below:
 
-LAYER 1 — Rule Engine (left side, dark terminal aesthetic):
-  "Deterministic. Never hallucinates. Never guesses."
-  if wind ≥ 25mph → cancel (roofing) [RED badge]
-  if humidity ≥ 85% → cancel (painting) [RED badge]
-  if rain ≥ 60% → reschedule route (landscaping) [YELLOW badge]
-  if temp ≤ 40°F → cancel (roofing — shingles won't seal) [RED badge]
-  Pure JavaScript. Runs in milliseconds. Evaluates every variable against every rule for every job.
+Node 1: Clock icon, emerald glow
+  Above: "5:00 AM" (Inter SemiBold, 13px, emerald, ALL CAPS)
+  Below: "Auto-checks forecast for every job" (Inter Regular, 14px, #CBD5E1)
 
-LAYER 2 — AI Layer (right side, softer glow, conversation bubbles):
-  "Smart. Private. Local."
-  AI notification: "Your exterior paint job moved to Thursday. Humidity on Tuesday would've added 4 hours to dry time."
-  Owner chat: "Should I send the roofing crew tomorrow?" → "Wind drops below 15mph after 11 AM. Safe to start afternoon shift."
-  Weekly summary: "Protected $12,400 in revenue this week across 8 rescheduled jobs."
-  Powered by Ollama — runs locally, no data leaves your server. Template fallback if AI is offline.
+Node 2: Shield/rule icon, emerald glow
+  Above: "5:01 AM"
+  Below: "Rule engine evaluates trade thresholds"
 
-Visual: Split screen — left side has a dark code-block aesthetic with green/yellow/red rule badges. Right side has a warm AI glow with natural language bubbles. A bridge or arrow connects them: "Rules decide. AI explains."
+Node 3: Calendar-move icon, rose glow (this node pulses)
+  Above: "5:02 AM"
+  Below: "4 jobs flagged RED → moved to next clear day"
+
+Node 4: Message/SMS icon, emerald glow
+  Above: "5:03 AM"
+  Below: "Clients + crews get SMS notification"
+
+Node 5: Phone/dashboard icon, emerald glow (strongest glow, hero node)
+  Above: "7:00 AM"
+  Below: "Owner opens app: '4 rescheduled. 8 proceeding.'"
+
+Connection lines between nodes: 2px solid emerald at 60% opacity, with small animated dots traveling along them (like data flowing through a pipeline). The line between Node 2 and Node 3 transitions from emerald to rose (the moment risk is detected).
+
+Below pipeline, centered, 48px gap:
+"The owner didn't do anything." (Inter Black, 32px, white, with a very subtle emerald glow behind the text)
+
+---
+
+SLIDE 5 — HOW IT WORKS
+Layout: True 50/50 split screen. Left half and right half each have a full-height frosted glass panel with distinct visual treatments. A bridge element connects them at center.
+Title: "Deterministic Engine. AI Intelligence." (centered top, spanning both halves, white, 48px)
+
+LEFT PANEL — "Rule Engine" (darker treatment, terminal aesthetic):
+  Panel background: rgba(0,0,0,0.3) instead of the usual glass — slightly darker, like a code terminal
+  Header badge: "LAYER 1 — RULES" (Inter SemiBold, 11px, ALL CAPS, emerald text on emerald/10% bg, rounded pill)
+  Subhead: "Deterministic. Never hallucinates." (Inter Medium, 16px, #94A3B8)
+
+  Four rule rows, each a mini card with monospace font (JetBrains Mono or similar, 14px):
+    "if wind ≥ 25mph → cancel" — [ROOFING] badge in rose, left-border rose
+    "if humidity ≥ 85% → cancel" — [PAINTING] badge in rose, left-border rose
+    "if rain ≥ 60% → reschedule" — [LANDSCAPE] badge in amber, left-border amber
+    "if temp ≤ 40°F → cancel" — [ROOFING] badge in rose, left-border rose
+
+  Bottom of panel: "Pure JavaScript. Milliseconds. Every variable × every rule × every job." (Inter Regular, 13px, #64748B)
+
+RIGHT PANEL — "AI Layer" (warmer, conversational):
+  Panel background: Standard glass but with a very subtle warm gradient (blue → slight purple at bottom-right)
+  Header badge: "LAYER 2 — INTELLIGENCE" (Inter SemiBold, 11px, ALL CAPS, blue text on blue/10% bg, rounded pill)
+  Subhead: "Smart. Private. Local." (Inter Medium, 16px, #94A3B8)
+
+  Three chat-bubble style cards, staggered (like a conversation):
+    Bubble 1 (system, left-aligned): "Your paint job moved to Thursday. Humidity would've added 4hrs to dry time." — small Ollama icon
+    Bubble 2 (user, right-aligned, slightly different glass tint): "Should I send the roofing crew tomorrow?"
+    Bubble 3 (system, left-aligned): "Wind drops below 15mph after 11 AM. Safe for afternoon shift." — emerald dot
+
+  Bottom of panel: "Powered by Ollama — runs locally, your data never leaves." (Inter Regular, 13px, #64748B)
+
+CENTER BRIDGE: A vertical divider line (1px, white, 10% opacity) with a small diamond/arrow icon at the midpoint containing the text "Rules decide → AI explains" (Inter SemiBold, 11px, #94A3B8)
+
+---
 
 SLIDE 6 — TRADE-SPECIFIC INTELLIGENCE
-Title: "Every Trade. Every Variable. Every Threshold."
-Three columns, each a frosted glass card with the trade icon at top:
+Layout: Three equal-width frosted glass cards in a row (24px gap). Each card has a unique top-border gradient matching the trade's character.
+Title: "Every Trade. Every Variable. Every Threshold." (top-left, white, 48px)
 
-ROOFING (house/roof icon):
-  Wind ≥ 25mph → CANCEL (materials become projectiles)
-  Rain ≥ 70% → CANCEL (water intrusion during tear-off)
-  Temp ≤ 40°F → CANCEL (shingles won't seal — $8K callback)
-  Wind ≥ 20mph → WARN (secure materials, monitor)
+CARD 1 — ROOFING:
+  Top border: 3px gradient — dark slate to steel gray (industrial, tough)
+  Icon: Minimal line-art roof/house (white, 32px) in a frosted circle badge, top-center of card
+  Trade name: "ROOFING" (Inter SemiBold, 13px, ALL CAPS, #94A3B8, letter-spaced)
 
-EXTERIOR PAINTING (paintbrush icon):
-  Humidity ≥ 85% → CANCEL (paint won't cure properly)
-  Dew point spread ≤ 5°F → CANCEL (condensation forms on surface)
-  Temp ≤ 50°F → CANCEL (latex won't adhere)
-  Rain within 4hrs → WARN (check coverage windows)
+  Four rule rows inside the card, each with a status dot and left-border accent:
+    [RED dot] Wind ≥ 25mph → CANCEL — "Materials become projectiles" (Inter Regular, 14px, #CBD5E1)
+    [RED dot] Rain ≥ 70% → CANCEL — "Water intrusion during tear-off"
+    [RED dot] Temp ≤ 40°F → CANCEL — "Shingles won't seal — $8K callback"
+    [YELLOW dot] Wind ≥ 20mph → WARN — "Secure materials, monitor"
 
-LANDSCAPING (leaf icon):
-  Rain ≥ 60% → RESCHEDULE ROUTE (mud, equipment damage)
-  Wind ≥ 15mph → CANCEL CHEMICALS (spray drift — liability)
-  Soil temp ≤ 55°F → HOLD PRE-EMERGENT (won't activate)
-  Rain 40-60% → WARN (skip mowing, keep hardscape)
+  Each row: 40px height, left-border (3px) matches the dot color (rose for RED, amber for YELLOW). Dot is 8px, pulsing softly.
 
-Visual: Each column has animated circular gauges showing thresholds, color-coded green/yellow/red zones. Looks like a mission control dashboard. Trade icons are clean line art, not cartoon. At the bottom: "5 trades supported at launch. Concrete + pressure washing included."
+CARD 2 — EXTERIOR PAINTING:
+  Top border: 3px gradient — dusty blue to lavender (clean, precision)
+  Icon: Minimal paintbrush line-art, top-center
+  "EXTERIOR PAINTING" header
 
-SLIDE 7 — THE DASHBOARD (Product Screenshot)
-Title: "Your Weather Command Center"
-Full-bleed dark UI mockup showing the actual Rain Check dashboard:
-- LEFT PANEL: Today's job list with status badges — "Johnson Roof Repair" [CLEAR/green], "Patel Exterior Paint" [MONITOR/yellow, Wind 22mph], "Chen Concrete Pour" [RESCHEDULE/red, Rain 80%, "Moved to Thu, Feb 19 · Client notified"]
-- CENTER: Hourly weather forecast strip with temperature, wind, rain probability charts
-- RIGHT PANEL: AI chat — "What's tomorrow looking like?" with a smart response
-- TOP BAR: Date selector, "4 jobs at risk" amber badge, last checked timestamp
-- BOTTOM: Bulk action bar — "Reschedule All Red Jobs" button glowing blue
-Visual: This must look like the REAL app. Reference the landing page screenshot style — dark glassmorphic panels, green/yellow/red left-border accents on job cards. The dashboard should make someone want to sign up immediately. Include the Rain Check logo in the top-left nav.
+  [RED dot] Humidity ≥ 85% → CANCEL — "Paint won't cure properly"
+  [RED dot] Dew spread ≤ 5°F → CANCEL — "Condensation forms on surface"
+  [RED dot] Temp ≤ 50°F → CANCEL — "Latex won't adhere"
+  [YELLOW dot] Rain within 4hrs → WARN — "Check coverage windows"
+
+CARD 3 — LANDSCAPING:
+  Top border: 3px gradient — forest green to emerald (organic, growth)
+  Icon: Minimal leaf line-art, top-center
+  "LANDSCAPING" header
+
+  [YELLOW dot] Rain ≥ 60% → RESCHEDULE ROUTE — "Mud, equipment damage"
+  [RED dot] Wind ≥ 15mph → CANCEL CHEMICALS — "Spray drift liability"
+  [YELLOW dot] Soil temp ≤ 55°F → HOLD — "Pre-emergent won't activate"
+  [YELLOW dot] Rain 40-60% → WARN — "Skip mowing, keep hardscape"
+
+Bottom of slide, centered: "5 trades at launch. Concrete + pressure washing included." (Inter Regular, 14px, #64748B)
+
+---
+
+SLIDE 7 — THE DASHBOARD
+Layout: Full-bleed product screenshot mockup. No traditional title bar — the title floats as an overlay badge, top-left.
+Title badge: Frosted glass pill containing "Your Weather Command Center" (Inter SemiBold, 14px, white)
+
+The mockup is a single massive frosted glass panel taking 85% of the slide, centered, with rounded corners (20px) and a subtle blue border glow (box-shadow: 0 0 30px rgba(59,130,246,0.15)). Inside:
+
+TOP BAR of the mockup (dark, 56px height):
+  Left: Rain Check logo (small, 24px bolt + wordmark)
+  Center: Date selector pill — "Tuesday, Feb 17, 2026" with left/right arrows
+  Right: Amber badge "4 jobs at risk" with pulse animation, then "Last checked: 5:02 AM" in muted text
+
+LEFT PANEL (35% width, scrollable job list):
+  Three job cards stacked vertically, each a mini frosted glass card with a colored left-border:
+
+  Job 1: Green left-border (3px emerald), emerald status dot
+    "Johnson Roof Repair" (Inter SemiBold, 15px, white)
+    "8:00 AM – 4:00 PM · 142 Oak St" (Inter Regular, 13px, #94A3B8)
+    Badge: "CLEAR" (emerald text, emerald/10% bg, pill shape)
+
+  Job 2: Yellow left-border (3px amber), amber status dot
+    "Patel Exterior Paint"
+    "9:00 AM – 5:00 PM · 88 Elm Dr"
+    Badge: "MONITOR" (amber text, amber/10% bg), sub-text: "Wind 22mph at 2PM"
+
+  Job 3: Red left-border (3px rose), rose status dot
+    "Chen Concrete Pour"
+    "7:00 AM – 3:00 PM · 205 Pine Ln"
+    Badge: "RESCHEDULE" (rose text, rose/10% bg), sub-text: "Rain 80% · Moved to Thu, Feb 19 · Client notified"
+
+CENTER PANEL (40% width):
+  Hourly forecast strip — a horizontal chart showing 12 hours (6AM-6PM) with:
+    Temperature line (blue, smooth curve)
+    Wind bars (gray, vertical)
+    Rain probability area (rose fill at 20% opacity where probability > 40%)
+  Current conditions card below the chart: "62°F · Wind 12mph · Humidity 58% · Rain 15%"
+
+RIGHT PANEL (25% width):
+  AI chat interface, dark glass sub-panel:
+    User message bubble: "What's tomorrow looking like?"
+    AI response bubble: "Wednesday looks rough — 80% rain chance from 8AM-2PM. I'd move exterior work. Roofing crew can start after 3PM if wind stays under 20mph."
+
+BOTTOM BAR (56px):
+  Left: "3 green · 2 yellow · 3 red" with colored dots
+  Right: Blue CTA button "Reschedule All Red Jobs" with blue glow
+
+---
 
 SLIDE 8 — COMPETITIVE MOAT
-Title: "They Show Weather. We Act On It."
-Beautiful comparison matrix (NOT a boring table — make it a visual showdown):
-                         Jobber  ServiceTitan  LawnPro  Zuper  RAIN CHECK
-Trade-specific rules       ✗         ✗           ✗       ✗       ✓
-Auto-reschedule            ✗         ✗           ✗       ✗       ✓
-Smart impact alerts        ✗         ✗           ✗       ✗       ✓
-Weather windows            ✗         ✗           ✗       ✗       ✓
-AI notifications           ✗         ✗           ✗       ✗       ✓
-Bulk route delay           ✗         ✗           ~       ✗       ✓
-Revenue scoring            ✗         ✗           ✗       ✗       ✓
-Client auto-notify         ✗         ✗           ✗       ✗       ✓
+Layout: Full-width comparison matrix as a stylized table. Rain Check column visually dominates.
+Title: "They Show Weather. We Act On It." (top-left, white, 48px)
 
-Visual: Rain Check column glows electric blue with emerald checkmarks. Competitor columns are dim, muted gray. The ✗ marks are barely visible. The visual dominance should be IMMEDIATE — you see a wall of gray and one column of green. Rain Check doesn't compete with these tools. It does what none of them even attempt.
+Matrix layout — 6 columns, 8 rows:
+  Column headers (top row): Jobber | ServiceTitan | LawnPro | Zuper | RAIN CHECK
+  - Competitor headers: Inter Regular, 14px, #64748B, 50% opacity
+  - RAIN CHECK header: Inter Bold, 16px, electric blue, full opacity, with blue underline glow
 
-SLIDE 9 — WEATHER WINDOWS (Killer Feature)
-Title: "Best 3-Hour Block This Week for Exterior Paint."
-Show a 7-day forecast calendar heat map:
-Monday: RED (rain all day, 80%)
-Tuesday: YELLOW (humidity 78%, borderline)
-Wednesday 10AM-1PM: GLOWING EMERALD GREEN with spotlight — "Optimal window: 62°F, 45% humidity, 0% rain, dew spread 12°F. Confidence: 87%"
-Thursday: YELLOW (wind 18mph, gusty)
-Friday: RED (thunderstorms)
-Saturday: GREEN (clear, good backup)
-Sunday: YELLOW (morning fog)
+  Row labels (left column, Inter Medium, 15px, #CBD5E1):
+    Trade-specific rules
+    Auto-reschedule
+    Smart impact alerts
+    Weather windows
+    AI notifications
+    Bulk route delay
+    Revenue scoring
+    Client auto-notify
 
-Visual: Calendar strip with color-coded blocks. Wednesday's window pulses with a spotlight/beacon effect — this is the crown jewel. Below each day: micro-charts showing temperature, humidity, wind speed. The Wednesday block expands to show detailed conditions. Tag below in muted text: "No other tool does this. Business tier, $299/mo."
+  Competitor cells: "✗" in dark gray (#374151), barely visible, no glow. The cells feel empty, dead.
+  LawnPro "Bulk route delay" cell: "~" in slightly lighter gray (partial credit)
+  RAIN CHECK cells: "✓" in emerald (#10B981), each checkmark has a subtle emerald glow (box-shadow: 0 0 12px rgba(16,185,129,0.4)). The entire column has a faint vertical emerald gradient strip behind it (2% opacity).
+
+The visual effect: You see a dark, lifeless grid and one glowing column of green. The dominance is instant — your eye goes straight to Rain Check. Every other column looks like an empty parking lot.
+
+Below the matrix, centered: "Rain Check doesn't compete with these tools. It does what none of them even attempt." (Inter Medium, 16px, #64748B)
+
+---
+
+SLIDE 9 — WEATHER WINDOWS
+Layout: Horizontal 7-day calendar strip (full-width), with an expanded detail card for the optimal window.
+Title: "Best 3-Hour Block This Week for Exterior Paint." (top-left, white, 48px)
+
+Calendar strip: Seven day cards in a row (equal width, 12px gap). Each card is a frosted glass rectangle (tall aspect ratio — ~200px height) with:
+  Day name at top (Inter SemiBold, 14px, ALL CAPS)
+  Date below (Inter Regular, 13px, #94A3B8)
+  A vertical mini-chart showing hourly conditions (abstract — thin colored bars stacked vertically)
+  Status badge at bottom
+
+  MONDAY: Rose background tint (rgba(244,63,94,0.08)), rose left border, badge "RAIN 80%" in rose
+  TUESDAY: Amber background tint, amber left border, badge "HUMID 78%" in amber
+  WEDNESDAY: Emerald background tint (STRONG — rgba(16,185,129,0.12)), emerald left border, emerald pulsing glow around entire card (box-shadow: 0 0 24px rgba(16,185,129,0.3)), badge "OPTIMAL" in emerald
+  THURSDAY: Amber background tint, badge "WIND 18mph" in amber
+  FRIDAY: Rose background tint, badge "STORMS" in rose
+  SATURDAY: Emerald background tint (lighter than Wednesday), badge "CLEAR" in emerald
+  SUNDAY: Amber background tint, badge "FOG" in amber
+
+Wednesday's card is VISUALLY DISTINCT: slightly taller (+20px), brighter glow, thicker border (2px vs 1px), and a small upward-pointing "spotlight" triangle at the bottom connecting it to the detail panel below.
+
+Detail panel (below Wednesday, centered under the card, 60% width):
+  A frosted glass card with emerald left border (3px) and emerald ambient glow:
+    "Wednesday 10AM – 1PM" (Inter SemiBold, 20px, white)
+    "Optimal 3-hour window for exterior painting" (Inter Regular, 14px, #94A3B8)
+    Four condition pills in a row (each a mini frosted badge):
+      "62°F" (emerald text) | "45% humidity" (emerald) | "0% rain" (emerald) | "Dew spread 12°F" (emerald)
+    Confidence bar: A thin progress bar at 87%, emerald fill, with "87% confidence" label
+
+Bottom-right, small: "No other tool does this. Storm Command tier." (Inter Regular, 13px, #64748B)
+
+---
 
 SLIDE 10 — PRICING
-Title: "Less Than One Cancelled Job Pays for a Year."
-Three tier cards with glassmorphic styling (no free tier — trial only):
+Layout: Three tier cards (ascending scale), centered, with trial banner above and value-prop text below.
+Title: "Less Than One Cancelled Job Pays for a Year." (top-left, white, 48px)
 
-14-DAY FREE TRIAL (banner badge across top of all three cards, not a separate card):
-"All Clear Day features. 50 SMS. No credit card required."
+TRIAL BANNER (full-width, above the three cards, 48px height):
+  Frosted glass strip with blue left border (3px):
+    "14-DAY FREE TRIAL" (Inter SemiBold, 13px, ALL CAPS, electric blue, letter-spaced) + "All Clear Day features. 50 SMS. No credit card." (Inter Regular, 14px, #94A3B8)
 
-CLEAR DAY ($59/mo) — frosted glass card with sunrise/clear sky gradient accent (matching the screenshot aesthetic — sun breaking through clouds):
-  1 trade preset
-  15 jobs/day weather checks
-  500 SMS + unlimited email/mo
-  Auto-reschedule
-  AI-generated notifications
-  CTA: "Start Free Trial"
+Three cards in a row (24px gap). Cards ASCEND in visual weight:
 
-ALL CLEAR ($149/mo) — frosted glass card with golden sunburst glow, "MOST POPULAR" star badge (this is the hero card — slightly larger, brighter border):
-  3 trade presets
-  Unlimited jobs
-  2,000 SMS/mo included
-  Bulk reschedule actions
-  Weather radar overlay
-  Priority support
-  CTA: "Start Free Trial"
+CLEAR DAY ($59/mo) — 280px wide:
+  Top gradient: Soft sunrise — linear-gradient from pale warm blue (#1E3A5F) at top to the standard glass background. Feels like early morning, clear sky breaking through.
+  Card border: 1px solid rgba(255,255,255,0.08)
+  Tier name: "Clear Day" (Inter SemiBold, 18px, white)
+  Price: "$59" (Inter Black, 56px, white) + "/mo" (Inter Regular, 18px, #94A3B8)
+  Divider line (1px, white, 8% opacity)
+  Features list (Inter Regular, 14px, #CBD5E1, 28px line-height, bullet: small emerald dot):
+    • 1 trade preset
+    • 15 jobs/day weather checks
+    • 500 SMS + unlimited email
+    • Auto-reschedule
+    • AI-generated notifications
+  CTA button: Full-width, frosted glass button with blue text: "Start Free Trial" (Inter SemiBold, 14px)
 
-STORM COMMAND ($299/mo) — frosted glass card with dramatic amber/storm sunset accent (power, command, the premium feel):
-  Unlimited trades + jobs
-  Unlimited SMS
-  Weather windows optimizer
-  Revenue impact scoring
-  Full API access
-  Custom integrations
-  Dedicated support
-  CTA: "Start Free Trial"
+ALL CLEAR ($149/mo) — 300px wide, 20px taller than Clear Day:
+  Top gradient: Golden sunburst — linear-gradient from warm amber (#78350F at 15% opacity) to standard glass. Feels like afternoon sun, everything is clear and productive.
+  Card border: 1px solid rgba(59,130,246,0.3) — BRIGHTER border than the other two cards
+  "MOST POPULAR" pill badge: Top-right corner, overlapping the card edge. Pill bg: electric blue. Text: Inter SemiBold, 11px, white, ALL CAPS. Subtle blue glow around the pill.
+  Tier name: "All Clear" (Inter SemiBold, 18px, white)
+  Price: "$149" (Inter Black, 56px, white) + "/mo"
+  Divider line
+  Features (same style):
+    • 3 trade presets
+    • Unlimited jobs
+    • 2,000 SMS/mo included
+    • Bulk reschedule actions
+    • Weather radar overlay
+    • Priority support
+  CTA button: Full-width, SOLID electric blue bg (#3B82F6), white text, blue glow: "Start Free Trial"
 
-Visual: Three cards ascending in size and visual weight. Each card has a weather-themed gradient — Clear Day is sunrise/blue sky, All Clear is golden clear weather, Storm Command is dramatic amber/storm sunset. The All Clear ($149) card is highlighted as "Most Popular" with a star icon and brighter border glow. Dark glass cards with pricing in MASSIVE bold type. The Rain Check lightning bolt logo anchored bottom-left. Below all cards: "One $8,000 callback pays for 11 years of Clear Day. Every competitor charges more and does less." SMS overage note in small text: "$0.01/SMS after plan limit."
+STORM COMMAND ($299/mo) — 280px wide:
+  Top gradient: Dramatic storm — linear-gradient from deep amber-black (#451A03 at 20% opacity) to standard glass. Feels like a controlled storm — power, command, authority.
+  Card border: 1px solid rgba(245,158,11,0.15) — subtle amber tint
+  Tier name: "Storm Command" (Inter SemiBold, 18px, white)
+  Price: "$299" (Inter Black, 56px, white) + "/mo"
+  Divider line
+  Features:
+    • Unlimited trades + jobs
+    • Unlimited SMS
+    • Weather windows optimizer
+    • Revenue impact scoring
+    • Full API access
+    • Custom integrations
+    • Dedicated support
+  CTA button: Frosted glass, amber text: "Start Free Trial"
+
+Below all three cards, centered, 40px gap:
+"One $8,000 callback pays for 11 years of Clear Day." (Inter Medium, 18px, #94A3B8)
+"Every competitor charges more and does less." (Inter Regular, 14px, #64748B)
+Small print: "$0.01/SMS after plan limit" (Inter Regular, 12px, #475569)
+
+---
 
 SLIDE 11 — MARKET SIZE
-Title: "867,000 Outdoor Service Businesses. Zero Weather Automation."
-Key numbers displayed as oversized bold typography:
-867K — Outdoor service businesses in the US
-$150B+ — Total addressable market for field service management
-$0 — Competitors with trade-specific weather automation (literally zero)
-$47K/yr — Average revenue protected per customer using Rain Check
+Layout: Three massive stat cards in a row (top), concentric ring diagram below (bottom 50%).
+Title: "867,000 Outdoor Service Businesses. Zero Weather Automation." (top-left, white, 44px — slightly smaller to fit)
 
-Target vertical expansion shown as concentric rings:
-CORE: Landscaping (launch) → Roofing → Exterior Painting
-EXPANSION: Concrete → Pressure Washing → HVAC → Solar Installation
-PLATFORM: Any outdoor trade with weather-dependent scheduling
+Top row — Three stat cards (frosted glass, equal width, 24px gap):
 
-Visual: Concentric target rings expanding outward, each ring labeled with a trade. TAM/SAM/SOM in a clean three-circle Venn. The "zero competitors" stat should feel like an exclamation point.
+Card 1: Blue left border, blue ambient glow
+  "867K" (Inter Black, 72px, electric blue)
+  "Outdoor service businesses in the US" (Inter Regular, 16px, #CBD5E1)
+
+Card 2: Emerald left border
+  "$150B+" (Inter Black, 72px, emerald)
+  "Field service management TAM" (Inter Regular, 16px, #CBD5E1)
+
+Card 3: Amber left border, amber glow (this one should feel like an exclamation point)
+  "ZERO" (Inter Black, 72px, amber)
+  "Competitors with trade-specific weather automation" (Inter Regular, 16px, #CBD5E1)
+
+Bottom half — Concentric ring diagram (centered):
+  Inner ring (smallest, emerald fill at 15% opacity, emerald border): "CORE" label
+    Contents: "Landscaping · Roofing · Painting" (Inter Regular, 14px, white)
+  Middle ring (amber fill at 8%, amber border): "EXPANSION" label
+    Contents: "Concrete · Pressure Washing · HVAC · Solar" (Inter Regular, 13px, #94A3B8)
+  Outer ring (blue fill at 5%, blue border): "PLATFORM" label
+    Contents: "Any outdoor trade with weather-dependent scheduling" (Inter Regular, 13px, #64748B)
+
+Each ring has a subtle pulsing glow matching its color. The diagram shows expansion, inevitability.
+
+---
 
 SLIDE 12 — GO-TO-MARKET
-Title: "Trade Forums → Trial Conversions → Viral Growth"
-Three-phase GTM as a clean flywheel:
+Layout: Three-phase horizontal flow (like a pipeline, similar energy to Slide 4) with milestone cards below.
+Title: "Trade Forums → Trial Conversions → Viral Growth" (top-left, white, 48px)
 
-PHASE 1 — Community Seeding (Month 1-3):
-  14-day free trial promoted in r/lawncare, LawnSite, ContractorTalk, PaintTalk
-  "The tool that moves your jobs when it rains — try it free for 2 weeks"
-  Target: 200 trial signups → 40% conversion → 80 paying customers
-  No free tier = every trial user is a potential customer, not a freeloader
+Three phase cards in a row (each a tall frosted glass card, 24px gap):
 
-PHASE 2 — Integration Moat (Month 4-8):
-  Jobber + Housecall Pro API integrations — be the weather layer they plug in
-  "Works with your existing scheduling tool. Just add weather intelligence."
-  FSM app marketplaces drive organic discovery
-  Target: 500+ paying customers via integration channels
+PHASE 1 card — emerald top-border gradient:
+  Badge: "MONTH 1-3" (Inter SemiBold, 11px, ALL CAPS, emerald text, emerald/10% bg, pill)
+  Header: "Community Seeding" (Inter SemiBold, 20px, white)
+  Body (Inter Regular, 14px, #CBD5E1):
+    "14-day trial in r/lawncare, LawnSite, ContractorTalk, PaintTalk"
+    "'The tool that moves your jobs when it rains'"
+  Milestone card (nested, smaller frosted glass, emerald left border):
+    "200 trials → 40% conversion → 80 paying" (Inter SemiBold, 14px, emerald)
+  Bottom note: "No free tier = every trial is a potential customer" (Inter Regular, 12px, #64748B)
 
-PHASE 3 — Vertical Expansion (Month 9-12):
-  New trade presets = new communities. Concrete forums, pressure washing groups, roofing subs
-  Each trade preset is a preset + a community + a growth loop
-  Target: 1,000+ customers, $100K+ MRR
+PHASE 2 card — blue top-border gradient:
+  Badge: "MONTH 4-8" (blue)
+  Header: "Integration Moat" (Inter SemiBold, 20px, white)
+  Body:
+    "Jobber + Housecall Pro API integrations"
+    "'Works with your tools. Just add weather intelligence.'"
+    "FSM app marketplaces drive organic discovery"
+  Milestone card (blue left border):
+    "500+ paying customers via integrations" (Inter SemiBold, 14px, blue)
 
-Visual: Clean flywheel diagram with arrows connecting phases. Trade community logos (Reddit, LawnSite) on Phase 1, integration partner logos (Jobber, HCP) on Phase 2, expanding trade icons on Phase 3. Revenue milestone callouts at each phase.
+PHASE 3 card — amber top-border gradient:
+  Badge: "MONTH 9-12" (amber)
+  Header: "Vertical Expansion" (Inter SemiBold, 20px, white)
+  Body:
+    "Each new trade = new preset + new community + new growth loop"
+    "Concrete, pressure washing, roofing subs"
+  Milestone card (amber left border):
+    "1,000+ customers · $100K+ MRR" (Inter SemiBold, 14px, amber)
+
+Connection arrows between the three cards: Thin lines (1px, white, 15% opacity) with small directional arrows. The flow reads left-to-right naturally.
+
+---
 
 SLIDE 13 — TECH STACK
-Title: "Built to Ship Fast. Built to Scale."
-Tech stack in a horizontal strip of frosted glass badges:
-Next.js (frontend) → Convex (real-time backend) → Clerk (auth) → Ollama (local AI) → Tomorrow.io (weather) → Twilio (SMS) → SendGrid (email) → Stripe (billing)
+Layout: Horizontal logo strip (top 30%), architecture diagram (bottom 60%).
+Title: "Built to Ship Fast. Built to Scale." (top-left, white, 48px)
 
-Key differentiators below in three columns:
-REAL-TIME: Convex backend — jobs update live across all devices. No refresh needed. Reactive subscriptions.
-PRIVATE AI: Ollama runs locally — LLM never sends data to third-party servers. Template fallback always works.
-DUAL WEATHER: Tomorrow.io primary + OpenWeatherMap fallback. Never miss a forecast.
+Logo strip: Eight frosted glass badge pills in a row (auto-width, 16px gap), each containing:
+  Tech logo (24px, grayscale at 60% opacity, full color on the Rain Check-specific ones) + name (Inter Medium, 14px, #CBD5E1)
+  Badges: Next.js → Convex → Clerk → Ollama → Tomorrow.io → Twilio → SendGrid → Stripe
+  Arrows (→) between them: thin, white, 20% opacity
 
-Architecture diagram: Clean flow showing Browser → Vercel → Convex → Weather APIs, with Ollama as a side panel and Twilio/SendGrid as output channels.
+Below, three frosted glass feature cards in a row (same pattern as other slides):
 
-Visual: Each tech logo in a frosted glass badge with subtle glow. Below: simplified architecture diagram with clean arrows and minimal nodes. Engineering-credible but not cluttered. The message: "This is built properly."
+Card 1 — emerald left border:
+  "REAL-TIME" badge (emerald pill)
+  "Convex backend — jobs update live across all devices. No refresh. Reactive subscriptions." (Inter Regular, 14px, #CBD5E1)
+
+Card 2 — blue left border:
+  "PRIVATE AI" badge (blue pill)
+  "Ollama runs locally — LLM never sends data to third parties. Template fallback always works." (Inter Regular, 14px, #CBD5E1)
+
+Card 3 — amber left border:
+  "DUAL WEATHER" badge (amber pill)
+  "Tomorrow.io primary + OpenWeatherMap fallback. Never miss a forecast." (Inter Regular, 14px, #CBD5E1)
+
+Bottom: Simplified architecture flow diagram — a clean horizontal pipeline:
+  [Browser] → [Vercel Edge] → [Convex DB] → [Weather APIs]
+  With side branches: [Ollama] feeding into Convex, [Twilio + SendGrid] as output channels
+  Each node is a small frosted glass pill. Lines are thin, white, 15% opacity. Clean, engineering-credible, not cluttered.
+
+---
 
 SLIDE 14 — THE ASK / CLOSING
-Title: "Stop Checking the Weather. Start Commanding It."
-Three closing lines, each its own row:
-"Your crews know where to go."
-"Your clients know what's happening."
-"You sleep until 7."
+Layout: Centered single-focus. Same energy as Slide 1 — bookend the deck.
+No traditional title. The content IS the title.
 
-CTA: "14-day free trial. No credit card. Set up in 5 minutes."
-Below: automationnation.wtf
+Three lines, stacked vertically, centered, generous spacing (40px gap between each):
+  "Your crews know where to go." (Inter Medium, 28px, #CBD5E1)
+  "Your clients know what's happening." (Inter Medium, 28px, #CBD5E1)
+  "You sleep until 7." (Inter Bold, 32px, white — the heaviest, the punchline)
 
-Visual: The Rain Check lightning bolt logo large and centered, glowing electric blue against the deep navy. Radar sweep animation behind it, fading outward. Clean, confident, inevitable. No clutter. Just the logo, the lines, and the CTA.
+40px gap, then:
+  "Stop Checking the Weather. Start Commanding It." (Inter Black, 40px, white, subtle blue glow)
+
+40px gap, then:
+  CTA button: Large frosted glass pill, electric blue border and glow:
+    "Start your 14-day free trial" (Inter SemiBold, 18px, electric blue)
+    Below the button: "No credit card required. Set up in 5 minutes." (Inter Regular, 14px, #64748B)
+
+60px gap, then:
+  Rain Check lightning bolt + wordmark, centered, 48px, electric blue, soft pulsing glow
+  Below: "automationnation.wtf" (Inter Regular, 16px, #475569)
+
+Background: Same radar sweep rings from Slide 1, slightly more intense — the deck opened with calm, it closes with confidence. The rings expand outward, suggesting growth, inevitability.
 
 ---
 
 TONE RULES:
 
-- Speak directly to the contractor/owner. They're practical, no-BS, frustrated by tech that overpromises
-- Use their actual language: "callbacks," "tear-off," "dry time," "spray drift," "route," "tarp," "shingle seal"
-- Every stat should feel like a punch — short, bold, undeniable
-- Never say "leverage," "synergy," "best-in-class," "scalable solution," or "paradigm." Say "it works" and "nobody else does this"
-- The deck should feel like the weather version of a Stripe or Linear product launch — premium, confident, inevitable
+- Speak directly to the contractor/owner. Practical, no-BS, frustrated by tech that overpromises
+- Use their language: "callbacks," "tear-off," "dry time," "spray drift," "route," "tarp," "shingle seal"
+- Every stat should hit like a punch — short, bold, undeniable
+- Never say "leverage," "synergy," "best-in-class," "scalable solution," or "paradigm"
+- The deck should feel like the weather version of a Stripe or Linear product launch
 - Quotes from real contractor forums add credibility (attribute to trade/forum, not individuals)
-- When in doubt, show don't tell. Data viz over explanations. Product screenshots over descriptions.
-- The pricing should feel like a no-brainer: "This costs less than one callback."
+- Show don't tell. Data viz over explanations. Product screenshots over descriptions.
+- Pricing should feel like a no-brainer: "This costs less than one callback."
 
 ---
 
-DESIGN NOTES FOR PRICING SLIDE:
+CONSISTENCY RULES (apply to every single slide):
 
-The old pricing had a free tier. It's gone. Here's why, and the deck should reflect the confidence:
-- No free tier means every user is a paying customer or actively trialing
-- 14-day trial is generous enough to prove value, short enough to create urgency
-- $59/mo Clear Day is positioned as "less than one hour of a crew lead's time per month"
-- $149/mo All Clear is the sweet spot — highlighted as "Most Popular"
-- $299/mo Storm Command is for operations that would've paid $599/mo for ServiceTitan
-- SMS included (not metered) — contractors hate unpredictable bills
-- The comparison: "Jobber charges $129/mo and doesn't even show trade-specific weather"
+1. Every frosted glass card uses the SAME base treatment: rgba(255,255,255,0.04) bg, 1px border rgba(255,255,255,0.08), backdrop-blur 12px, border-radius 16px, 32px internal padding
+2. Status colors are ALWAYS the same: Emerald for green/positive, Amber for yellow/warning, Rose for red/danger
+3. Left-border accents on cards are ALWAYS 3px solid in the relevant status color
+4. Ambient glows are ALWAYS box-shadow: 0 0 20px rgba([color],0.2) — consistent intensity
+5. Badge pills are ALWAYS Inter SemiBold, 11-13px, ALL CAPS, letter-spaced, colored text on color/10% bg
+6. The Rain Check logo sits bottom-left of every slide (except Slide 1 and 14 where it's centered)
+7. Slide titles are ALWAYS top-left, Inter Bold, 44-48px, white
+8. Muted secondary text is ALWAYS #64748B. Primary body text is ALWAYS #CBD5E1
+9. Generous spacing everywhere — 80px+ slide margins, 24px card gaps, 32px internal padding
+10. The rain particle texture is ALWAYS present in the background at 5% opacity
 
 ---
 
 FINAL INSTRUCTION:
 
-This deck should make someone say "Why doesn't this exist yet?" within 3 slides, and "I need this" by slide 7. By slide 10 (pricing), they should think "That's it? That's cheap." The design must be so polished that the product feels inevitable — not a startup pitch, but a product unveiling. Every slide earns the next one.
+This deck should make someone say "Why doesn't this exist yet?" within 3 slides, and "I need this" by slide 7. By slide 10 (pricing), they should think "That's it? That's cheap." The design must be so polished and so CONSISTENT that every slide feels like it came from the same designer on the same day. No slide should feel like the B-team made it. The pricing slide set the bar — every other slide must match it. This is a product unveiling, not a pitch deck.
