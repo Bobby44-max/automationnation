@@ -157,10 +157,10 @@ SLIDE 10 — PRICING
 Title: "Less Than One Cancelled Job Pays for a Year."
 Three tier cards with glassmorphic styling (no free tier — trial only):
 
-14-DAY FREE TRIAL (badge across top, not a separate card):
-"All Solo features. 50 SMS. No credit card required."
+14-DAY FREE TRIAL (banner badge across top of all three cards, not a separate card):
+"All Clear Day features. 50 SMS. No credit card required."
 
-SOLO ($59/mo) — frosted glass card with sunrise gradient accent:
+CLEAR DAY ($59/mo) — frosted glass card with sunrise/clear sky gradient accent (matching the screenshot aesthetic — sun breaking through clouds):
   1 trade preset
   15 jobs/day weather checks
   500 SMS + unlimited email/mo
@@ -168,7 +168,7 @@ SOLO ($59/mo) — frosted glass card with sunrise gradient accent:
   AI-generated notifications
   CTA: "Start Free Trial"
 
-TEAM ($149/mo) — frosted glass card with golden glow, "MOST POPULAR" badge with star:
+ALL CLEAR ($149/mo) — frosted glass card with golden sunburst glow, "MOST POPULAR" star badge (this is the hero card — slightly larger, brighter border):
   3 trade presets
   Unlimited jobs
   2,000 SMS/mo included
@@ -177,7 +177,7 @@ TEAM ($149/mo) — frosted glass card with golden glow, "MOST POPULAR" badge wit
   Priority support
   CTA: "Start Free Trial"
 
-BUSINESS ($299/mo) — frosted glass card with premium amber/storm accent:
+STORM COMMAND ($299/mo) — frosted glass card with dramatic amber/storm sunset accent (power, command, the premium feel):
   Unlimited trades + jobs
   Unlimited SMS
   Weather windows optimizer
@@ -187,7 +187,7 @@ BUSINESS ($299/mo) — frosted glass card with premium amber/storm accent:
   Dedicated support
   CTA: "Start Free Trial"
 
-Visual: Three cards ascending in size and visual weight, the Team tier ($149) highlighted as "Most Popular" with subtle crown or star icon and a brighter border glow. Dark glass cards with pricing in LARGE bold type. Below all cards: "One $8,000 callback pays for 11 years of Solo. Every competitor charges more and does less." SMS overage note in small text: "$0.01/SMS after plan limit."
+Visual: Three cards ascending in size and visual weight. Each card has a weather-themed gradient — Clear Day is sunrise/blue sky, All Clear is golden clear weather, Storm Command is dramatic amber/storm sunset. The All Clear ($149) card is highlighted as "Most Popular" with a star icon and brighter border glow. Dark glass cards with pricing in MASSIVE bold type. The Rain Check lightning bolt logo anchored bottom-left. Below all cards: "One $8,000 callback pays for 11 years of Clear Day. Every competitor charges more and does less." SMS overage note in small text: "$0.01/SMS after plan limit."
 
 SLIDE 11 — MARKET SIZE
 Title: "867,000 Outdoor Service Businesses. Zero Weather Automation."
@@ -273,9 +273,9 @@ DESIGN NOTES FOR PRICING SLIDE:
 The old pricing had a free tier. It's gone. Here's why, and the deck should reflect the confidence:
 - No free tier means every user is a paying customer or actively trialing
 - 14-day trial is generous enough to prove value, short enough to create urgency
-- $59/mo Solo is positioned as "less than one hour of a crew lead's time per month"
-- $149/mo Team is the sweet spot — highlighted as "Most Popular"
-- $299/mo Business is for operations that would've paid $599/mo for ServiceTitan
+- $59/mo Clear Day is positioned as "less than one hour of a crew lead's time per month"
+- $149/mo All Clear is the sweet spot — highlighted as "Most Popular"
+- $299/mo Storm Command is for operations that would've paid $599/mo for ServiceTitan
 - SMS included (not metered) — contractors hate unpredictable bills
 - The comparison: "Jobber charges $129/mo and doesn't even show trade-specific weather"
 

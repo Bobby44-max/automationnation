@@ -106,10 +106,10 @@ Browser (Terminal UI at /terminal)
 
 | Tier | Name | Price | Key Limits |
 |---|---|---|---|
-| Trial | 14-Day Trial | $0 × 14 days | All Solo features, 50 SMS |
-| Solo | Solo | $59/mo | 1 trade, 15 jobs/day, 500 SMS/mo |
-| Team | Team | $149/mo | 3 trades, unlimited jobs, 2,000 SMS/mo |
-| Business | Business | $299/mo | Unlimited trades + jobs + SMS, API, weather windows |
+| Trial | 14-Day Trial | $0 × 14 days | All Clear Day features, 50 SMS |
+| Solo | Clear Day | $59/mo | 1 trade, 15 jobs/day, 500 SMS/mo |
+| Team | All Clear | $149/mo | 3 trades, unlimited jobs, 2,000 SMS/mo |
+| Business | Storm Command | $299/mo | Unlimited trades + jobs + SMS, API, weather windows |
 
 ## TECH DECISIONS
 

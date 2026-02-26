@@ -14,7 +14,7 @@ export const STATUS_COLORS = {
 
 export const PLAN_TIERS = {
   trial: { name: "14-Day Trial", price: 0, maxTrades: 1, maxJobs: 15, durationDays: 14, smsIncluded: 50 },
-  solo: { name: "Solo", price: 59, maxTrades: 1, maxJobs: 15, smsIncluded: 500 },
-  team: { name: "Team", price: 149, maxTrades: 3, maxJobs: Infinity, smsIncluded: 2000 },
-  business: { name: "Business", price: 299, maxTrades: Infinity, maxJobs: Infinity, smsIncluded: Infinity },
+  solo: { name: "Clear Day", price: 59, maxTrades: 1, maxJobs: 15, smsIncluded: 500 },
+  team: { name: "All Clear", price: 149, maxTrades: 3, maxJobs: Infinity, smsIncluded: 2000 },
+  business: { name: "Storm Command", price: 299, maxTrades: Infinity, maxJobs: Infinity, smsIncluded: Infinity },
 } as const;

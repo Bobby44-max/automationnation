@@ -140,10 +140,10 @@ This is critical — don't compete with Jobber/ServiceTitan on scheduling. Be th
 
 | Tier | Name | Price | Target | Includes |
 |------|------|-------|--------|----------|
-| Trial | **14-Day Trial** | $0 × 14 days | All tiers, prove the value | All Solo features, 50 SMS, no credit card required |
-| Solo | **Solo** | $59/mo | Solo operators, 1-2 person crews | 1 trade, 15 jobs/day, 500 SMS/mo + email, auto-reschedule, AI messages |
-| Team | **Team** | $149/mo | 3-10 crew company | 3 trades, unlimited jobs, 2,000 SMS/mo, bulk route actions, radar overlay, integrations |
-| Business | **Business** | $299/mo | 10+ crews, multi-trade | Unlimited everything, weather windows, revenue scoring, API access, dedicated support |
+| Trial | **14-Day Trial** | $0 × 14 days | All tiers, prove the value | All Clear Day features, 50 SMS, no credit card required |
+| Solo | **Clear Day** | $59/mo | Solo operators, 1-2 person crews | 1 trade, 15 jobs/day, 500 SMS/mo + email, auto-reschedule, AI messages |
+| Team | **All Clear** | $149/mo | 3-10 crew company | 3 trades, unlimited jobs, 2,000 SMS/mo, bulk route actions, radar overlay, integrations |
+| Business | **Storm Command** | $299/mo | 10+ crews, multi-trade | Unlimited everything, weather windows, revenue scoring, API access, dedicated support |
 
 **Why this works (updated with real COGS analysis):**
 - No free tier = no money pit. 14-day trial proves value, then converts or expires

@@ -2,8 +2,9 @@ import Link from "next/link";
 
 const tiers = [
   {
-    name: "Solo",
-    price: "$59/mo",
+    name: "Clear Day",
+    price: "$59",
+    period: "/mo",
     description: "For solo operators who can't afford weather surprises",
     features: [
       "1 trade preset",
@@ -16,8 +17,10 @@ const tiers = [
     highlight: false,
   },
   {
-    name: "Team",
-    price: "$149/mo",
+    name: "All Clear",
+    price: "$149",
+    period: "/mo",
+    badge: "Most Popular",
     description: "For growing crews running multiple trades",
     features: [
       "3 trade presets",
@@ -31,8 +34,9 @@ const tiers = [
     highlight: true,
   },
   {
-    name: "Business",
-    price: "$299/mo",
+    name: "Storm Command",
+    price: "$299",
+    period: "/mo",
     description: "For multi-crew operations at scale",
     features: [
       "Unlimited trades + jobs",
@@ -70,9 +74,19 @@ export default function PricingPage() {
                   : "border-gray-800 bg-gray-900"
               }`}
             >
-              <h3 className="text-lg font-semibold">{tier.name}</h3>
+              <div className="flex items-center gap-2">
+                <h3 className="text-lg font-semibold">{tier.name}</h3>
+                {"badge" in tier && tier.badge && (
+                  <span className="rounded-full bg-blue-500/20 px-2 py-0.5 text-xs font-medium text-blue-400">
+                    {tier.badge}
+                  </span>
+                )}
+              </div>
               <p className="mt-1 text-sm text-gray-400">{tier.description}</p>
-              <p className="mt-4 text-3xl font-bold">{tier.price}</p>
+              <p className="mt-4">
+                <span className="text-4xl font-bold">{tier.price}</span>
+                <span className="text-sm text-gray-400">{tier.period}</span>
+              </p>
               <ul className="mt-6 space-y-2">
                 {tier.features.map((f) => (
                   <li key={f} className="text-sm text-gray-300">
