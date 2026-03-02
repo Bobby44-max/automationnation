@@ -16,8 +16,12 @@
       "Bash(git log *)",
       "Bash(git add *)",
       "Bash(git commit *)",
-      "Bash(git push *)"
+      "Bash(git push *)",
+      "Bash(node scripts/agent-server.js)"
     ]
+  },
+  "hooks": {
+    "preToolUse": "./scripts/gatekeeper.sh"
   },
   "mcpServers": {
     "convex": {

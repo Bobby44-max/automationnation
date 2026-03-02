@@ -11,6 +11,7 @@ import {
   Bell,
   Settings,
   CreditCard,
+  Terminal,
   Menu,
   X,
 } from "lucide-react";
@@ -23,6 +24,7 @@ const NAV_ITEMS = [
   { label: "Notifications", href: "/notifications", icon: Bell },
   { label: "Settings", href: "/settings", icon: Settings },
   { label: "Billing", href: "/billing", icon: CreditCard },
+  { label: "Agent Terminal", href: "/terminal", icon: Terminal },
 ];
 
 export function Sidebar() {
