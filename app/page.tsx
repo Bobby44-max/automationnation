@@ -1,31 +1,30 @@
 'use client';
 
-import { addDays, format } from 'date-fns';
-
 import { useState, useMemo } from 'react';
+import { addDays, format } from 'date-fns';
 import { useAuth } from '@clerk/nextjs';
 import Link from 'next/link';
 import Image from 'next/image';
 import {
-  Cloud,
-  Shield,
-  Bell,
-  BarChart3,
-  Calendar,
-  Clock,
-  Zap,
+  CloudLightning,
+  ShieldAlert,
+  BellRing,
+  Activity,
   ArrowRight,
-  Check,
-  ChevronRight,
+  CheckSquare,
   Menu,
   X,
+  ChevronRight,
+  Droplets,
+  Wind,
+  ThermometerSnowflake
 } from 'lucide-react';
 
-/* ─── Data ─── */
+/* --- Data --- */
 
 const NAV_LINKS = [
-  { label: 'Features', href: '#features' },
-  { label: 'How It Works', href: '#how-it-works' },
+  { label: 'Platform', href: '#features' },
+  { label: 'Workflow', href: '#how-it-works' },
   { label: 'Pricing', href: '#pricing' },
 ];
 
@@ -93,7 +92,7 @@ const PRICING = [
   },
 ];
 
-/* ─── Page ─── */
+/* --- Page --- */
 
 export default function LandingPage() {
   const { isSignedIn } = useAuth();
@@ -103,50 +102,40 @@ export default function LandingPage() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-surface-primary relative">
-      {/* Rain backdrop */}
-      <div
-        className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat pointer-events-none"
-        style={{ backgroundImage: "url('/rain-backdrop.jpg')", opacity: 0.06 }}
-        aria-hidden="true"
-      />
-
-      {/* ═══════════ NAV ═══════════ */}
-      <header className="fixed top-0 inset-x-0 z-50 border-b border-white/[0.04] bg-surface-primary ">
-        <nav className="mx-auto max-w-7xl px-6 h-16 flex items-center justify-between">
+    <div className="min-h-screen bg-surface-primary text-primary selection:bg-accent/30 selection:text-white">
+      
+      {/* --- NAV --- */}
+      <header className="fixed top-0 inset-x-0 z-50 bg-surface-primary border-b border-white/[0.08]">
+        <nav className="mx-auto max-w-[1400px] px-6 lg:px-12 h-20 flex items-center justify-between">
           <Link
             href="/"
-            className="flex items-center"
+            className="flex items-center gap-3"
             aria-label="Rain Check home"
           >
-            <Image
-              src="/logo-large.jpg"
-              alt="Rain Check"
-              width={180}
-              height={50}
-              className="h-9 w-auto"
-              priority
-            />
+            <div className="bg-accent h-8 w-8 flex items-center justify-center font-bold text-white text-lg tracking-tighter">
+              RC
+            </div>
+            <span className="font-bold text-lg tracking-tight">Rain Check</span>
           </Link>
 
-          <div className="hidden md:flex items-center gap-8">
+          <div className="hidden md:flex items-center gap-10">
             {NAV_LINKS.map((l) => (
               <a
                 key={l.href}
                 href={l.href}
-                className="text-body-sm text-muted hover:text-white transition-colors"
+                className="text-body-sm font-medium text-muted hover:text-white transition-colors"
               >
                 {l.label}
               </a>
             ))}
           </div>
 
-          <div className="hidden md:flex items-center gap-4">
+          <div className="hidden md:flex items-center gap-6">
             <Link
               href="/dashboard"
-              className="text-body-sm font-medium bg-accent hover:bg-accent-hover text-white px-4 py-2 rounded transition-colors"
+              className="text-body-sm font-bold bg-accent hover:bg-accent-hover text-white px-6 py-2.5 transition-colors uppercase tracking-wider"
             >
-              {isSignedIn ? 'Go to Dashboard' : 'Get Started'}
+              {isSignedIn ? 'CONSOLE ?' : 'GET STARTED'}
             </Link>
           </div>
 
@@ -155,386 +144,246 @@ export default function LandingPage() {
             className="md:hidden p-2 -mr-2 text-muted hover:text-white"
             aria-label={menuOpen ? 'Close menu' : 'Open menu'}
           >
-            {menuOpen ? (
-              <X className="h-5 w-5" />
-            ) : (
-              <Menu className="h-5 w-5" />
-            )}
+            {menuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
         </nav>
 
         {menuOpen && (
-          <div className="md:hidden border-t border-white/[0.04] bg-surface-primary px-6 pb-6 pt-4">
+          <div className="md:hidden border-t border-white/[0.08] bg-surface-primary px-6 pb-6 pt-4">
             {NAV_LINKS.map((l) => (
               <a
                 key={l.href}
                 href={l.href}
                 onClick={() => setMenuOpen(false)}
-                className="block py-2.5 text-muted hover:text-white transition-colors"
+                className="block py-4 text-body font-medium text-muted hover:text-white transition-colors border-b border-white/[0.04]"
               >
                 {l.label}
               </a>
             ))}
-            <div className="mt-4 pt-4 border-t border-white/[0.04] space-y-2">
+            <div className="mt-6">
               <Link
                 href="/dashboard"
-                className="block text-center bg-accent hover:bg-accent-hover text-white font-medium py-2.5 rounded transition-colors"
+                className="block text-center bg-accent hover:bg-accent-hover text-white font-bold py-4 transition-colors uppercase tracking-wider"
               >
-                {isSignedIn ? 'Go to Dashboard' : 'Get Started'}
+                {isSignedIn ? 'CONSOLE ?' : 'GET STARTED'}
               </Link>
             </div>
           </div>
         )}
       </header>
 
-      <main>
-        {/* ═══════════ HERO ═══════════ */}
-        <section className="pt-32 pb-20 lg:pb-28 px-6">
-          <div className="mx-auto max-w-7xl grid lg:grid-cols-12 gap-12 lg:gap-20 items-center">
-            {/* Copy — 7 cols */}
-            <div className="lg:col-span-7">
-              {/* Big Rain Check Logo */}
-              <Image
-                src="/logo-large.jpg"
-                alt="Rain Check"
-                width={600}
-                height={200}
-                className="h-auto w-[340px] sm:w-[420px] lg:w-[480px] mb-6"
-                priority
-              />
-
-              <div className="inline-flex items-center gap-2 rounded border border-white/[0.06] bg-surface-secondary px-3.5 py-1.5 text-caption text-muted mb-8">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-                Trusted by 5,000+ contractors
+      <main className="pt-20">
+        {/* --- SPLIT HERO --- */}
+        <section className="grid lg:grid-cols-2 min-h-[calc(100vh-80px)] border-b border-white/[0.08]">
+          {/* Left: Copy */}
+          <div className="flex flex-col justify-center px-6 lg:px-20 py-20 lg:py-0 border-r border-white/[0.08]">
+            <div className="max-w-2xl">
+              <div className="inline-flex items-center gap-3 border border-white/[0.12] bg-surface-secondary px-4 py-2 text-[10px] font-bold text-muted uppercase tracking-widest mb-10">
+                <span className="h-2 w-2 bg-emerald-500 animate-pulse" />
+                Live: Monitoring 5,000+ Schedules
               </div>
 
-              <h1 className="text-4xl sm:text-5xl lg:text-[3.5rem] font-bold tracking-tight leading-[1.08] mb-6">
-                Weather delays cost you
-                <br />
-                <span className="text-accent">$47K a year</span>
+              <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold tracking-tighter leading-[1.05] mb-8">
+                Weather delays <br />
+                cost you <br />
+                <span className="text-accent underline decoration-4 underline-offset-8">
+                  $47K a year.
+                </span>
               </h1>
 
-              <p className="text-body text-secondary max-w-xl mb-10 leading-relaxed">
-                Rain Check monitors conditions around the clock and
-                auto-reschedules jobs before weather hits. Trade-specific rules.
-                Instant client notifications. Zero lost revenue.
+              <p className="text-body sm:text-lg text-secondary mb-12 leading-relaxed max-w-xl">
+                Rain Check monitors conditions around the clock and auto-reschedules jobs 
+                before the weather hits. Trade-specific rules. Instant notifications. 
+                Zero lost revenue.
               </p>
 
-              <div className="flex flex-col sm:flex-row gap-3">
+              <div className="flex flex-col sm:flex-row gap-4">
                 <Link
                   href="/dashboard"
-                  className="inline-flex items-center justify-center gap-2 bg-accent hover:bg-accent-hover text-white px-6 py-3 rounded font-semibold transition-colors"
+                  className="inline-flex items-center justify-center gap-3 bg-accent hover:bg-accent-hover text-white px-8 py-4 font-bold text-body transition-colors uppercase tracking-wide"
                 >
-                  Start free trial
-                  <ArrowRight className="h-4 w-4" />
+                  Start Free Trial
+                  <ArrowRight className="h-5 w-5" />
                 </Link>
                 <a
                   href="#how-it-works"
-                  className="inline-flex items-center justify-center gap-2 border border-white/[0.06] hover:border-white/[0.12] hover:bg-surface-secondary text-secondary px-6 py-3 rounded font-medium transition-colors"
+                  className="inline-flex items-center justify-center gap-3 border border-white/[0.12] hover:bg-surface-elevated text-white px-8 py-4 font-bold text-body transition-colors uppercase tracking-wide"
                 >
-                  See how it works
+                  View Workflow
                 </a>
               </div>
-
-              <p className="mt-5 text-caption text-dim">
-                Free 30-day trial &middot; No credit card required
-              </p>
             </div>
+          </div>
 
-            {/* Status preview — 5 cols */}
-            <div className="lg:col-span-5">
-              <div className="bg-surface-secondary border border-white/[0.06] rounded shadow-2xl shadow-black/20 overflow-hidden">
-                <div className="px-5 py-3.5 border-b border-white/[0.04] flex items-center justify-between">
-                  <span className="text-body-sm font-semibold">
-                    Today&apos;s Schedule
-                  </span>
-                  <span className="text-caption text-muted">
-                    {new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
-                  </span>
+          {/* Right: Image */}
+          <div className="relative hidden lg:block bg-surface-secondary">
+            <Image
+              src="/hero-storm-truck.png"
+              alt="Contractor truck at job site under storm clouds"
+              fill
+              className="object-cover object-center grayscale-[0.2] contrast-[1.1]"
+              priority
+            />
+            {/* Hard-edged Status Overlay */}
+            <div className="absolute bottom-12 left-12 right-12 bg-surface-primary border border-white/[0.08] p-6 shadow-2xl">
+              <div className="flex items-center justify-between mb-6 border-b border-white/[0.08] pb-4">
+                <span className="text-body font-bold uppercase tracking-widest text-secondary">Live Schedule Monitor</span>
+                <span className="text-caption font-mono text-muted">{new Date().toLocaleTimeString()}</span>
+              </div>
+              
+              <div className="space-y-3">
+                <div className="flex items-center justify-between p-3 border-l-4 border-emerald-500 bg-surface-secondary">
+                  <div className="flex flex-col">
+                    <span className="font-bold text-body-sm">Johnson Roof Repair</span>
+                    <span className="text-caption text-muted">9:00 AM � 123 Oak St</span>
+                  </div>
+                  <span className="bg-emerald-500/10 text-emerald-500 font-bold text-[10px] uppercase tracking-widest px-3 py-1">Clear</span>
                 </div>
-                <div className="p-4 space-y-1.5">
-                  {/* GREEN */}
-                  <div className="rounded bg-surface-tertiary p-3 border-l-2 border-emerald-400">
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-body-sm font-medium">
-                        Johnson Roof Repair
-                      </span>
-                      <span className="text-[10px] font-semibold text-emerald-400 bg-emerald-400/[0.08] px-2 py-0.5 rounded uppercase tracking-wider">
-                        Clear
-                      </span>
-                    </div>
-                    <span className="text-caption text-muted">
-                      9:00 AM &middot; 123 Oak St &middot; 68°F, calm
-                    </span>
+                
+                <div className="flex items-center justify-between p-3 border-l-4 border-red-500 bg-surface-secondary">
+                  <div className="flex flex-col">
+                    <span className="font-bold text-body-sm">Chen Concrete Pour</span>
+                    <span className="text-caption text-red-400">Rain 80% � Rescheduled to {rescheduledDate}</span>
                   </div>
-
-                  {/* YELLOW */}
-                  <div className="rounded bg-surface-tertiary p-3 border-l-2 border-amber-400">
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-body-sm font-medium">
-                        Patel Exterior Paint
-                      </span>
-                      <span className="text-[10px] font-semibold text-amber-400 bg-amber-400/[0.08] px-2 py-0.5 rounded uppercase tracking-wider">
-                        Monitor
-                      </span>
-                    </div>
-                    <span className="text-caption text-muted">
-                      10:30 AM &middot; 456 Elm Ave &middot; Wind 22mph
-                    </span>
-                  </div>
-
-                  {/* RED */}
-                  <div className="rounded bg-surface-tertiary p-3 border-l-2 border-red-400">
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-body-sm font-medium">
-                        Chen Concrete Pour
-                      </span>
-                      <span className="text-[10px] font-semibold text-red-400 bg-red-400/[0.08] px-2 py-0.5 rounded uppercase tracking-wider">
-                        Reschedule
-                      </span>
-                    </div>
-                    <span className="text-caption text-muted">
-                      1:00 PM &middot; 789 Pine Rd &middot; Rain 80%
-                    </span>
-                    <div className="text-caption text-accent mt-1.5 flex items-center gap-1">
-                      <ChevronRight className="h-3 w-3" />
-                      Moved to {rescheduledDate} &middot; Client notified
-                    </div>
-                  </div>
+                  <span className="bg-red-500/10 text-red-500 font-bold text-[10px] uppercase tracking-widest px-3 py-1">Moved</span>
                 </div>
               </div>
             </div>
           </div>
         </section>
 
-        {/* ═══════════ STATS ═══════════ */}
-        <section className="border-y border-white/[0.04] bg-surface-secondary/50 py-12 px-6">
-          <div className="mx-auto max-w-7xl grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
+        {/* --- DATA BAR --- */}
+        <section className="border-b border-white/[0.08] bg-surface-secondary overflow-hidden">
+          <div className="mx-auto max-w-[1400px] flex flex-col md:flex-row">
             {[
-              { value: '$47K', label: 'avg revenue protected / year' },
-              { value: '8 sec', label: 'weather response time' },
-              { value: '94%', label: 'fewer client complaints' },
-              { value: '5,000+', label: 'contractors trust us' },
-            ].map((s, i) => (
-              <div key={i} className="text-center">
-                <div className="text-2xl sm:text-3xl font-bold tracking-tight">
-                  {s.value}
-                </div>
-                <div className="text-caption sm:text-[12px] text-muted mt-1">
-                  {s.label}
-                </div>
+              { label: 'Avg Revenue Protected', value: '$47,000' },
+              { label: 'Weather Response', value: '< 8s' },
+              { label: 'Fewer Complaints', value: '94%' },
+              { label: 'Active Contractors', value: '5,000+' },
+            ].map((stat, i) => (
+              <div key={i} className="flex-1 p-8 md:p-12 border-b md:border-b-0 md:border-r border-white/[0.08] last:border-0 flex flex-col justify-center">
+                <div className="text-4xl font-extrabold tracking-tighter mb-2">{stat.value}</div>
+                <div className="text-caption font-bold text-muted uppercase tracking-widest">{stat.label}</div>
               </div>
             ))}
           </div>
         </section>
 
-        {/* ═══════════ FEATURES ═══════════ */}
-        <section id="features" className="py-24 px-6">
-          <div className="mx-auto max-w-7xl">
-            <div className="max-w-2xl mb-16">
-              <h2 className="text-3xl sm:text-4xl font-bold tracking-tight mb-4">
-                Weather intelligence built for your trade
+        {/* --- FEATURES (RADAR INSET) --- */}
+        <section id="features" className="py-24 lg:py-32 px-6 lg:px-12 border-b border-white/[0.08]">
+          <div className="mx-auto max-w-[1400px]">
+            <div className="mb-20 max-w-3xl">
+              <h2 className="text-4xl lg:text-5xl font-extrabold tracking-tight mb-6 leading-tight">
+                Weather intelligence built explicitly for your trade.
               </h2>
-              <p className="text-secondary text-body leading-relaxed">
-                Industry-researched thresholds for roofing, painting,
-                landscaping, and concrete. Not generic weather alerts — real
-                protection.
+              <p className="text-lg text-secondary leading-relaxed">
+                We replaced generic forecasts with deterministic rules engines. NRCA-compliant wind thresholds for roofers. 
+                Surface temp checks for concrete. No AI guessing, just pure, reliable automation.
               </p>
             </div>
 
-            {/* Asymmetric 7/5 grid */}
-            <div className="grid lg:grid-cols-12 gap-6">
-              {/* Primary feature — large card */}
-              <div className="lg:col-span-7 bg-surface-secondary border border-white/[0.06] rounded p-8">
-                <div className="h-10 w-10 rounded bg-accent/[0.08] flex items-center justify-center mb-5">
-                  <Shield className="h-5 w-5 text-accent" />
-                </div>
-                <h3 className="text-xl font-bold mb-3 tracking-tight">
-                  Trade-Specific Rules Engine
-                </h3>
-                <p className="text-secondary mb-6 leading-relaxed text-body-sm">
-                  Deterministic weather evaluation — no AI guessing.
-                  NRCA-compliant wind thresholds for roofers, humidity limits for
-                  painters, ground temp checks for concrete. Every rule backed by
-                  industry standards.
-                </p>
-                <div className="bg-surface-primary rounded border border-white/[0.04] p-4 font-mono text-body-sm leading-relaxed">
-                  <div className="text-dim">
-                    {'//'} Roofing preset (NRCA standards)
+            <div className="grid lg:grid-cols-2 gap-12 lg:gap-24 items-center">
+              <div className="space-y-8">
+                {[
+                  { title: "Trade-Specific Rules", desc: "Select roofing, painting, or concrete. We load the industry-standard thresholds instantly.", icon: <CloudLightning className="w-6 h-6 text-accent" /> },
+                  { title: "Deterministic Actions", desc: "If Wind >= 25mph, then Reschedule. Precise, undeniable logic ensures you never miss a threat.", icon: <Wind className="w-6 h-6 text-accent" /> },
+                  { title: "Zero-Touch Comms", desc: "Clients and crews receive instant SMS/Email updates the second a job is moved. No manual calls.", icon: <BellRing className="w-6 h-6 text-accent" /> },
+                  { title: "Revenue Audit", desc: "Track every dollar saved. Provide undeniable proof to ownership of how much capital was protected.", icon: <Activity className="w-6 h-6 text-accent" /> }
+                ].map((f, i) => (
+                  <div key={i} className="flex gap-6 items-start border-l-2 border-white/[0.08] pl-6 hover:border-accent transition-colors">
+                    <div className="mt-1 bg-surface-secondary p-3 border border-white/[0.08]">
+                      {f.icon}
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold tracking-tight mb-2">{f.title}</h3>
+                      <p className="text-secondary leading-relaxed text-body-sm">{f.desc}</p>
+                    </div>
                   </div>
-                  <div>
-                    <span className="text-amber-400">if</span> wind{' '}
-                    <span className="text-accent">&ge; 25 mph</span>{' '}
-                    &rarr; <span className="text-red-400">CANCEL</span>
-                  </div>
-                  <div>
-                    <span className="text-amber-400">if</span> rain{' '}
-                    <span className="text-accent">&ge; 40%</span> &rarr;{' '}
-                    <span className="text-amber-400">WARN</span>
-                  </div>
-                  <div>
-                    <span className="text-amber-400">if</span> temp{' '}
-                    <span className="text-accent">&le; 35°F</span> &rarr;{' '}
-                    <span className="text-amber-400">WARN</span>
-                  </div>
-                </div>
+                ))}
               </div>
 
-              {/* Secondary features — stacked */}
-              <div className="lg:col-span-5 grid gap-6">
-                <div className="bg-surface-secondary border border-white/[0.06] rounded p-8">
-                  <div className="h-10 w-10 rounded bg-amber-400/[0.08] flex items-center justify-center mb-5">
-                    <Bell className="h-5 w-5 text-amber-400" />
+              <div className="relative aspect-square lg:aspect-auto lg:h-[600px] border border-white/[0.12] bg-surface-secondary p-4">
+                <Image
+                  src="/radar-texture.png"
+                  alt="High contrast weather radar"
+                  fill
+                  className="object-cover object-center grayscale-[0.5] contrast-125 opacity-40 p-4"
+                />
+                {/* Simulated Code Block Overlay */}
+                <div className="absolute inset-8 bg-surface-primary border border-white/[0.08] p-8 shadow-2xl flex flex-col justify-center">
+                  <div className="font-mono text-sm leading-loose text-secondary">
+                    <div className="text-muted mb-4">// active_preset: ROOFING_NRCA</div>
+                    <div><span className="text-accent">evaluate_conditions</span>(job_id_8832) {'{'}</div>
+                    <div className="pl-4">fetch_radar_data()</div>
+                    <div className="pl-4 text-white">wind_gust = <span className="text-red-400">32mph</span>;</div>
+                    <div className="pl-4">threshold = 25mph;</div>
+                    <br/>
+                    <div className="pl-4 text-emerald-400">if (wind_gust &gt; threshold) {'{'}</div>
+                    <div className="pl-8 text-white">status = <span className="text-red-400">'RESCHEDULE'</span>;</div>
+                    <div className="pl-8 text-white">notify_client(template: 'High_Wind');</div>
+                    <div className="pl-4 text-emerald-400">{'}'}</div>
+                    <div>{'}'}</div>
+                    <br/>
+                    <div className="text-muted">// Output: Job safely moved. Client notified.</div>
                   </div>
-                  <h3 className="text-xl font-bold mb-3 tracking-tight">
-                    Instant Notifications
-                  </h3>
-                  <p className="text-secondary leading-relaxed text-body-sm">
-                    SMS and email to clients and crew the moment conditions
-                    change. 7 template types, zero AI dependency in the
-                    notification path.
-                  </p>
-                </div>
-
-                <div className="bg-surface-secondary border border-white/[0.06] rounded p-8">
-                  <div className="h-10 w-10 rounded bg-accent/[0.08] flex items-center justify-center mb-5">
-                    <BarChart3 className="h-5 w-5 text-accent" />
-                  </div>
-                  <h3 className="text-xl font-bold mb-3 tracking-tight">
-                    Revenue Protection
-                  </h3>
-                  <p className="text-secondary leading-relaxed text-body-sm">
-                    Track every dollar saved from weather-triggered reschedules.
-                    Full audit log of actions, overrides, and notifications sent.
-                  </p>
                 </div>
               </div>
             </div>
           </div>
         </section>
 
-        {/* ═══════════ HOW IT WORKS ═══════════ */}
-        <section
-          id="how-it-works"
-          className="py-24 px-6 bg-surface-secondary/50 border-y border-white/[0.04]"
-        >
-          <div className="mx-auto max-w-7xl">
-            <div className="max-w-2xl mx-auto text-center mb-16">
-              <h2 className="text-3xl sm:text-4xl font-bold tracking-tight mb-4">
-                Four steps to weather-proof your schedule
+        {/* --- PRICING --- */}
+        <section id="pricing" className="py-24 lg:py-32 px-6 lg:px-12 bg-surface-secondary">
+          <div className="mx-auto max-w-[1400px]">
+            <div className="mb-16">
+              <h2 className="text-4xl lg:text-5xl font-extrabold tracking-tight mb-4">
+                Transparent Pricing.
               </h2>
-              <p className="text-secondary text-body">
-                Set it once. Rain Check handles the rest.
+              <p className="text-lg text-secondary">
+                Start free. Upgrade when the ROI is undeniable.
               </p>
             </div>
 
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
-              {(
-                [
-                  {
-                    step: '01',
-                    title: 'Choose your trade',
-                    desc: 'Select roofing, painting, landscaping, concrete, or pressure washing. We load industry-standard thresholds.',
-                    Icon: Cloud,
-                  },
-                  {
-                    step: '02',
-                    title: 'Add your jobs',
-                    desc: 'Enter job details, client info, and crew. Rain Check starts monitoring weather immediately.',
-                    Icon: Calendar,
-                  },
-                  {
-                    step: '03',
-                    title: 'We watch the sky',
-                    desc: 'Conditions checked every 3 hours against your trade rules. Real-time status: green, yellow, red.',
-                    Icon: Clock,
-                  },
-                  {
-                    step: '04',
-                    title: 'Auto-protect',
-                    desc: 'Red flag? Jobs auto-reschedule to the next clear window. Clients and crew notified instantly.',
-                    Icon: Zap,
-                  },
-                ] as const
-              ).map(({ step, title, desc, Icon }) => (
-                <div key={step}>
-                  <div className="text-caption font-mono text-dim mb-4 tracking-wider">
-                    {step}
-                  </div>
-                  <div className="h-10 w-10 rounded bg-surface-tertiary border border-white/[0.06] flex items-center justify-center mb-4">
-                    <Icon className="h-5 w-5 text-muted" />
-                  </div>
-                  <h3 className="text-body font-bold mb-2 tracking-tight">
-                    {title}
-                  </h3>
-                  <p className="text-[12px] text-muted leading-relaxed">{desc}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ═══════════ PRICING ═══════════ */}
-        <section id="pricing" className="py-24 px-6">
-          <div className="mx-auto max-w-7xl">
-            <div className="max-w-2xl mx-auto text-center mb-16">
-              <h2 className="text-3xl sm:text-4xl font-bold tracking-tight mb-4">
-                Transparent pricing
-              </h2>
-              <p className="text-secondary text-body">
-                Start free. Upgrade when you&apos;re ready. Cancel anytime.
-              </p>
-            </div>
-
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
               {PRICING.map((t) => (
                 <div
                   key={t.name}
-                  className={`relative rounded border p-6 transition-all duration-150 ${
+                  className={`flex flex-col border bg-surface-primary p-8 transition-all ${
                     t.pop
-                      ? 'bg-surface-secondary border-accent/30 shadow-lg shadow-accent/5'
-                      : 'bg-surface-secondary/50 border-white/[0.06] hover:border-white/[0.12]'
+                      ? 'border-accent shadow-[0_0_30px_rgba(25,175,255,0.1)] scale-[1.02] z-10'
+                      : 'border-white/[0.08] hover:border-white/[0.2]'
                   }`}
                 >
                   {t.pop && (
-                    <div className="absolute -top-3 left-6 bg-accent text-white text-[10px] font-bold px-3 py-1 rounded tracking-wider uppercase">
-                      Most popular
+                    <div className="bg-accent text-white text-[10px] font-bold px-3 py-1 tracking-widest uppercase self-start mb-6">
+                      Recommended
                     </div>
                   )}
 
-                  <div className="mb-6">
-                    <h3 className="text-body font-bold mb-1 tracking-tight">
-                      {t.name}
-                    </h3>
-                    <p className="text-caption text-muted mb-4">{t.tag}</p>
+                  <div className="mb-8">
+                    <h3 className="text-xl font-bold tracking-tight mb-2">{t.name}</h3>
+                    <p className="text-caption text-muted font-mono mb-4">{t.tag}</p>
                     <div className="flex items-baseline gap-1">
-                      <span className="text-3xl font-bold tracking-tight">
-                        {t.price}
-                      </span>
-                      <span className="text-body-sm text-muted">{t.period}</span>
+                      <span className="text-4xl font-extrabold tracking-tighter">{t.price}</span>
+                      <span className="text-body-sm text-secondary font-medium">{t.period}</span>
                     </div>
                   </div>
 
-                  <ul className="space-y-2.5 mb-8">
+                  <ul className="space-y-4 mb-10 flex-1">
                     {t.features.map((f) => (
-                      <li
-                        key={f}
-                        className="flex items-start gap-2 text-body-sm text-secondary"
-                      >
-                        <Check className="h-4 w-4 text-accent mt-0.5 shrink-0" />
+                      <li key={f} className="flex items-start gap-3 text-body-sm text-secondary">
+                        <CheckSquare className="h-5 w-5 text-accent shrink-0" />
                         {f}
                       </li>
                     ))}
                   </ul>
 
                   <Link
-                    href={
-                      t.name === 'Storm Command' ? '#contact' : '/sign-up'
-                    }
-                    className={`block text-center text-body-sm font-medium py-2.5 rounded transition-colors ${
+                    href={t.name === 'Storm Command' ? '#contact' : '/sign-up'}
+                    className={`block text-center font-bold py-4 uppercase tracking-wider transition-colors ${
                       t.pop
                         ? 'bg-accent hover:bg-accent-hover text-white'
-                        : 'bg-surface-tertiary hover:bg-surface-elevated text-secondary'
+                        : 'border border-white/[0.12] hover:bg-surface-elevated text-white'
                     }`}
                   >
                     {t.cta}
@@ -545,125 +394,44 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* ═══════════ TESTIMONIALS ═══════════ */}
-        <section className="py-24 px-6 bg-surface-secondary/50 border-y border-white/[0.04]">
-          <div className="mx-auto max-w-7xl">
-            <div className="max-w-2xl mb-16">
-              <h2 className="text-3xl sm:text-4xl font-bold tracking-tight mb-4">
-                Contractors trust Rain Check
-              </h2>
-              <p className="text-secondary text-body">
-                Real results from real businesses.
-              </p>
-            </div>
-
-            <div className="grid md:grid-cols-3 gap-6">
-              {[
-                {
-                  quote:
-                    'Rain Check saved us $68K in year one. No more showing up to a job site in 40mph winds.',
-                  name: 'Mike Rodriguez',
-                  role: 'Owner, Rodriguez Roofing',
-                  loc: 'Phoenix, AZ',
-                },
-                {
-                  quote:
-                    'We lost 2-3 jobs a week to weather before. Now clients actually thank us for the proactive communication.',
-                  name: 'Sarah Chen',
-                  role: 'Ops Manager, Elite Paint Co',
-                  loc: 'Seattle, WA',
-                },
-                {
-                  quote:
-                    'The revenue tracking alone pays for itself. Finally showing my CFO what weather delays actually cost us.',
-                  name: 'David Thompson',
-                  role: 'VP Ops, Thompson Landscaping',
-                  loc: 'Atlanta, GA',
-                },
-              ].map((t) => (
-                <div
-                  key={t.name}
-                  className="bg-surface-secondary border border-white/[0.06] rounded p-6"
-                >
-                  <p className="text-secondary leading-relaxed mb-6 text-body-sm">
-                    &ldquo;{t.quote}&rdquo;
-                  </p>
-                  <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded bg-surface-tertiary flex items-center justify-center text-caption font-bold text-muted">
-                      {t.name
-                        .split(' ')
-                        .map((n) => n[0])
-                        .join('')}
-                    </div>
-                    <div>
-                      <div className="text-body-sm font-medium">{t.name}</div>
-                      <div className="text-caption text-muted">
-                        {t.role} &middot; {t.loc}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ═══════════ FINAL CTA ═══════════ */}
-        <section className="py-24 px-6">
-          <div className="mx-auto max-w-3xl text-center">
-            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight mb-4">
-              Stop losing money to weather
+        {/* --- CTA --- */}
+        <section className="py-32 px-6 border-t border-white/[0.08]">
+          <div className="mx-auto max-w-4xl text-center">
+            <h2 className="text-5xl lg:text-7xl font-extrabold tracking-tighter mb-8 leading-tight">
+              Stop bleeding cash to the forecast.
             </h2>
-            <p className="text-secondary text-body mb-10 max-w-xl mx-auto">
-              Join 5,000+ contractors who protect their revenue with automated
-              weather intelligence. 30-day free trial, no card required.
+            <p className="text-xl text-secondary mb-12 max-w-2xl mx-auto">
+              Join the 5,000+ top-tier contractors who automated their weather risk. 30-day free trial, no credit card required.
             </p>
             <Link
               href="/dashboard"
-              className="inline-flex items-center gap-2 bg-accent hover:bg-accent-hover text-white px-8 py-3.5 rounded font-semibold text-lg transition-colors"
+              className="inline-flex items-center gap-3 bg-accent hover:bg-accent-hover text-white px-10 py-5 font-bold text-lg uppercase tracking-wide transition-colors"
             >
-              Start free trial
-              <ArrowRight className="h-5 w-5" />
+              Start Free Trial
+              <ArrowRight className="h-6 w-6" />
             </Link>
           </div>
         </section>
       </main>
 
-      {/* ═══════════ FOOTER ═══════════ */}
-      <footer className="border-t border-white/[0.04] py-12 px-6">
-        <div className="mx-auto max-w-7xl flex flex-col sm:flex-row items-center justify-between gap-6">
-          <Image
-            src="/logo.jpg"
-            alt="Rain Check"
-            width={120}
-            height={30}
-            className="h-6 w-auto"
-          />
-          <div className="text-caption text-dim">
-            &copy; {new Date().getFullYear()} Rain Check. All rights reserved.
+      {/* --- FOOTER --- */}
+      <footer className="border-t border-white/[0.08] bg-surface-secondary py-12 px-6 lg:px-12">
+        <div className="mx-auto max-w-[1400px] flex flex-col md:flex-row items-center justify-between gap-6">  
+          <div className="flex items-center gap-3">
+            <div className="bg-accent h-6 w-6 flex items-center justify-center font-bold text-white text-[10px] tracking-tighter">
+              RC
+            </div>
+            <span className="font-bold tracking-tight text-secondary">Rain Check.</span>
           </div>
-          <div className="flex gap-6 text-caption text-muted">
-            <a
-              href="/privacy"
-              className="hover:text-white transition-colors"
-            >
-              Privacy
-            </a>
-            <a href="/terms" className="hover:text-white transition-colors">
-              Terms
-            </a>
+          <div className="text-caption font-mono text-muted">
+            &copy; {new Date().getFullYear()} APEX AI SYSTEMS. ALL RIGHTS RESERVED.
+          </div>
+          <div className="flex gap-8 text-caption font-bold tracking-widest uppercase text-muted">
+            <a href="/privacy" className="hover:text-white transition-colors">Privacy</a>
+            <a href="/terms" className="hover:text-white transition-colors">Terms</a>
           </div>
         </div>
       </footer>
     </div>
   );
 }
-
-
-
-
-
-
-
-
-
