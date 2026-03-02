@@ -102,9 +102,9 @@ export default function LandingPage() {
         <nav className="mx-auto max-w-[1400px] px-8 h-20 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-4 group">
             <div className="bg-accent h-7 w-7 flex items-center justify-center font-bold text-white text-xs tracking-tighter rounded shadow-[0_0_20px_rgba(16,185,129,0.3)]">
-              AN
+              RC
             </div>
-            <span className="font-heading font-extrabold text-lg tracking-[-0.05em] uppercase text-white">Automation Nation</span>
+            <span className="font-heading font-extrabold text-lg tracking-[-0.05em] uppercase text-white">Rain Check</span>
           </Link>
 
           <div className="hidden md:flex items-center gap-10">
@@ -298,8 +298,8 @@ export default function LandingPage() {
       <footer className="py-20 px-8 border-t border-white/[0.04] bg-surface-primary relative z-10">
         <div className="mx-auto max-w-[1400px] flex flex-col md:flex-row items-center justify-between gap-12">
           <div className="flex items-center gap-4">
-            <div className="bg-accent h-6 w-6 flex items-center justify-center font-bold text-white text-[10px] tracking-tighter rounded">AN</div>
-            <span className="font-heading font-black tracking-[-0.05em] text-white uppercase italic">Automation Nation.</span>
+            <div className="bg-accent h-6 w-6 flex items-center justify-center font-bold text-white text-[10px] tracking-tighter rounded">RC</div>
+            <span className="font-heading font-black tracking-[-0.05em] text-white uppercase italic">Rain Check.</span>
           </div>
           <div className="text-[10px] font-mono text-dim font-bold uppercase tracking-[0.5em]">
             &copy; 2026 APEX AI SYSTEMS. ALL OPERATIONAL RIGHTS RESERVED.
