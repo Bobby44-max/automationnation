@@ -69,11 +69,18 @@ body {
   border: 1px solid var(--color-glass-border);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+              border-color 0.3s ease,
+              background 0.3s ease,
+              box-shadow 0.3s ease;
 }
 
 .glass-card:hover {
   border-color: var(--color-glass-border-hover);
   background: var(--color-glass-strong);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(25, 175, 255, 0.06),
+              0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 /* ─── Gradient Text ─── */
@@ -89,11 +96,25 @@ body {
 
 .gradient-btn {
   background: linear-gradient(135deg, var(--color-gradient-start), var(--color-gradient-end));
-  transition: opacity 0.2s, transform 0.2s;
+  transition: opacity 0.2s, transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s ease;
 }
 .gradient-btn:hover {
   opacity: 0.9;
-  transform: translateY(-1px);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 8px 30px rgba(25, 175, 255, 0.2),
+              0 4px 12px rgba(124, 58, 237, 0.15);
+}
+.gradient-btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* ─── Nav Pill ─── */
+
+.nav-pill {
+  transition: color 0.2s, background-color 0.2s, transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.nav-pill:hover {
+  transform: translateY(-2px);
 }
 
 /* ─── Glow Effect ─── */
