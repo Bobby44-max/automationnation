@@ -116,7 +116,7 @@ export default function AutomationNationLanding() {
                 </a>
                 <a
                   href="#services"
-                  className="px-8 py-4 rounded-xl text-center font-semibold text-lg border border-white/10 hover:border-white/25 transition-colors"
+                  className="px-8 py-4 rounded-xl text-center font-semibold text-lg border border-white/10 hover:border-white/25 hover:-translate-y-0.5 transition-all duration-300"
                 >
                   See Our Services
                 </a>
@@ -136,7 +136,10 @@ export default function AutomationNationLanding() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
             {stats.map((stat) => (
-              <div key={stat.label} className="text-center">
+              <div
+                key={stat.label}
+                className="text-center transition-transform duration-300 hover:scale-110 cursor-default"
+              >
                 <p className="text-3xl sm:text-4xl font-bold gradient-text mb-1">
                   {stat.value}
                 </p>
@@ -170,10 +173,12 @@ export default function AutomationNationLanding() {
             {services.map((service) => (
               <div
                 key={service.title}
-                className="glass-card p-8 rounded-2xl group hover:border-[#19AFFF]/20 transition-all duration-300"
+                className="glass-card p-8 rounded-2xl group hover:border-[#19AFFF]/20"
               >
-                <div className="text-4xl mb-4">{service.icon}</div>
-                <h3 className="text-xl font-bold mb-3 group-hover:text-[#19AFFF] transition-colors">
+                <div className="text-4xl mb-4 transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-3">
+                  {service.icon}
+                </div>
+                <h3 className="text-xl font-bold mb-3 group-hover:text-[#19AFFF] transition-colors duration-300">
                   {service.title}
                 </h3>
                 <p className="text-gray-400 leading-relaxed">
@@ -253,15 +258,15 @@ export default function AutomationNationLanding() {
                   <p className="text-2xl font-bold mb-2">Rain Check</p>
                   <p className="text-gray-400">Weather-Smart Scheduling</p>
                   <div className="mt-6 flex justify-center gap-4">
-                    <div className="glass-card px-4 py-2 rounded-lg text-sm">
+                    <div className="glass-card px-4 py-2 rounded-lg text-sm cursor-default hover:!scale-110">
                       <span className="text-[#19AFFF] font-bold">$59</span>
                       <span className="text-gray-500">/mo</span>
                     </div>
-                    <div className="glass-card px-4 py-2 rounded-lg text-sm border-[#19AFFF]/30">
+                    <div className="glass-card px-4 py-2 rounded-lg text-sm border-[#19AFFF]/30 cursor-default hover:!scale-110">
                       <span className="text-[#19AFFF] font-bold">$149</span>
                       <span className="text-gray-500">/mo</span>
                     </div>
-                    <div className="glass-card px-4 py-2 rounded-lg text-sm">
+                    <div className="glass-card px-4 py-2 rounded-lg text-sm cursor-default hover:!scale-110">
                       <span className="text-[#19AFFF] font-bold">$299</span>
                       <span className="text-gray-500">/mo</span>
                     </div>
@@ -291,12 +296,14 @@ export default function AutomationNationLanding() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {steps.map((step) => (
-              <div key={step.number} className="relative">
-                <div className="glass-card p-8 rounded-2xl h-full">
-                  <p className="text-5xl font-bold gradient-text opacity-50 mb-4">
+              <div key={step.number} className="relative group">
+                <div className="glass-card p-8 rounded-2xl h-full group-hover:border-[#19AFFF]/15">
+                  <p className="text-5xl font-bold gradient-text opacity-50 mb-4 transition-opacity duration-300 group-hover:opacity-100">
                     {step.number}
                   </p>
-                  <h3 className="text-xl font-bold mb-3">{step.title}</h3>
+                  <h3 className="text-xl font-bold mb-3 transition-colors duration-300 group-hover:text-[#19AFFF]">
+                    {step.title}
+                  </h3>
                   <p className="text-gray-400 leading-relaxed">
                     {step.description}
                   </p>
@@ -324,9 +331,9 @@ export default function AutomationNationLanding() {
             {testimonials.map((testimonial) => (
               <div
                 key={testimonial.author}
-                className="glass-card p-8 rounded-2xl"
+                className="glass-card p-8 rounded-2xl group"
               >
-                <p className="text-gray-300 mb-6 leading-relaxed italic">
+                <p className="text-gray-300 mb-6 leading-relaxed italic transition-colors duration-300 group-hover:text-white">
                   &ldquo;{testimonial.quote}&rdquo;
                 </p>
                 <div>
