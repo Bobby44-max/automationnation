@@ -110,3 +110,5 @@ export function JobCardGrid({ jobs }: JobCardGridProps) {
     </div>
   );
 }
+
+

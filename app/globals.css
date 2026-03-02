@@ -20,6 +20,7 @@
   --color-surface-secondary: #0E1216;
   --color-surface-tertiary: #151A1F;
   --color-surface-elevated: #1C2228;
+  --color-surface-card: #0E1216;
 
   /* Accent — monopo bright blue */
   --color-accent: #19AFFF;
@@ -86,4 +87,5 @@ body {
   background: rgba(25, 175, 255, 0.2);
   color: #fff;
 }
+
 

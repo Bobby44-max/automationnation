@@ -148,7 +148,7 @@ export function BulkActionBar({
   if (jobCount === 0) return null;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-surface-primary/95 backdrop-blur-md border-t border-white/[0.04] px-8 py-3 z-40">
+    <div className="fixed bottom-0 left-0 right-0 bg-surface-primary  border-t border-white/[0.04] px-8 py-3 z-40">
       <div className="flex items-center justify-between max-w-7xl mx-auto">
         <div className="text-body-sm text-muted">
           {jobCount} jobs today
@@ -181,7 +181,7 @@ export function BulkActionBar({
               <button
                 onClick={handleOverrideAll}
                 disabled={overriding}
-                className="rounded bg-surface-tertiary border border-white/[0.06] px-3.5 py-2 text-body-sm font-medium text-secondary hover:text-white hover:bg-[#1C2228] disabled:opacity-40 transition-all duration-150"
+                className="rounded bg-surface-tertiary border border-white/[0.06] px-3.5 py-2 text-body-sm font-medium text-secondary hover:text-white hover:bg-surface-elevated disabled:opacity-40 transition-all duration-150"
               >
                 {overriding ? "Overriding..." : "Override All"}
               </button>
@@ -192,6 +192,8 @@ export function BulkActionBar({
     </div>
   );
 }
+
+
 
 
 

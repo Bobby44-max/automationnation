@@ -78,7 +78,7 @@ export function WeatherSchedulingClient() {
             <button
               onClick={() => setShowAddJob(true)}
               disabled={!businessId}
-              className="rounded bg-accent px-3.5 py-2 text-body-sm font-medium text-white hover:bg-[#0D9AEB] disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-150 min-h-[40px] inline-flex items-center gap-2"
+              className="rounded bg-accent px-3.5 py-2 text-body-sm font-medium text-white hover:bg-accent-hover disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-150 min-h-[40px] inline-flex items-center gap-2"
             >
               <Plus className="h-3.5 w-3.5" />
               Add Job
@@ -86,7 +86,7 @@ export function WeatherSchedulingClient() {
             <button
               onClick={handleCheckWeatherNow}
               disabled={isChecking || !businessId}
-              className="rounded bg-surface-tertiary border border-white/[0.06] px-3.5 py-2 text-body-sm font-medium text-secondary hover:text-white hover:bg-[#1C2228] disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-150 min-h-[40px] inline-flex items-center gap-2"
+              className="rounded bg-surface-tertiary border border-white/[0.06] px-3.5 py-2 text-body-sm font-medium text-secondary hover:text-white hover:bg-surface-elevated disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-150 min-h-[40px] inline-flex items-center gap-2"
             >
               <RefreshCw className={`h-3.5 w-3.5 ${isChecking ? "animate-spin" : ""}`} />
               {isChecking ? "Checking" : "Check Weather"}
@@ -129,7 +129,7 @@ export function WeatherSchedulingClient() {
                 <>
                   <button
                     onClick={() => setShowAddJob(true)}
-                    className="text-accent hover:text-[#0D9AEB] transition-colors"
+                    className="text-accent hover:text-[accent-hover] transition-colors"
                   >
                     Add a job
                   </button>
@@ -164,6 +164,8 @@ export function WeatherSchedulingClient() {
     </div>
   );
 }
+
+
 
 
 

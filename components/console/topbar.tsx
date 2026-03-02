@@ -14,7 +14,7 @@ export function Topbar({ businessName }: TopbarProps) {
   });
 
   return (
-    <header className="sticky top-0 z-30 border-b border-white/[0.04] bg-surface-primary/90 backdrop-blur-md px-8 py-4">
+    <header className="sticky top-0 z-30 border-b border-white/[0.04] bg-surface-primary  px-8 py-4">
       <div className="flex items-center justify-between">
         <div className="pl-16 lg:pl-0">
           <h2 className="text-body-sm font-semibold text-white tracking-tight">
@@ -35,6 +35,8 @@ export function Topbar({ businessName }: TopbarProps) {
     </header>
   );
 }
+
+
 
 
 

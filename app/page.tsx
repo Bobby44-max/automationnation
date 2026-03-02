@@ -112,7 +112,7 @@ export default function LandingPage() {
       />
 
       {/* ═══════════ NAV ═══════════ */}
-      <header className="fixed top-0 inset-x-0 z-50 border-b border-white/[0.04] bg-surface-primary/90 backdrop-blur-md">
+      <header className="fixed top-0 inset-x-0 z-50 border-b border-white/[0.04] bg-surface-primary ">
         <nav className="mx-auto max-w-7xl px-6 h-16 flex items-center justify-between">
           <Link
             href="/"
@@ -144,7 +144,7 @@ export default function LandingPage() {
           <div className="hidden md:flex items-center gap-4">
             <Link
               href="/dashboard"
-              className="text-body-sm font-medium bg-accent hover:bg-[#0D9AEB] text-white px-4 py-2 rounded transition-colors"
+              className="text-body-sm font-medium bg-accent hover:bg-accent-hover text-white px-4 py-2 rounded transition-colors"
             >
               {isSignedIn ? 'Go to Dashboard' : 'Get Started'}
             </Link>
@@ -178,7 +178,7 @@ export default function LandingPage() {
             <div className="mt-4 pt-4 border-t border-white/[0.04] space-y-2">
               <Link
                 href="/dashboard"
-                className="block text-center bg-accent hover:bg-[#0D9AEB] text-white font-medium py-2.5 rounded transition-colors"
+                className="block text-center bg-accent hover:bg-accent-hover text-white font-medium py-2.5 rounded transition-colors"
               >
                 {isSignedIn ? 'Go to Dashboard' : 'Get Started'}
               </Link>
@@ -223,7 +223,7 @@ export default function LandingPage() {
               <div className="flex flex-col sm:flex-row gap-3">
                 <Link
                   href="/dashboard"
-                  className="inline-flex items-center justify-center gap-2 bg-accent hover:bg-[#0D9AEB] text-white px-6 py-3 rounded font-semibold transition-colors"
+                  className="inline-flex items-center justify-center gap-2 bg-accent hover:bg-accent-hover text-white px-6 py-3 rounded font-semibold transition-colors"
                 >
                   Start free trial
                   <ArrowRight className="h-4 w-4" />
@@ -533,8 +533,8 @@ export default function LandingPage() {
                     }
                     className={`block text-center text-body-sm font-medium py-2.5 rounded transition-colors ${
                       t.pop
-                        ? 'bg-accent hover:bg-[#0D9AEB] text-white'
-                        : 'bg-surface-tertiary hover:bg-[#1C2228] text-secondary'
+                        ? 'bg-accent hover:bg-accent-hover text-white'
+                        : 'bg-surface-tertiary hover:bg-surface-elevated text-secondary'
                     }`}
                   >
                     {t.cta}
@@ -620,7 +620,7 @@ export default function LandingPage() {
             </p>
             <Link
               href="/dashboard"
-              className="inline-flex items-center gap-2 bg-accent hover:bg-[#0D9AEB] text-white px-8 py-3.5 rounded font-semibold text-lg transition-colors"
+              className="inline-flex items-center gap-2 bg-accent hover:bg-accent-hover text-white px-8 py-3.5 rounded font-semibold text-lg transition-colors"
             >
               Start free trial
               <ArrowRight className="h-5 w-5" />
@@ -658,6 +658,8 @@ export default function LandingPage() {
     </div>
   );
 }
+
+
 
 
 

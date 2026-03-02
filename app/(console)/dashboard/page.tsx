@@ -87,7 +87,7 @@ export default function DashboardPage() {
           {jobs && jobs.length > 0 && (
             <Link
               href="/scheduling/weather"
-              className="text-caption text-accent hover:text-[#0D9AEB] transition-colors flex items-center gap-1"
+              className="text-caption text-accent hover:text-[accent-hover] transition-colors flex items-center gap-1"
             >
               View all
               <ArrowUpRight className="h-3 w-3" />
@@ -144,6 +144,8 @@ function QuickAction({
     </Link>
   );
 }
+
+
 
 
 
