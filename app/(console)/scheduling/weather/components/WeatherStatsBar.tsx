@@ -45,14 +45,14 @@ export function WeatherStatsBar({
       <StatCard
         label="Revenue Protected"
         value={`$${revenueProtected.toLocaleString()}`}
-        color="text-[#19AFFF]"
-        accent="bg-[#19AFFF]"
+        color="text-accent"
+        accent="bg-accent"
       />
-      <div className="flex flex-col justify-center rounded bg-[#0E1216] border border-white/[0.04] px-4 py-3">
-        <span className="text-[10px] text-[#5A6370] uppercase tracking-widest">
+      <div className="flex flex-col justify-center rounded bg-surface-secondary border border-white/[0.04] px-4 py-3">
+        <span className="text-[10px] text-muted uppercase tracking-widest">
           Last Check
         </span>
-        <span className="text-lg font-semibold text-[#8B939E] mt-1">
+        <span className="text-lg font-semibold text-secondary mt-1">
           {lastCheckTime}
         </span>
       </div>
@@ -72,10 +72,10 @@ function StatCard({
   accent: string;
 }) {
   return (
-    <div className="flex flex-col justify-center rounded bg-[#0E1216] border border-white/[0.04] px-4 py-3">
+    <div className="flex flex-col justify-center rounded bg-surface-secondary border border-white/[0.04] px-4 py-3">
       <div className="flex items-center gap-2 mb-1">
         <div className={`h-1 w-1 rounded-full ${accent}`} />
-        <span className="text-[10px] text-[#5A6370] uppercase tracking-widest">
+        <span className="text-[10px] text-muted uppercase tracking-widest">
           {label}
         </span>
       </div>
@@ -83,3 +83,6 @@ function StatCard({
     </div>
   );
 }
+
+
+

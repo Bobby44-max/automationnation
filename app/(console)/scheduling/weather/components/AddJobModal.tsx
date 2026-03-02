@@ -115,11 +115,11 @@ export function AddJobModal({ open, onClose, businessId }: AddJobModalProps) {
   const crewLeads = crew?.filter((c) => c.role === "crew_lead") ?? [];
 
   const selectClass =
-    "w-full rounded border border-white/[0.06] bg-[#0E1216] px-3 py-2 text-sm text-white min-h-[40px] focus:outline-none focus:ring-1 focus:ring-[#19AFFF] transition-colors";
+    "w-full rounded border border-white/[0.06] bg-surface-secondary px-3 py-2 text-sm text-white min-h-[40px] focus:outline-none focus:ring-1 focus:ring-accent transition-colors";
 
   return (
     <Modal open={open} onClose={onClose} className="max-w-xl max-h-[90vh] overflow-y-auto">
-      <h2 className="text-[15px] font-bold text-white tracking-tight mb-5">Add Job</h2>
+      <h2 className="text-body font-bold text-white tracking-tight mb-5">Add Job</h2>
 
       {(!clients || clients.length === 0) && (
         <div className="rounded bg-amber-400/[0.06] border border-amber-400/10 p-3.5 mb-5">
@@ -136,7 +136,7 @@ export function AddJobModal({ open, onClose, businessId }: AddJobModalProps) {
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Client */}
         <div>
-          <label className="block text-[10px] text-[#5A6370] uppercase tracking-widest mb-1">Client *</label>
+          <label className="block text-[10px] text-muted uppercase tracking-widest mb-1">Client *</label>
           <select
             value={form.clientId}
             onChange={(e) => update("clientId", e.target.value)}
@@ -154,7 +154,7 @@ export function AddJobModal({ open, onClose, businessId }: AddJobModalProps) {
 
         {/* Title */}
         <div>
-          <label className="block text-[10px] text-[#5A6370] uppercase tracking-widest mb-1">Job Title *</label>
+          <label className="block text-[10px] text-muted uppercase tracking-widest mb-1">Job Title *</label>
           <Input
             value={form.title}
             onChange={(e) => update("title", e.target.value)}
@@ -166,7 +166,7 @@ export function AddJobModal({ open, onClose, businessId }: AddJobModalProps) {
         {/* Trade + Crew Lead */}
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-[10px] text-[#5A6370] uppercase tracking-widest mb-1">Trade *</label>
+            <label className="block text-[10px] text-muted uppercase tracking-widest mb-1">Trade *</label>
             <select
               value={form.trade}
               onChange={(e) => update("trade", e.target.value)}
@@ -180,7 +180,7 @@ export function AddJobModal({ open, onClose, businessId }: AddJobModalProps) {
             </select>
           </div>
           <div>
-            <label className="block text-[10px] text-[#5A6370] uppercase tracking-widest mb-1">Crew Lead</label>
+            <label className="block text-[10px] text-muted uppercase tracking-widest mb-1">Crew Lead</label>
             <select
               value={form.crewLeadId}
               onChange={(e) => update("crewLeadId", e.target.value)}
@@ -199,7 +199,7 @@ export function AddJobModal({ open, onClose, businessId }: AddJobModalProps) {
         {/* Date + Times */}
         <div className="grid grid-cols-3 gap-3">
           <div>
-            <label className="block text-[10px] text-[#5A6370] uppercase tracking-widest mb-1">Date *</label>
+            <label className="block text-[10px] text-muted uppercase tracking-widest mb-1">Date *</label>
             <Input
               type="date"
               value={form.date}
@@ -208,7 +208,7 @@ export function AddJobModal({ open, onClose, businessId }: AddJobModalProps) {
             />
           </div>
           <div>
-            <label className="block text-[10px] text-[#5A6370] uppercase tracking-widest mb-1">Start</label>
+            <label className="block text-[10px] text-muted uppercase tracking-widest mb-1">Start</label>
             <Input
               type="time"
               value={form.startTime}
@@ -216,7 +216,7 @@ export function AddJobModal({ open, onClose, businessId }: AddJobModalProps) {
             />
           </div>
           <div>
-            <label className="block text-[10px] text-[#5A6370] uppercase tracking-widest mb-1">End</label>
+            <label className="block text-[10px] text-muted uppercase tracking-widest mb-1">End</label>
             <Input
               type="time"
               value={form.endTime}
@@ -228,7 +228,7 @@ export function AddJobModal({ open, onClose, businessId }: AddJobModalProps) {
         {/* Address + Zip */}
         <div className="grid grid-cols-3 gap-3">
           <div className="col-span-2">
-            <label className="block text-[10px] text-[#5A6370] uppercase tracking-widest mb-1">Job Address *</label>
+            <label className="block text-[10px] text-muted uppercase tracking-widest mb-1">Job Address *</label>
             <Input
               value={form.address}
               onChange={(e) => update("address", e.target.value)}
@@ -237,7 +237,7 @@ export function AddJobModal({ open, onClose, businessId }: AddJobModalProps) {
             />
           </div>
           <div>
-            <label className="block text-[10px] text-[#5A6370] uppercase tracking-widest mb-1">Zip Code *</label>
+            <label className="block text-[10px] text-muted uppercase tracking-widest mb-1">Zip Code *</label>
             <Input
               value={form.zipCode}
               onChange={(e) => update("zipCode", e.target.value)}
@@ -250,7 +250,7 @@ export function AddJobModal({ open, onClose, businessId }: AddJobModalProps) {
         {/* Revenue + Notes */}
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-[10px] text-[#5A6370] uppercase tracking-widest mb-1">Est. Revenue ($)</label>
+            <label className="block text-[10px] text-muted uppercase tracking-widest mb-1">Est. Revenue ($)</label>
             <Input
               type="number"
               value={form.estimatedRevenue}
@@ -259,7 +259,7 @@ export function AddJobModal({ open, onClose, businessId }: AddJobModalProps) {
             />
           </div>
           <div>
-            <label className="block text-[10px] text-[#5A6370] uppercase tracking-widest mb-1">Notes</label>
+            <label className="block text-[10px] text-muted uppercase tracking-widest mb-1">Notes</label>
             <Input
               value={form.notes}
               onChange={(e) => update("notes", e.target.value)}
@@ -285,3 +285,6 @@ export function AddJobModal({ open, onClose, businessId }: AddJobModalProps) {
     </Modal>
   );
 }
+
+
+

@@ -20,7 +20,7 @@ export default function NotificationsPage() {
     <div className="space-y-0">
       <div className="px-8 py-6 border-b border-white/[0.04]">
         <h1 className="text-xl font-bold tracking-tight">Notifications</h1>
-        <p className="text-[12px] text-[#5A6370] mt-1">
+        <p className="text-[12px] text-muted mt-1">
           SMS and email notification history
         </p>
       </div>
@@ -31,14 +31,14 @@ export default function NotificationsPage() {
             {notifications.map((n) => (
               <div
                 key={n._id}
-                className="rounded bg-[#0E1216] border border-white/[0.04] p-5 flex items-start gap-4 hover:border-white/[0.08] transition-all duration-150"
+                className="rounded bg-surface-secondary border border-white/[0.04] p-5 flex items-start gap-4 hover:border-white/[0.08] transition-all duration-150"
               >
                 {/* Channel icon */}
                 <div
                   className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded ${
                     n.channel === "sms"
                       ? "bg-emerald-400/[0.06] text-emerald-400"
-                      : "bg-[#19AFFF]/[0.06] text-[#19AFFF]"
+                      : "bg-accent/[0.06] text-accent"
                   }`}
                 >
                   {n.channel === "sms" ? (
@@ -51,14 +51,14 @@ export default function NotificationsPage() {
                 {/* Content */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1.5">
-                    <span className="text-[13px] font-medium text-white">
+                    <span className="text-body-sm font-medium text-white">
                       {n.recipientName || n.to}
                     </span>
                     <span
                       className={`inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wider ${
                         n.channel === "sms"
                           ? "bg-emerald-400/[0.06] text-emerald-400"
-                          : "bg-[#19AFFF]/[0.06] text-[#19AFFF]"
+                          : "bg-accent/[0.06] text-accent"
                       }`}
                     >
                       {n.channel}
@@ -71,19 +71,19 @@ export default function NotificationsPage() {
                             ? "bg-amber-400/[0.06] text-amber-400"
                             : n.status === "failed"
                               ? "bg-red-400/[0.06] text-red-400"
-                              : "bg-white/[0.04] text-[#5A6370]"
+                              : "bg-white/[0.04] text-muted"
                       }`}
                     >
                       {n.status}
                     </span>
-                    <span className="text-[10px] text-[#5A6370] capitalize">
+                    <span className="text-[10px] text-muted capitalize">
                       {n.recipientType.replace("_", " ")}
                     </span>
                   </div>
-                  <p className="text-[12px] text-[#8B939E] line-clamp-2 leading-relaxed">
+                  <p className="text-[12px] text-secondary line-clamp-2 leading-relaxed">
                     {n.message}
                   </p>
-                  <p className="text-[10px] text-[#3A424D] mt-2">
+                  <p className="text-[10px] text-dim mt-2">
                     {new Date(n.timestamp).toLocaleString("en-US", {
                       month: "short",
                       day: "numeric",
@@ -98,14 +98,14 @@ export default function NotificationsPage() {
             ))}
           </div>
         ) : (
-          <div className="rounded bg-[#0E1216] border border-white/[0.04] py-20 text-center">
-            <Bell className="h-8 w-8 text-[#3A424D] mx-auto mb-4" />
-            <p className="text-[13px] text-[#5A6370]">
+          <div className="rounded bg-surface-secondary border border-white/[0.04] py-20 text-center">
+            <Bell className="h-8 w-8 text-dim mx-auto mb-4" />
+            <p className="text-body-sm text-muted">
               {businessId
                 ? "No notifications sent yet"
                 : "Loading..."}
             </p>
-            <p className="text-[11px] text-[#3A424D] mt-1.5">
+            <p className="text-caption text-dim mt-1.5">
               Notifications appear after weather checks trigger alerts.
             </p>
           </div>
@@ -114,3 +114,6 @@ export default function NotificationsPage() {
     </div>
   );
 }
+
+
+

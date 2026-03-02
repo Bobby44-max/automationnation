@@ -33,7 +33,7 @@ export function Modal({ open, onClose, children, className }: ModalProps) {
       {/* Content */}
       <div
         className={cn(
-          "relative z-10 w-full max-w-lg rounded border border-white/[0.06] bg-[#0E1216] p-6 shadow-2xl shadow-black/40",
+          "relative z-10 w-full max-w-lg rounded border border-white/[0.06] bg-surface-secondary p-6 shadow-2xl shadow-black/40",
           className
         )}
         role="dialog"
@@ -44,3 +44,6 @@ export function Modal({ open, onClose, children, className }: ModalProps) {
     </div>
   );
 }
+
+
+

@@ -14,7 +14,7 @@ export function Card({
     <div
       className={cn(
         "rounded border border-white/[0.06] p-5",
-        variant === "default" ? "bg-[#0E1216]" : "bg-[#151A1F]",
+        variant === "default" ? "bg-surface-secondary" : "bg-surface-tertiary",
         className
       )}
       {...props}
@@ -35,7 +35,7 @@ export function CardTitle({
 }: HTMLAttributes<HTMLHeadingElement>) {
   return (
     <h3
-      className={cn("text-[15px] font-semibold text-white tracking-tight", className)}
+      className={cn("text-body font-semibold text-white tracking-tight", className)}
       {...props}
     />
   );
@@ -46,7 +46,7 @@ export function CardDescription({
   ...props
 }: HTMLAttributes<HTMLParagraphElement>) {
   return (
-    <p className={cn("text-sm text-[#8B939E]", className)} {...props} />
+    <p className={cn("text-sm text-secondary", className)} {...props} />
   );
 }
 
@@ -56,3 +56,6 @@ export function CardContent({
 }: HTMLAttributes<HTMLDivElement>) {
   return <div className={cn(className)} {...props} />;
 }
+
+
+

@@ -11,3 +11,6 @@ export const metadata = {
 export default function WeatherSchedulingPage() {
   return <WeatherSchedulingClient />;
 }
+
+
+

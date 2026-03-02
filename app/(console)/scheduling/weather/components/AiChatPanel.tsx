@@ -157,3 +157,6 @@ export function AiChatPanel({ businessId, onClose }: AiChatPanelProps) {
     </div>
   );
 }
+
+
+

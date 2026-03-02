@@ -9,7 +9,7 @@ function ShellInner({ children }: { children: ReactNode }) {
   const { businessName } = useDemoBusiness();
 
   return (
-    <div className="flex min-h-screen bg-[#0A0D10]">
+    <div className="flex min-h-screen bg-surface-primary">
       <Sidebar />
       <div className="flex-1 flex flex-col min-w-0">
         <Topbar businessName={businessName} />
@@ -37,3 +37,6 @@ export function ConsoleShell({ children }: { children: ReactNode }) {
     </DemoBusinessProvider>
   );
 }
+
+
+

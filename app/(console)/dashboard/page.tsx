@@ -29,7 +29,7 @@ export default function DashboardPage() {
       {/* Page Header */}
       <div className="px-8 py-6 border-b border-white/[0.04]">
         <h1 className="text-xl font-bold tracking-tight">Dashboard</h1>
-        <p className="text-[12px] text-[#5A6370] mt-1">
+        <p className="text-[12px] text-muted mt-1">
           Today&apos;s weather overview and job status
         </p>
       </div>
@@ -52,7 +52,7 @@ export default function DashboardPage() {
       <div className="px-8 pb-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
           <QuickAction
-            icon={<CloudSun className="h-4 w-4 text-[#19AFFF]" />}
+            icon={<CloudSun className="h-4 w-4 text-accent" />}
             title="Check Weather"
             description="Run weather check for all jobs"
             href="/scheduling/weather"
@@ -81,13 +81,13 @@ export default function DashboardPage() {
       {/* Today's Jobs */}
       <div className="px-8 pb-8">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-[15px] font-semibold text-white tracking-tight">
+          <h2 className="text-body font-semibold text-white tracking-tight">
             Today&apos;s Jobs
           </h2>
           {jobs && jobs.length > 0 && (
             <Link
               href="/scheduling/weather"
-              className="text-[11px] text-[#19AFFF] hover:text-[#0D9AEB] transition-colors flex items-center gap-1"
+              className="text-caption text-accent hover:text-[#0D9AEB] transition-colors flex items-center gap-1"
             >
               View all
               <ArrowUpRight className="h-3 w-3" />
@@ -103,10 +103,10 @@ export default function DashboardPage() {
         ) : (
           <Card>
             <CardContent className="py-12 text-center">
-              <p className="text-[13px] text-[#5A6370]">
+              <p className="text-body-sm text-muted">
                 {businessId ? "No jobs scheduled for today" : "Loading..."}
               </p>
-              <p className="text-[11px] text-[#3A424D] mt-1.5">
+              <p className="text-caption text-dim mt-1.5">
                 Jobs will appear here once added to the schedule.
               </p>
             </CardContent>
@@ -130,17 +130,20 @@ function QuickAction({
 }) {
   return (
     <Link href={href}>
-      <div className="rounded bg-[#0E1216] border border-white/[0.04] px-4 py-4 hover:border-white/[0.08] hover:bg-[#151A1F] transition-all duration-150 cursor-pointer group">
+      <div className="rounded bg-surface-secondary border border-white/[0.04] px-4 py-4 hover:border-white/[0.08] hover:bg-surface-tertiary transition-all duration-150 cursor-pointer group">
         <div className="flex items-center gap-3">
           <div className="shrink-0">{icon}</div>
           <div>
-            <div className="text-[13px] font-medium text-white tracking-tight group-hover:text-[#19AFFF] transition-colors">
+            <div className="text-body-sm font-medium text-white tracking-tight group-hover:text-accent transition-colors">
               {title}
             </div>
-            <p className="text-[11px] text-[#5A6370] mt-0.5">{description}</p>
+            <p className="text-caption text-muted mt-0.5">{description}</p>
           </div>
         </div>
       </div>
     </Link>
   );
 }
+
+
+

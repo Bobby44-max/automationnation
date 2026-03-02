@@ -6,12 +6,43 @@ import { v } from "convex/values";
 // ============================================================
 
 /**
- * Get the first active business — auth replacement for demo mode.
+ * Get the first active business — legacy fallback for demo mode / n8n API calls.
  * Returns null if no businesses exist yet (pre-seed).
  */
 export const getDemoBusiness = query({
   args: {},
   handler: async (ctx) => {
+    return await ctx.db
+      .query("businesses")
+      .withIndex("by_active", (q) => q.eq("isActive", true))
+      .first();
+  },
+});
+
+/**
+ * Auth-aware business lookup. Used by the frontend to resolve the current business.
+ * 1. If authenticated with Clerk org → finds business by clerkOrgId
+ * 2. Fallback → first active business (demo mode / development)
+ */
+export const getMyBusiness = query({
+  args: {},
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+
+    if (identity) {
+      const clerkOrgId = (identity as Record<string, unknown>).orgId as
+        | string
+        | undefined;
+      if (clerkOrgId) {
+        const business = await ctx.db
+          .query("businesses")
+          .withIndex("by_clerkOrgId", (q) => q.eq("clerkOrgId", clerkOrgId))
+          .first();
+        if (business) return business;
+      }
+    }
+
+    // Fallback: demo mode — return first active business
     return await ctx.db
       .query("businesses")
       .withIndex("by_active", (q) => q.eq("isActive", true))
@@ -611,6 +642,34 @@ export const createClient = mutation({
   },
 });
 
+export const updateClient = mutation({
+  args: {
+    clientId: v.id("clients"),
+    businessId: v.id("businesses"),
+    name: v.optional(v.string()),
+    email: v.optional(v.string()),
+    phone: v.optional(v.string()),
+    address: v.optional(v.string()),
+    city: v.optional(v.string()),
+    state: v.optional(v.string()),
+    zipCode: v.optional(v.string()),
+  },
+  handler: async (ctx, { clientId, businessId, ...updates }) => {
+    const client = await ctx.db.get(clientId);
+    if (!client || client.businessId !== businessId) {
+      throw new Error("Client not found");
+    }
+    // Only patch fields that were provided
+    const patch: Record<string, string> = {};
+    for (const [key, value] of Object.entries(updates)) {
+      if (value !== undefined) patch[key] = value;
+    }
+    if (Object.keys(patch).length > 0) {
+      await ctx.db.patch(clientId, patch);
+    }
+  },
+});
+
 export const deleteClient = mutation({
   args: { clientId: v.id("clients"), businessId: v.id("businesses") },
   handler: async (ctx, { clientId, businessId }) => {
@@ -635,6 +694,30 @@ export const createCrewMember = mutation({
       ...args,
       isActive: true,
     });
+  },
+});
+
+export const updateCrewMember = mutation({
+  args: {
+    crewMemberId: v.id("crewMembers"),
+    businessId: v.id("businesses"),
+    name: v.optional(v.string()),
+    phone: v.optional(v.string()),
+    email: v.optional(v.string()),
+    role: v.optional(v.string()),
+  },
+  handler: async (ctx, { crewMemberId, businessId, ...updates }) => {
+    const member = await ctx.db.get(crewMemberId);
+    if (!member || member.businessId !== businessId) {
+      throw new Error("Crew member not found");
+    }
+    const patch: Record<string, string> = {};
+    for (const [key, value] of Object.entries(updates)) {
+      if (value !== undefined) patch[key] = value;
+    }
+    if (Object.keys(patch).length > 0) {
+      await ctx.db.patch(crewMemberId, patch);
+    }
   },
 });
 

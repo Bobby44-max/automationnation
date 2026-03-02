@@ -10,6 +10,11 @@
   --font-sans: var(--font-raleway), "Raleway", system-ui, -apple-system, sans-serif;
   --font-heading: var(--font-raleway), "Raleway", system-ui, sans-serif;
 
+  /* Typography scale */
+  --font-size-caption: 11px;
+  --font-size-body-sm: 13px;
+  --font-size-body: 15px;
+
   /* Surface palette â€” deep blacks */
   --color-surface-primary: #0A0D10;
   --color-surface-secondary: #0E1216;
@@ -27,11 +32,11 @@
   --color-status-red: #F87171;
   --color-status-blue: #19AFFF;
 
-  /* Text */
-  --color-text-primary: #F0F2F4;
-  --color-text-secondary: #8B939E;
-  --color-text-muted: #5A6370;
-  --color-text-dim: #3A424D;
+  /* Text palette */
+  --color-primary: #F0F2F4;
+  --color-secondary: #8B939E;
+  --color-muted: #5A6370;
+  --color-dim: #3A424D;
 
   /* Borders */
   --color-border: rgba(255, 255, 255, 0.06);
@@ -46,7 +51,7 @@ html {
 
 body {
   background-color: var(--color-surface-primary);
-  color: var(--color-text-primary);
+  color: var(--color-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   letter-spacing: -0.01em;
@@ -65,7 +70,7 @@ body {
   border-radius: 2px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-text-dim);
+  background: var(--color-dim);
 }
 
 /* â”€â”€â”€ Focus â”€â”€â”€ */
@@ -75,9 +80,10 @@ body {
   outline-offset: 2px;
 }
 
-/* â”€â”€â”€ Selection â”€â”€â”€ */
+/* â”€â”€â”€ Selection â•â•â•â•â•â•â•â•â•â•â• */
 
 ::selection {
   background: rgba(25, 175, 255, 0.2);
   color: #fff;
 }
+

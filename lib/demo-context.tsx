@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, type ReactNode } from "react";
-import { useQuery } from "convex/react";
+import { useConvexAuth, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 
@@ -18,8 +18,12 @@ const DemoCtx = createContext<DemoBusinessContext>({
 });
 
 export function DemoBusinessProvider({ children }: { children: ReactNode }) {
-  const business = useQuery(api.weatherScheduling.getDemoBusiness);
-  const isLoading = business === undefined;
+  const { isLoading: isAuthLoading } = useConvexAuth();
+  const business = useQuery(
+    api.weatherScheduling.getMyBusiness,
+    isAuthLoading ? "skip" : {}
+  );
+  const isLoading = isAuthLoading || business === undefined;
 
   return (
     <DemoCtx.Provider

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { JobCard } from "./JobCard";
+import { SearchX } from "lucide-react";
 
 interface JobCardGridProps {
   jobs: any[];
@@ -49,15 +50,15 @@ export function JobCardGrid({ jobs }: JobCardGridProps) {
       {/* Controls */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <span className="text-xs text-gray-500">Filter:</span>
+          <span className="text-xs text-muted">Filter:</span>
           {(["all", "red", "yellow", "green"] as const).map((opt) => (
             <button
               key={opt}
               onClick={() => setFilterBy(opt)}
               className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
                 filterBy === opt
-                  ? "bg-gray-700 text-white"
-                  : "text-gray-500 hover:text-gray-300"
+                  ? "bg-surface-elevated text-white"
+                  : "text-muted hover:text-secondary"
               }`}
             >
               {opt === "all" ? "All" : opt.charAt(0).toUpperCase() + opt.slice(1)}
@@ -76,15 +77,15 @@ export function JobCardGrid({ jobs }: JobCardGridProps) {
           ))}
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-xs text-gray-500">Sort:</span>
+          <span className="text-xs text-muted">Sort:</span>
           {(["status", "time", "client"] as const).map((opt) => (
             <button
               key={opt}
               onClick={() => setSortBy(opt)}
               className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
                 sortBy === opt
-                  ? "bg-gray-700 text-white"
-                  : "text-gray-500 hover:text-gray-300"
+                  ? "bg-surface-elevated text-white"
+                  : "text-muted hover:text-secondary"
               }`}
             >
               {opt.charAt(0).toUpperCase() + opt.slice(1)}
@@ -101,9 +102,10 @@ export function JobCardGrid({ jobs }: JobCardGridProps) {
       </div>
 
       {sorted.length === 0 && (
-        <p className="text-center text-gray-600 py-10">
-          No jobs match this filter.
-        </p>
+        <div className="text-center text-dim py-20">
+          <SearchX className="h-10 w-10 mx-auto mb-4 opacity-20" />
+          <p>No jobs match this filter.</p>
+        </div>
       )}
     </div>
   );

@@ -49,7 +49,7 @@ export function WeatherStrip({ businessId }: WeatherStripProps) {
   const currentHour = new Date().getHours();
 
   return (
-    <div className="rounded bg-[#0E1216] border border-white/[0.04] p-5">
+    <div className="rounded bg-surface-secondary border border-white/[0.04] p-5">
       {/* Current Conditions */}
       <div className="flex items-center gap-10 mb-5">
         <ConditionBadge
@@ -76,7 +76,7 @@ export function WeatherStrip({ businessId }: WeatherStripProps) {
           unit="%"
           severity={currentConditions.rainProb >= 60 ? "danger" : "neutral"}
         />
-        <div className="ml-auto text-[11px] text-[#5A6370]">
+        <div className="ml-auto text-caption text-muted">
           {weatherSummary
             ? `Updated ${new Date(weatherSummary.timestamp).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}`
             : "Rain expected 10a – 3p"}
@@ -98,12 +98,12 @@ export function WeatherStrip({ businessId }: WeatherStripProps) {
           return (
             <div key={h.hour} className="flex-1 flex flex-col items-center">
               <div
-                className={`w-full rounded-t-sm ${color} ${isNow ? "ring-1 ring-white ring-offset-1 ring-offset-[#0E1216]" : "opacity-80"} transition-all`}
+                className={`w-full rounded-t-sm ${color} ${isNow ? "ring-1 ring-white ring-offset-1 ring-offset-surface-secondary" : "opacity-80"} transition-all`}
                 style={{ height: `${height}px` }}
                 title={`${h.hour}:00 — ${h.rainProb}% rain`}
               />
               {h.hour % 4 === 0 && (
-                <span className="text-[9px] text-[#3A424D] mt-1.5 font-medium">
+                <span className="text-[9px] text-dim mt-1.5 font-medium">
                   {h.hour === 0
                     ? "12a"
                     : h.hour === 12
@@ -140,15 +140,18 @@ function ConditionBadge({
 
   return (
     <div>
-      <div className="text-[10px] text-[#5A6370] uppercase tracking-widest mb-1">
+      <div className="text-[10px] text-muted uppercase tracking-widest mb-1">
         {label}
       </div>
       <div className="flex items-baseline gap-0.5">
         <span className={`text-xl font-bold tracking-tight ${colors[severity]}`}>
           {value}
         </span>
-        <span className="text-[10px] text-[#5A6370]">{unit}</span>
+        <span className="text-[10px] text-muted">{unit}</span>
       </div>
     </div>
   );
 }
+
+
+

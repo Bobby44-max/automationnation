@@ -19,7 +19,7 @@ export function TradeSelector({ selected, onChange }: TradeSelectorProps) {
     <select
       value={selected}
       onChange={(e) => onChange(e.target.value)}
-      className="rounded bg-[#151A1F] border border-white/[0.06] px-3 py-2 text-[13px] text-[#8B939E] min-h-[40px] focus:outline-none focus:ring-1 focus:ring-[#19AFFF] transition-colors"
+      className="rounded bg-surface-tertiary border border-white/[0.06] px-3 py-2 text-body-sm text-secondary min-h-[40px] focus:outline-none focus:ring-1 focus:ring-accent transition-colors"
     >
       {TRADES.map((t) => (
         <option key={t.value} value={t.value}>
@@ -29,3 +29,6 @@ export function TradeSelector({ selected, onChange }: TradeSelectorProps) {
     </select>
   );
 }
+
+
+

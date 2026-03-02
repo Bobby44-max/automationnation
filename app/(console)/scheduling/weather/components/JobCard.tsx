@@ -79,33 +79,33 @@ export function JobCard({ job }: JobCardProps) {
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2.5">
           <div className={`w-2 h-2 rounded-full ${styles.accent}`} />
-          <span className={`text-[11px] font-medium uppercase tracking-wider ${styles.labelColor}`}>
+          <span className={`text-caption font-medium uppercase tracking-wider ${styles.labelColor}`}>
             {styles.label}
           </span>
         </div>
-        <span className="text-[11px] text-[#5A6370] font-medium">
+        <span className="text-caption text-muted font-medium">
           {job.startTime}
         </span>
       </div>
 
       {/* Client Name */}
-      <h3 className="text-[15px] font-semibold text-white tracking-tight mb-1">
+      <h3 className="text-body font-semibold text-white tracking-tight mb-1">
         {job.client?.name || "Unknown Client"}
       </h3>
 
       {/* Meta row */}
-      <div className="flex items-center gap-3 text-[11px] text-[#5A6370]">
+      <div className="flex items-center gap-3 text-caption text-muted">
         <span>{TRADE_LABELS[job.trade] || job.trade}</span>
         {job.crewLead && (
           <>
-            <span className="text-[#3A424D]">/</span>
+            <span className="text-dim">/</span>
             <span>{job.crewLead.name}</span>
           </>
         )}
         {job.estimatedRevenue && (
           <>
-            <span className="text-[#3A424D]">/</span>
-            <span className="text-[#19AFFF]">${job.estimatedRevenue.toLocaleString()}</span>
+            <span className="text-dim">/</span>
+            <span className="text-accent">${job.estimatedRevenue.toLocaleString()}</span>
           </>
         )}
       </div>
@@ -127,7 +127,7 @@ export function JobCard({ job }: JobCardProps) {
         </div>
       )}
       {job.weatherStatus?.overriddenBy && (
-        <div className="text-[11px] text-[#19AFFF]/60 mt-1.5">
+        <div className="text-caption text-accent/60 mt-1.5">
           Override: {job.weatherStatus.overriddenBy}
         </div>
       )}
@@ -135,7 +135,7 @@ export function JobCard({ job }: JobCardProps) {
       {/* Expanded Detail */}
       {expanded && job.weatherStatus?.triggeredRules && (
         <div className="mt-4 pt-4 border-t border-white/[0.04]">
-          <div className="text-[10px] text-[#5A6370] uppercase tracking-widest mb-2">
+          <div className="text-[10px] text-muted uppercase tracking-widest mb-2">
             Weather Detail
           </div>
           {job.weatherStatus.triggeredRules.length > 0 ? (
@@ -143,10 +143,10 @@ export function JobCard({ job }: JobCardProps) {
               {job.weatherStatus.triggeredRules.map((rule, i) => (
                 <div
                   key={i}
-                  className="flex items-center justify-between text-[11px]"
+                  className="flex items-center justify-between text-caption"
                 >
-                  <span className="text-[#8B939E]">{rule.reason}</span>
-                  <span className="text-[#5A6370] font-mono text-[10px]">
+                  <span className="text-secondary">{rule.reason}</span>
+                  <span className="text-muted font-mono text-[10px]">
                     {rule.actual} / {rule.threshold}
                     {rule.hour && ` @ ${rule.hour}`}
                   </span>
@@ -154,11 +154,11 @@ export function JobCard({ job }: JobCardProps) {
               ))}
             </div>
           ) : (
-            <p className="text-[11px] text-emerald-400/60">
+            <p className="text-caption text-emerald-400/60">
               All conditions within safe limits
             </p>
           )}
-          <div className="mt-2.5 text-[10px] text-[#3A424D]">
+          <div className="mt-2.5 text-[10px] text-dim">
             Confidence {job.weatherStatus.confidence}%
           </div>
         </div>
@@ -166,3 +166,6 @@ export function JobCard({ job }: JobCardProps) {
     </div>
   );
 }
+
+
+
