@@ -18,11 +18,24 @@ export function AIFBlueprint() {
             <p className="text-xl text-secondary font-medium tracking-tight mb-12">
               The Agentic Intelligence Framework (AIF) is the core deterministic engine of Rain Check. It processes 44+ environmental variables to generate sub-second operational decisions.
             </p>
-            <div className="space-y-4">
+            <div className="space-y-4 mb-12">
               <BlueprintMeta label="Engine Version" value="v1.0.4-Stable" />
               <BlueprintMeta label="Logic Density" value="High-Frequency" />
               <BlueprintMeta label="Failure Tolerance" value="0.0001%" />
             </div>
+            {/* Cinematic Mascot Integration */}
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              className="relative group p-4 border border-white/5 bg-white/[0.02] rounded-3xl overflow-hidden shadow-2xl"
+            >
+              <div className="absolute inset-0 bg-accent/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+              <img 
+                src="/marketing/contractor-figurine-mascot.png" 
+                alt="Rain Check Mascot" 
+                className="w-full h-auto rounded-2xl grayscale hover:grayscale-0 transition-all duration-700"
+              />
+            </motion.div>
           </div>
 
           <div className="flex-1 w-full grid grid-cols-1 md:grid-cols-2 gap-8">
