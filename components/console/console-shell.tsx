@@ -14,7 +14,7 @@ function ShellInner({ children }: { children: ReactNode }) {
       <div className="flex-1 flex flex-col min-w-0">
         <Topbar businessName={businessName} />
         <main className="flex-1 relative overflow-hidden">
-          {/* Rain backdrop — fixed behind all dashboard content */}
+          {/* Rain backdrop â€” fixed behind all dashboard content */}
           <div
             className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat pointer-events-none"
             style={{

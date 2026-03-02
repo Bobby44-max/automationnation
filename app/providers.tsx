@@ -14,12 +14,12 @@ export function Providers({ children }: { children: ReactNode }) {
     return new ConvexReactClient(url);
   }, []);
 
-  // No Convex URL — render without providers
+  // No Convex URL â€” render without providers
   if (!convex) {
     return <>{children}</>;
   }
 
-  // No Clerk key — Convex-only mode (no auth)
+  // No Clerk key â€” Convex-only mode (no auth)
   if (!clerkKey) {
     return <ConvexProvider client={convex}>{children}</ConvexProvider>;
   }

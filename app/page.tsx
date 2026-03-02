@@ -235,7 +235,7 @@ export default function LandingPage() {
                 <div className="flex items-center justify-between p-3 border-l-4 border-emerald-500 bg-surface-secondary">
                   <div className="flex flex-col">
                     <span className="font-bold text-body-sm">Johnson Roof Repair</span>
-                    <span className="text-caption text-muted">9:00 AM � 123 Oak St</span>
+                    <span className="text-caption text-muted">9:00 AM â€¢ 123 Oak St</span>
                   </div>
                   <span className="bg-emerald-500/10 text-emerald-500 font-bold text-[10px] uppercase tracking-widest px-3 py-1">Clear</span>
                 </div>
@@ -243,7 +243,7 @@ export default function LandingPage() {
                 <div className="flex items-center justify-between p-3 border-l-4 border-red-500 bg-surface-secondary">
                   <div className="flex flex-col">
                     <span className="font-bold text-body-sm">Chen Concrete Pour</span>
-                    <span className="text-caption text-red-400">Rain 80% � Rescheduled to {rescheduledDate}</span>
+                    <span className="text-caption text-red-400">Rain 80% â€¢ Rescheduled to {rescheduledDate}</span>
                   </div>
                   <span className="bg-red-500/10 text-red-500 font-bold text-[10px] uppercase tracking-widest px-3 py-1">Moved</span>
                 </div>
@@ -435,3 +435,4 @@ export default function LandingPage() {
     </div>
   );
 }
+

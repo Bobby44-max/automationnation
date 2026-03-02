@@ -54,7 +54,7 @@ export function WeatherStrip({ businessId }: WeatherStripProps) {
       <div className="flex items-center gap-10 mb-5">
         <ConditionBadge
           label="Temp"
-          value={`${currentConditions.temp}°`}
+          value={`${currentConditions.temp}Â°`}
           unit="F"
           severity="neutral"
         />
@@ -79,7 +79,7 @@ export function WeatherStrip({ businessId }: WeatherStripProps) {
         <div className="ml-auto text-caption text-muted">
           {weatherSummary
             ? `Updated ${new Date(weatherSummary.timestamp).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}`
-            : "Rain expected 10a – 3p"}
+            : "Rain expected 10a â€“ 3p"}
         </div>
       </div>
 
@@ -100,7 +100,7 @@ export function WeatherStrip({ businessId }: WeatherStripProps) {
               <div
                 className={`w-full rounded-t-sm ${color} ${isNow ? "ring-1 ring-white ring-offset-1 ring-offset-surface-secondary" : "opacity-80"} transition-all`}
                 style={{ height: `${height}px` }}
-                title={`${h.hour}:00 — ${h.rainProb}% rain`}
+                title={`${h.hour}:00 â€” ${h.rainProb}% rain`}
               />
               {h.hour % 4 === 0 && (
                 <span className="text-[9px] text-dim mt-1.5 font-medium">

@@ -6,12 +6,12 @@ import { api } from "@/convex/_generated/api";
 import { useDemoBusiness } from "@/lib/demo-context";
 
 const WEATHER_VARIABLES: Record<string, string> = {
-  temperature_f: "Temperature (°F)",
+  temperature_f: "Temperature (Â°F)",
   humidity_pct: "Humidity (%)",
   wind_speed_mph: "Wind Speed (mph)",
   rain_probability_pct: "Rain Probability (%)",
-  dew_point_spread_f: "Dew Point Spread (°F)",
-  soil_temperature_f: "Soil Temperature (°F)",
+  dew_point_spread_f: "Dew Point Spread (Â°F)",
+  soil_temperature_f: "Soil Temperature (Â°F)",
 };
 
 export default function WeatherSettingsPage() {
@@ -171,7 +171,7 @@ export default function WeatherSettingsPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             {[
-              { name: "Voice AI — Riley", desc: "Hands-free weather checks and crew alerts via voice calls.", color: "bg-purple-400" },
+              { name: "Voice AI â€” Riley", desc: "Hands-free weather checks and crew alerts via voice calls.", color: "bg-purple-400" },
               { name: "Jobber CRM", desc: "Syncs reschedules with Jobber visits and invoice dates.", color: "bg-accent" },
               { name: "Calendar Sync", desc: "Keeps Google Calendar and Outlook updated on reschedules.", color: "bg-emerald-400" },
             ].map((item) => (

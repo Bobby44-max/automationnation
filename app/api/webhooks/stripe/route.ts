@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
     case "customer.subscription.updated": {
       const subscription = event.data.object as Stripe.Subscription;
       console.log(
-        `Subscription ${event.type}: ${subscription.id} — status: ${subscription.status}`
+        `Subscription ${event.type}: ${subscription.id} â€” status: ${subscription.status}`
       );
       // TODO: Update business planTier in Convex based on price ID
       break;
@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
     }
 
     default:
-      // Unhandled event type — ignore
+      // Unhandled event type â€” ignore
       break;
   }
 

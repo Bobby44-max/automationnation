@@ -49,7 +49,7 @@ export default function SettingsPage() {
               </div>
               <div>
                 <span className="text-[10px] text-muted uppercase tracking-widest">Plan</span>
-                <p className="text-body text-accent font-medium mt-1">Pro — All Clear</p>
+                <p className="text-body text-accent font-medium mt-1">Pro â€” All Clear</p>
               </div>
             </div>
           </div>
