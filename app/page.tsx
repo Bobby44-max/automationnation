@@ -1,653 +1,369 @@
-'use client';
+import { Navbar } from "@/components/landing/Navbar";
+import { SplineHero } from "@/components/landing/SplineHero";
+import { LeadCaptureForm } from "@/components/landing/LeadCaptureForm";
+import { Footer } from "@/components/landing/Footer";
+import Link from "next/link";
 
-import { useState } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
-import {
-  Cloud,
-  Shield,
-  Bell,
-  BarChart3,
-  Calendar,
-  Clock,
-  Zap,
-  ArrowRight,
-  Check,
-  ChevronRight,
-  Menu,
-  X,
-} from 'lucide-react';
+const SPLINE_SCENE_URL =
+  "https://my.spline.design/b448c525-9f4b-4075-816b-ca3a980e1db6/";
 
-/* ─── Data ─── */
-
-const NAV_LINKS = [
-  { label: 'Features', href: '#features' },
-  { label: 'How It Works', href: '#how-it-works' },
-  { label: 'Pricing', href: '#pricing' },
+const stats = [
+  { value: "50+", label: "Automations Built" },
+  { value: "5,000+", label: "Users Served" },
+  { value: "$2M+", label: "Revenue Protected" },
+  { value: "24/7", label: "AI Systems Running" },
 ];
 
-const PRICING = [
+const services = [
   {
-    name: 'Storm Watch',
-    price: '$0',
-    period: '/mo',
-    tag: 'Try it out',
-    features: [
-      '1 trade preset',
-      '5 jobs per week',
-      'Email notifications',
-      '3-day forecast',
-    ],
-    cta: 'Start free',
-    pop: false,
+    icon: "⚡",
+    title: "AI Workflow Automation",
+    description:
+      "End-to-end automation pipelines that eliminate manual tasks. From data ingestion to decision-making, we build systems that run themselves.",
   },
   {
-    name: 'Clear Day',
-    price: '$29',
-    period: '/mo',
-    tag: 'Small crews',
-    features: [
-      '1 trade preset',
-      '10 jobs per day',
-      '50 SMS/month',
-      'Email + SMS alerts',
-      'Revenue tracking',
-    ],
-    cta: 'Start trial',
-    pop: false,
+    icon: "🔧",
+    title: "Custom SaaS Development",
+    description:
+      "Full-stack SaaS products built on the Elite Stack — Next.js, Convex, Clerk, Stripe. Production-ready in weeks, not months.",
   },
   {
-    name: 'All Clear',
-    price: '$79',
-    period: '/mo',
-    tag: 'Growing businesses',
-    features: [
-      'Unlimited trades',
-      'Unlimited jobs',
-      '500 SMS/month',
-      'Bulk actions',
-      'Custom rules',
-      'Priority support',
-    ],
-    cta: 'Start trial',
-    pop: true,
+    icon: "🧠",
+    title: "AI Consulting & Strategy",
+    description:
+      "Strategic guidance on where AI fits your business. We identify the highest-ROI automation opportunities and build the roadmap.",
   },
   {
-    name: 'Storm Command',
-    price: '$149',
-    period: '/mo',
-    tag: 'Large operations',
-    features: [
-      'Everything in All Clear',
-      'Weather windows',
-      'Revenue scoring',
-      'API access',
-      'Dedicated support',
-      'Multi-location',
-    ],
-    cta: 'Contact sales',
-    pop: false,
+    icon: "🔗",
+    title: "Integration Engineering",
+    description:
+      "Connect your tools into a unified system. Stripe, Twilio, n8n, Supabase — we wire it all together with bulletproof reliability.",
   },
 ];
 
-/* ─── Page ─── */
+const steps = [
+  {
+    number: "01",
+    title: "Discovery",
+    description:
+      "We audit your workflows, identify automation opportunities, and map the highest-impact areas where AI can transform your operations.",
+  },
+  {
+    number: "02",
+    title: "Build",
+    description:
+      "Our team architects and builds your AI systems using battle-tested patterns. Incremental delivery means you see progress weekly.",
+  },
+  {
+    number: "03",
+    title: "Launch & Scale",
+    description:
+      "We deploy to production, monitor performance, and continuously optimize. Your AI systems get smarter and more efficient over time.",
+  },
+];
 
-export default function LandingPage() {
-  const [menuOpen, setMenuOpen] = useState(false);
+const testimonials = [
+  {
+    quote:
+      "AutomationNation built us an AI scheduling system that cut our manual coordination by 80%. Our team now focuses on what actually matters.",
+    author: "Operations Director",
+    company: "Regional Service Company",
+  },
+  {
+    quote:
+      "The Elite Stack they recommended is genuinely next-level. Real-time data, instant auth, seamless payments — all working together flawlessly.",
+    author: "CTO",
+    company: "Growing SaaS Startup",
+  },
+  {
+    quote:
+      "We went from idea to production SaaS in 6 weeks. Their process is dialed — discovery, build, launch. No wasted time.",
+    author: "Founder",
+    company: "AI-First Agency",
+  },
+];
 
+export default function AutomationNationLanding() {
   return (
-    <div className="min-h-screen bg-[#0A0D10] relative">
-      {/* Rain backdrop */}
-      <div
-        className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat pointer-events-none"
-        style={{ backgroundImage: "url('/rain-backdrop.jpg')", opacity: 0.06 }}
-        aria-hidden="true"
-      />
+    <div className="min-h-screen bg-[#0A0D10] text-white">
+      <Navbar />
 
-      {/* ═══════════ NAV ═══════════ */}
-      <header className="fixed top-0 inset-x-0 z-50 border-b border-white/[0.04] bg-[#0A0D10]/90 backdrop-blur-md">
-        <nav className="mx-auto max-w-7xl px-6 h-16 flex items-center justify-between">
-          <Link
-            href="/"
-            className="flex items-center"
-            aria-label="Rain Check home"
-          >
-            <Image
-              src="/logo-large.jpg"
-              alt="Rain Check"
-              width={180}
-              height={50}
-              className="h-9 w-auto"
-              priority
-            />
-          </Link>
-
-          <div className="hidden md:flex items-center gap-8">
-            {NAV_LINKS.map((l) => (
-              <a
-                key={l.href}
-                href={l.href}
-                className="text-[13px] text-[#5A6370] hover:text-white transition-colors"
-              >
-                {l.label}
-              </a>
-            ))}
-          </div>
-
-          <div className="hidden md:flex items-center gap-4">
-            <Link
-              href="/dashboard"
-              className="text-[13px] font-medium bg-[#19AFFF] hover:bg-[#0D9AEB] text-white px-4 py-2 rounded transition-colors"
-            >
-              Go to Dashboard
-            </Link>
-          </div>
-
-          <button
-            onClick={() => setMenuOpen(!menuOpen)}
-            className="md:hidden p-2 -mr-2 text-[#5A6370] hover:text-white"
-            aria-label={menuOpen ? 'Close menu' : 'Open menu'}
-          >
-            {menuOpen ? (
-              <X className="h-5 w-5" />
-            ) : (
-              <Menu className="h-5 w-5" />
-            )}
-          </button>
-        </nav>
-
-        {menuOpen && (
-          <div className="md:hidden border-t border-white/[0.04] bg-[#0A0D10] px-6 pb-6 pt-4">
-            {NAV_LINKS.map((l) => (
-              <a
-                key={l.href}
-                href={l.href}
-                onClick={() => setMenuOpen(false)}
-                className="block py-2.5 text-[#5A6370] hover:text-white transition-colors"
-              >
-                {l.label}
-              </a>
-            ))}
-            <div className="mt-4 pt-4 border-t border-white/[0.04] space-y-2">
-              <Link
-                href="/dashboard"
-                className="block text-center bg-[#19AFFF] hover:bg-[#0D9AEB] text-white font-medium py-2.5 rounded transition-colors"
-              >
-                Go to Dashboard
-              </Link>
-            </div>
-          </div>
-        )}
-      </header>
-
-      <main>
-        {/* ═══════════ HERO ═══════════ */}
-        <section className="pt-32 pb-20 lg:pb-28 px-6">
-          <div className="mx-auto max-w-7xl grid lg:grid-cols-12 gap-12 lg:gap-20 items-center">
-            {/* Copy — 7 cols */}
-            <div className="lg:col-span-7">
-              {/* Big Rain Check Logo */}
-              <Image
-                src="/logo-large.jpg"
-                alt="Rain Check"
-                width={600}
-                height={200}
-                className="h-auto w-[340px] sm:w-[420px] lg:w-[480px] mb-6"
-                priority
-              />
-
-              <div className="inline-flex items-center gap-2 rounded border border-white/[0.06] bg-[#0E1216] px-3.5 py-1.5 text-[11px] text-[#5A6370] mb-8">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-                Trusted by 5,000+ contractors
-              </div>
-
-              <h1 className="text-4xl sm:text-5xl lg:text-[3.5rem] font-bold tracking-tight leading-[1.08] mb-6">
-                Weather delays cost you
-                <br />
-                <span className="text-[#19AFFF]">$47K a year</span>
-              </h1>
-
-              <p className="text-[15px] text-[#8B939E] max-w-xl mb-10 leading-relaxed">
-                Rain Check monitors conditions around the clock and
-                auto-reschedules jobs before weather hits. Trade-specific rules.
-                Instant client notifications. Zero lost revenue.
+      {/* Hero Section */}
+      <section className="relative pt-24 pb-16 lg:pt-32 lg:pb-24 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-[#19AFFF]/5 via-transparent to-transparent pointer-events-none" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            {/* Left — Copy */}
+            <div className="relative z-10">
+              <p className="text-sm font-semibold tracking-widest uppercase text-[#19AFFF] mb-4">
+                AI Automation Consulting
               </p>
-
-              <div className="flex flex-col sm:flex-row gap-3">
-                <Link
-                  href="/dashboard"
-                  className="inline-flex items-center justify-center gap-2 bg-[#19AFFF] hover:bg-[#0D9AEB] text-white px-6 py-3 rounded font-semibold transition-colors"
-                >
-                  Start free trial
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight mb-6">
+                We Build AI Systems{" "}
+                <span className="gradient-text">That Run Your Business</span>
+              </h1>
+              <p className="text-lg text-gray-400 mb-8 max-w-lg">
+                From custom SaaS products to intelligent workflow automation, we
+                architect AI systems that eliminate manual work and scale your
+                operations — built on the Elite Stack.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4">
                 <a
-                  href="#how-it-works"
-                  className="inline-flex items-center justify-center gap-2 border border-white/[0.06] hover:border-white/[0.12] hover:bg-[#0E1216] text-[#8B939E] px-6 py-3 rounded font-medium transition-colors"
+                  href="#contact"
+                  className="gradient-btn px-8 py-4 rounded-xl text-center font-semibold text-lg"
                 >
-                  See how it works
+                  Book a Free Consultation
+                </a>
+                <a
+                  href="#services"
+                  className="px-8 py-4 rounded-xl text-center font-semibold text-lg border border-white/10 hover:border-white/25 transition-colors"
+                >
+                  See Our Services
                 </a>
               </div>
-
-              <p className="mt-5 text-[11px] text-[#3A424D]">
-                Free 30-day trial &middot; No credit card required
-              </p>
             </div>
 
-            {/* Status preview — 5 cols */}
-            <div className="lg:col-span-5">
-              <div className="bg-[#0E1216] border border-white/[0.06] rounded shadow-2xl shadow-black/20 overflow-hidden">
-                <div className="px-5 py-3.5 border-b border-white/[0.04] flex items-center justify-between">
-                  <span className="text-[13px] font-semibold">
-                    Today&apos;s Schedule
-                  </span>
-                  <span className="text-[11px] text-[#5A6370]">
-                    {new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
-                  </span>
+            {/* Right — Spline 3D */}
+            <div className="relative z-10">
+              <SplineHero sceneUrl={SPLINE_SCENE_URL} />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Stats Bar */}
+      <section className="relative py-12 border-y border-white/5">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
+            {stats.map((stat) => (
+              <div key={stat.label} className="text-center">
+                <p className="text-3xl sm:text-4xl font-bold gradient-text mb-1">
+                  {stat.value}
+                </p>
+                <p className="text-sm text-gray-500 uppercase tracking-wider">
+                  {stat.label}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Services — Bento Grid */}
+      <section id="services" className="py-20 lg:py-28">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <p className="text-sm font-semibold tracking-widest uppercase text-[#19AFFF] mb-3">
+              What We Do
+            </p>
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4">
+              AI-Powered Services for{" "}
+              <span className="gradient-text">Modern Businesses</span>
+            </h2>
+            <p className="text-gray-400 max-w-2xl mx-auto">
+              We don&apos;t just consult — we build. Every engagement produces
+              working AI systems deployed to production.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {services.map((service) => (
+              <div
+                key={service.title}
+                className="glass-card p-8 rounded-2xl group hover:border-[#19AFFF]/20 transition-all duration-300"
+              >
+                <div className="text-4xl mb-4">{service.icon}</div>
+                <h3 className="text-xl font-bold mb-3 group-hover:text-[#19AFFF] transition-colors">
+                  {service.title}
+                </h3>
+                <p className="text-gray-400 leading-relaxed">
+                  {service.description}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Products Showcase — Rain Check */}
+      <section id="products" className="py-20 lg:py-28 relative">
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#7C3AED]/5 to-transparent pointer-events-none" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="text-center mb-16">
+            <p className="text-sm font-semibold tracking-widest uppercase text-[#7C3AED] mb-3">
+              Our Products
+            </p>
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4">
+              See Our Work{" "}
+              <span className="gradient-text">In Production</span>
+            </h2>
+            <p className="text-gray-400 max-w-2xl mx-auto">
+              We don&apos;t just talk about AI — we ship it. Here&apos;s what
+              we&apos;ve built.
+            </p>
+          </div>
+
+          <div className="glass-card rounded-2xl overflow-hidden">
+            <div className="grid grid-cols-1 lg:grid-cols-2">
+              {/* Product Info */}
+              <div className="p-8 lg:p-12 flex flex-col justify-center">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#19AFFF]/10 text-[#19AFFF] text-sm font-medium mb-6 w-fit">
+                  <span className="w-2 h-2 rounded-full bg-[#19AFFF] animate-pulse" />
+                  Live Product
                 </div>
-                <div className="p-4 space-y-1.5">
-                  {/* GREEN */}
-                  <div className="rounded bg-[#151A1F] p-3 border-l-2 border-emerald-400">
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-[13px] font-medium">
-                        Johnson Roof Repair
-                      </span>
-                      <span className="text-[10px] font-semibold text-emerald-400 bg-emerald-400/[0.08] px-2 py-0.5 rounded uppercase tracking-wider">
-                        Clear
-                      </span>
-                    </div>
-                    <span className="text-[11px] text-[#5A6370]">
-                      9:00 AM &middot; 123 Oak St &middot; 68°F, calm
-                    </span>
-                  </div>
+                <h3 className="text-2xl sm:text-3xl font-bold mb-4">
+                  Rain Check
+                </h3>
+                <p className="text-gray-400 mb-4 leading-relaxed">
+                  AI-powered weather scheduling for outdoor service contractors.
+                  Deterministic rule engine + AI voice assistant that
+                  automatically reschedules jobs when weather threatens —
+                  protecting revenue and keeping crews productive.
+                </p>
+                <ul className="space-y-2 mb-8 text-gray-400">
+                  <li className="flex items-center gap-2">
+                    <span className="text-[#19AFFF]">&#10003;</span>
+                    Deterministic weather rule engine
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="text-[#19AFFF]">&#10003;</span>
+                    AI voice rescheduling via Twilio + Ollama
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="text-[#19AFFF]">&#10003;</span>
+                    Real-time crew & client notifications
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="text-[#19AFFF]">&#10003;</span>
+                    Built on the Elite Stack
+                  </li>
+                </ul>
+                <Link
+                  href="/products/rain-check"
+                  className="gradient-btn px-6 py-3 rounded-xl text-center font-semibold w-fit"
+                >
+                  Learn More About Rain Check
+                </Link>
+              </div>
 
-                  {/* YELLOW */}
-                  <div className="rounded bg-[#151A1F] p-3 border-l-2 border-amber-400">
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-[13px] font-medium">
-                        Patel Exterior Paint
-                      </span>
-                      <span className="text-[10px] font-semibold text-amber-400 bg-amber-400/[0.08] px-2 py-0.5 rounded uppercase tracking-wider">
-                        Monitor
-                      </span>
+              {/* Product Visual */}
+              <div className="relative bg-gradient-to-br from-[#19AFFF]/10 to-[#7C3AED]/10 p-8 lg:p-12 flex items-center justify-center min-h-[300px]">
+                <div className="text-center">
+                  <div className="text-6xl mb-4">🌦️</div>
+                  <p className="text-2xl font-bold mb-2">Rain Check</p>
+                  <p className="text-gray-400">Weather-Smart Scheduling</p>
+                  <div className="mt-6 flex justify-center gap-4">
+                    <div className="glass-card px-4 py-2 rounded-lg text-sm">
+                      <span className="text-[#19AFFF] font-bold">$59</span>
+                      <span className="text-gray-500">/mo</span>
                     </div>
-                    <span className="text-[11px] text-[#5A6370]">
-                      10:30 AM &middot; 456 Elm Ave &middot; Wind 22mph
-                    </span>
-                  </div>
-
-                  {/* RED */}
-                  <div className="rounded bg-[#151A1F] p-3 border-l-2 border-red-400">
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-[13px] font-medium">
-                        Chen Concrete Pour
-                      </span>
-                      <span className="text-[10px] font-semibold text-red-400 bg-red-400/[0.08] px-2 py-0.5 rounded uppercase tracking-wider">
-                        Reschedule
-                      </span>
+                    <div className="glass-card px-4 py-2 rounded-lg text-sm border-[#19AFFF]/30">
+                      <span className="text-[#19AFFF] font-bold">$149</span>
+                      <span className="text-gray-500">/mo</span>
                     </div>
-                    <span className="text-[11px] text-[#5A6370]">
-                      1:00 PM &middot; 789 Pine Rd &middot; Rain 80%
-                    </span>
-                    <div className="text-[11px] text-[#19AFFF] mt-1.5 flex items-center gap-1">
-                      <ChevronRight className="h-3 w-3" />
-                      Moved to Thu, Feb 20 &middot; Client notified
+                    <div className="glass-card px-4 py-2 rounded-lg text-sm">
+                      <span className="text-[#19AFFF] font-bold">$299</span>
+                      <span className="text-gray-500">/mo</span>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* ═══════════ STATS ═══════════ */}
-        <section className="border-y border-white/[0.04] bg-[#0E1216]/50 py-12 px-6">
-          <div className="mx-auto max-w-7xl grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
-            {[
-              { value: '$47K', label: 'avg revenue protected / year' },
-              { value: '8 sec', label: 'weather response time' },
-              { value: '94%', label: 'fewer client complaints' },
-              { value: '5,000+', label: 'contractors trust us' },
-            ].map((s, i) => (
-              <div key={i} className="text-center">
-                <div className="text-2xl sm:text-3xl font-bold tracking-tight">
-                  {s.value}
-                </div>
-                <div className="text-[11px] sm:text-[12px] text-[#5A6370] mt-1">
-                  {s.label}
+      {/* How We Work */}
+      <section id="process" className="py-20 lg:py-28">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <p className="text-sm font-semibold tracking-widest uppercase text-[#19AFFF] mb-3">
+              Our Process
+            </p>
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4">
+              How We <span className="gradient-text">Get It Done</span>
+            </h2>
+            <p className="text-gray-400 max-w-2xl mx-auto">
+              A proven three-phase process that takes you from idea to
+              production AI systems.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {steps.map((step) => (
+              <div key={step.number} className="relative">
+                <div className="glass-card p-8 rounded-2xl h-full">
+                  <p className="text-5xl font-bold gradient-text opacity-50 mb-4">
+                    {step.number}
+                  </p>
+                  <h3 className="text-xl font-bold mb-3">{step.title}</h3>
+                  <p className="text-gray-400 leading-relaxed">
+                    {step.description}
+                  </p>
                 </div>
               </div>
             ))}
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* ═══════════ FEATURES ═══════════ */}
-        <section id="features" className="py-24 px-6">
-          <div className="mx-auto max-w-7xl">
-            <div className="max-w-2xl mb-16">
-              <h2 className="text-3xl sm:text-4xl font-bold tracking-tight mb-4">
-                Weather intelligence built for your trade
-              </h2>
-              <p className="text-[#8B939E] text-[15px] leading-relaxed">
-                Industry-researched thresholds for roofing, painting,
-                landscaping, and concrete. Not generic weather alerts — real
-                protection.
-              </p>
-            </div>
-
-            {/* Asymmetric 7/5 grid */}
-            <div className="grid lg:grid-cols-12 gap-6">
-              {/* Primary feature — large card */}
-              <div className="lg:col-span-7 bg-[#0E1216] border border-white/[0.06] rounded p-8">
-                <div className="h-10 w-10 rounded bg-[#19AFFF]/[0.08] flex items-center justify-center mb-5">
-                  <Shield className="h-5 w-5 text-[#19AFFF]" />
-                </div>
-                <h3 className="text-xl font-bold mb-3 tracking-tight">
-                  Trade-Specific Rules Engine
-                </h3>
-                <p className="text-[#8B939E] mb-6 leading-relaxed text-[13px]">
-                  Deterministic weather evaluation — no AI guessing.
-                  NRCA-compliant wind thresholds for roofers, humidity limits for
-                  painters, ground temp checks for concrete. Every rule backed by
-                  industry standards.
-                </p>
-                <div className="bg-[#0A0D10] rounded border border-white/[0.04] p-4 font-mono text-[13px] leading-relaxed">
-                  <div className="text-[#3A424D]">
-                    {'//'} Roofing preset (NRCA standards)
-                  </div>
-                  <div>
-                    <span className="text-amber-400">if</span> wind{' '}
-                    <span className="text-[#19AFFF]">&ge; 25 mph</span>{' '}
-                    &rarr; <span className="text-red-400">CANCEL</span>
-                  </div>
-                  <div>
-                    <span className="text-amber-400">if</span> rain{' '}
-                    <span className="text-[#19AFFF]">&ge; 40%</span> &rarr;{' '}
-                    <span className="text-amber-400">WARN</span>
-                  </div>
-                  <div>
-                    <span className="text-amber-400">if</span> temp{' '}
-                    <span className="text-[#19AFFF]">&le; 35°F</span> &rarr;{' '}
-                    <span className="text-amber-400">WARN</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Secondary features — stacked */}
-              <div className="lg:col-span-5 grid gap-6">
-                <div className="bg-[#0E1216] border border-white/[0.06] rounded p-8">
-                  <div className="h-10 w-10 rounded bg-amber-400/[0.08] flex items-center justify-center mb-5">
-                    <Bell className="h-5 w-5 text-amber-400" />
-                  </div>
-                  <h3 className="text-xl font-bold mb-3 tracking-tight">
-                    Instant Notifications
-                  </h3>
-                  <p className="text-[#8B939E] leading-relaxed text-[13px]">
-                    SMS and email to clients and crew the moment conditions
-                    change. 7 template types, zero AI dependency in the
-                    notification path.
-                  </p>
-                </div>
-
-                <div className="bg-[#0E1216] border border-white/[0.06] rounded p-8">
-                  <div className="h-10 w-10 rounded bg-[#19AFFF]/[0.08] flex items-center justify-center mb-5">
-                    <BarChart3 className="h-5 w-5 text-[#19AFFF]" />
-                  </div>
-                  <h3 className="text-xl font-bold mb-3 tracking-tight">
-                    Revenue Protection
-                  </h3>
-                  <p className="text-[#8B939E] leading-relaxed text-[13px]">
-                    Track every dollar saved from weather-triggered reschedules.
-                    Full audit log of actions, overrides, and notifications sent.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ═══════════ HOW IT WORKS ═══════════ */}
-        <section
-          id="how-it-works"
-          className="py-24 px-6 bg-[#0E1216]/50 border-y border-white/[0.04]"
-        >
-          <div className="mx-auto max-w-7xl">
-            <div className="max-w-2xl mx-auto text-center mb-16">
-              <h2 className="text-3xl sm:text-4xl font-bold tracking-tight mb-4">
-                Four steps to weather-proof your schedule
-              </h2>
-              <p className="text-[#8B939E] text-[15px]">
-                Set it once. Rain Check handles the rest.
-              </p>
-            </div>
-
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
-              {(
-                [
-                  {
-                    step: '01',
-                    title: 'Choose your trade',
-                    desc: 'Select roofing, painting, landscaping, concrete, or pressure washing. We load industry-standard thresholds.',
-                    Icon: Cloud,
-                  },
-                  {
-                    step: '02',
-                    title: 'Add your jobs',
-                    desc: 'Enter job details, client info, and crew. Rain Check starts monitoring weather immediately.',
-                    Icon: Calendar,
-                  },
-                  {
-                    step: '03',
-                    title: 'We watch the sky',
-                    desc: 'Conditions checked every 3 hours against your trade rules. Real-time status: green, yellow, red.',
-                    Icon: Clock,
-                  },
-                  {
-                    step: '04',
-                    title: 'Auto-protect',
-                    desc: 'Red flag? Jobs auto-reschedule to the next clear window. Clients and crew notified instantly.',
-                    Icon: Zap,
-                  },
-                ] as const
-              ).map(({ step, title, desc, Icon }) => (
-                <div key={step}>
-                  <div className="text-[11px] font-mono text-[#3A424D] mb-4 tracking-wider">
-                    {step}
-                  </div>
-                  <div className="h-10 w-10 rounded bg-[#151A1F] border border-white/[0.06] flex items-center justify-center mb-4">
-                    <Icon className="h-5 w-5 text-[#5A6370]" />
-                  </div>
-                  <h3 className="text-[15px] font-bold mb-2 tracking-tight">
-                    {title}
-                  </h3>
-                  <p className="text-[12px] text-[#5A6370] leading-relaxed">{desc}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ═══════════ PRICING ═══════════ */}
-        <section id="pricing" className="py-24 px-6">
-          <div className="mx-auto max-w-7xl">
-            <div className="max-w-2xl mx-auto text-center mb-16">
-              <h2 className="text-3xl sm:text-4xl font-bold tracking-tight mb-4">
-                Transparent pricing
-              </h2>
-              <p className="text-[#8B939E] text-[15px]">
-                Start free. Upgrade when you&apos;re ready. Cancel anytime.
-              </p>
-            </div>
-
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {PRICING.map((t) => (
-                <div
-                  key={t.name}
-                  className={`relative rounded border p-6 transition-all duration-150 ${
-                    t.pop
-                      ? 'bg-[#0E1216] border-[#19AFFF]/30 shadow-lg shadow-[#19AFFF]/5'
-                      : 'bg-[#0E1216]/50 border-white/[0.06] hover:border-white/[0.12]'
-                  }`}
-                >
-                  {t.pop && (
-                    <div className="absolute -top-3 left-6 bg-[#19AFFF] text-white text-[10px] font-bold px-3 py-1 rounded tracking-wider uppercase">
-                      Most popular
-                    </div>
-                  )}
-
-                  <div className="mb-6">
-                    <h3 className="text-[15px] font-bold mb-1 tracking-tight">
-                      {t.name}
-                    </h3>
-                    <p className="text-[11px] text-[#5A6370] mb-4">{t.tag}</p>
-                    <div className="flex items-baseline gap-1">
-                      <span className="text-3xl font-bold tracking-tight">
-                        {t.price}
-                      </span>
-                      <span className="text-[13px] text-[#5A6370]">{t.period}</span>
-                    </div>
-                  </div>
-
-                  <ul className="space-y-2.5 mb-8">
-                    {t.features.map((f) => (
-                      <li
-                        key={f}
-                        className="flex items-start gap-2 text-[13px] text-[#8B939E]"
-                      >
-                        <Check className="h-4 w-4 text-[#19AFFF] mt-0.5 shrink-0" />
-                        {f}
-                      </li>
-                    ))}
-                  </ul>
-
-                  <Link
-                    href={
-                      t.name === 'Storm Command' ? '#contact' : '/sign-up'
-                    }
-                    className={`block text-center text-[13px] font-medium py-2.5 rounded transition-colors ${
-                      t.pop
-                        ? 'bg-[#19AFFF] hover:bg-[#0D9AEB] text-white'
-                        : 'bg-[#151A1F] hover:bg-[#1C2228] text-[#8B939E]'
-                    }`}
-                  >
-                    {t.cta}
-                  </Link>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ═══════════ TESTIMONIALS ═══════════ */}
-        <section className="py-24 px-6 bg-[#0E1216]/50 border-y border-white/[0.04]">
-          <div className="mx-auto max-w-7xl">
-            <div className="max-w-2xl mb-16">
-              <h2 className="text-3xl sm:text-4xl font-bold tracking-tight mb-4">
-                Contractors trust Rain Check
-              </h2>
-              <p className="text-[#8B939E] text-[15px]">
-                Real results from real businesses.
-              </p>
-            </div>
-
-            <div className="grid md:grid-cols-3 gap-6">
-              {[
-                {
-                  quote:
-                    'Rain Check saved us $68K in year one. No more showing up to a job site in 40mph winds.',
-                  name: 'Mike Rodriguez',
-                  role: 'Owner, Rodriguez Roofing',
-                  loc: 'Phoenix, AZ',
-                },
-                {
-                  quote:
-                    'We lost 2-3 jobs a week to weather before. Now clients actually thank us for the proactive communication.',
-                  name: 'Sarah Chen',
-                  role: 'Ops Manager, Elite Paint Co',
-                  loc: 'Seattle, WA',
-                },
-                {
-                  quote:
-                    'The revenue tracking alone pays for itself. Finally showing my CFO what weather delays actually cost us.',
-                  name: 'David Thompson',
-                  role: 'VP Ops, Thompson Landscaping',
-                  loc: 'Atlanta, GA',
-                },
-              ].map((t) => (
-                <div
-                  key={t.name}
-                  className="bg-[#0E1216] border border-white/[0.06] rounded p-6"
-                >
-                  <p className="text-[#8B939E] leading-relaxed mb-6 text-[13px]">
-                    &ldquo;{t.quote}&rdquo;
-                  </p>
-                  <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded bg-[#151A1F] flex items-center justify-center text-[11px] font-bold text-[#5A6370]">
-                      {t.name
-                        .split(' ')
-                        .map((n) => n[0])
-                        .join('')}
-                    </div>
-                    <div>
-                      <div className="text-[13px] font-medium">{t.name}</div>
-                      <div className="text-[11px] text-[#5A6370]">
-                        {t.role} &middot; {t.loc}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ═══════════ FINAL CTA ═══════════ */}
-        <section className="py-24 px-6">
-          <div className="mx-auto max-w-3xl text-center">
-            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight mb-4">
-              Stop losing money to weather
-            </h2>
-            <p className="text-[#8B939E] text-[15px] mb-10 max-w-xl mx-auto">
-              Join 5,000+ contractors who protect their revenue with automated
-              weather intelligence. 30-day free trial, no card required.
+      {/* Testimonials */}
+      <section className="py-20 lg:py-28 relative">
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#19AFFF]/3 to-transparent pointer-events-none" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="text-center mb-16">
+            <p className="text-sm font-semibold tracking-widest uppercase text-[#19AFFF] mb-3">
+              Results
             </p>
-            <Link
-              href="/dashboard"
-              className="inline-flex items-center gap-2 bg-[#19AFFF] hover:bg-[#0D9AEB] text-white px-8 py-3.5 rounded font-semibold text-lg transition-colors"
-            >
-              Start free trial
-              <ArrowRight className="h-5 w-5" />
-            </Link>
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4">
+              What Our <span className="gradient-text">Clients Say</span>
+            </h2>
           </div>
-        </section>
-      </main>
 
-      {/* ═══════════ FOOTER ═══════════ */}
-      <footer className="border-t border-white/[0.04] py-12 px-6">
-        <div className="mx-auto max-w-7xl flex flex-col sm:flex-row items-center justify-between gap-6">
-          <Image
-            src="/logo.jpg"
-            alt="Rain Check"
-            width={120}
-            height={30}
-            className="h-6 w-auto"
-          />
-          <div className="text-[11px] text-[#3A424D]">
-            &copy; {new Date().getFullYear()} Rain Check. All rights reserved.
-          </div>
-          <div className="flex gap-6 text-[11px] text-[#5A6370]">
-            <a
-              href="/privacy"
-              className="hover:text-white transition-colors"
-            >
-              Privacy
-            </a>
-            <a href="/terms" className="hover:text-white transition-colors">
-              Terms
-            </a>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {testimonials.map((testimonial) => (
+              <div
+                key={testimonial.author}
+                className="glass-card p-8 rounded-2xl"
+              >
+                <p className="text-gray-300 mb-6 leading-relaxed italic">
+                  &ldquo;{testimonial.quote}&rdquo;
+                </p>
+                <div>
+                  <p className="font-semibold text-white">
+                    {testimonial.author}
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    {testimonial.company}
+                  </p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
-      </footer>
+      </section>
+
+      {/* Lead Capture CTA */}
+      <section id="contact" className="py-20 lg:py-28 relative">
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#7C3AED]/5 to-[#19AFFF]/5 pointer-events-none" />
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4">
+              Ready to{" "}
+              <span className="gradient-text">Automate Your Business?</span>
+            </h2>
+            <p className="text-gray-400 max-w-xl mx-auto">
+              Book a free consultation. We&apos;ll audit your workflows,
+              identify the biggest automation opportunities, and show you
+              what&apos;s possible with AI.
+            </p>
+          </div>
+
+          <LeadCaptureForm source="website" />
+        </div>
+      </section>
+
+      <Footer />
     </div>
   );
 }

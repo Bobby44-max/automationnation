@@ -8,6 +8,14 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "img.clerk.com",
       },
+      {
+        protocol: "https",
+        hostname: "my.spline.design",
+      },
+      {
+        protocol: "https",
+        hostname: "app.spline.design",
+      },
     ],
   },
 };
