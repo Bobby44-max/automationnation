@@ -208,4 +208,18 @@ export default defineSchema({
     .index("by_business", ["businessId"])
     .index("by_job", ["jobId"])
     .index("by_status", ["status"]),
+
+  // --- Website Leads (AutomationNation) ---
+  leads: defineTable({
+    name: v.string(),
+    email: v.string(),
+    company: v.optional(v.string()),
+    message: v.optional(v.string()),
+    source: v.string(), // "website", "rain-check", "consultation"
+    status: v.string(), // "new", "contacted", "qualified", "closed"
+    createdAt: v.number(),
+  })
+    .index("by_email", ["email"])
+    .index("by_status", ["status"])
+    .index("by_created", ["createdAt"]),
 });
