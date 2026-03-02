@@ -17,6 +17,8 @@
     "@remotion/lambda": "^4.0.0",
     "@remotion/player": "^4.0.0",
     "@sendgrid/mail": "^8.1.0",
+    "@splinetool/react-spline": "^4.0.0",
+    "@splinetool/runtime": "^1.9.0",
     "@stripe/stripe-js": "^5.5.0",
     "@tailwindcss/postcss": "^4.0.0",
     "clsx": "^2.1.0",
