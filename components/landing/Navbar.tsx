@@ -39,12 +39,12 @@ export function Navbar() {
         </Link>
 
         {/* Desktop nav */}
-        <div className="hidden md:flex items-center gap-8">
+        <div className="hidden md:flex items-center gap-2">
           {NAV_LINKS.map((l) => (
             <a
               key={l.href}
               href={l.href}
-              className="text-[13px] text-[#5A6370] hover:text-white transition-colors"
+              className="nav-pill text-[13px] text-[#5A6370] hover:text-white px-3 py-1.5 rounded-full hover:bg-white/[0.06]"
             >
               {l.label}
             </a>
@@ -55,13 +55,13 @@ export function Navbar() {
         <div className="hidden md:flex items-center gap-3">
           <Link
             href="/products/rain-check"
-            className="text-[13px] text-[#5A6370] hover:text-white transition-colors"
+            className="nav-pill text-[13px] text-[#5A6370] hover:text-white px-3 py-1.5 rounded-full hover:bg-white/[0.06]"
           >
             Rain Check
           </Link>
           <a
             href="#contact"
-            className="gradient-btn text-white text-[13px] font-medium px-4 py-2 rounded flex items-center gap-1.5"
+            className="gradient-btn text-white text-[13px] font-medium px-4 py-2 rounded-lg flex items-center gap-1.5"
           >
             Get Started
             <ArrowRight className="h-3.5 w-3.5" />
@@ -71,7 +71,7 @@ export function Navbar() {
         {/* Mobile toggle */}
         <button
           onClick={() => setMenuOpen(!menuOpen)}
-          className="md:hidden p-2 -mr-2 text-[#5A6370] hover:text-white"
+          className="md:hidden p-2 -mr-2 text-[#5A6370] hover:text-white transition-colors"
           aria-label={menuOpen ? 'Close menu' : 'Open menu'}
         >
           {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -102,7 +102,7 @@ export function Navbar() {
             <a
               href="#contact"
               onClick={() => setMenuOpen(false)}
-              className="block text-center gradient-btn text-white font-medium py-2.5 rounded"
+              className="block text-center gradient-btn text-white font-medium py-2.5 rounded-lg"
             >
               Get Started
             </a>
