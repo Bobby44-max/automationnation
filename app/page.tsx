@@ -102,20 +102,20 @@ export default function LandingPage() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-surface-primary text-primary selection:bg-accent/30 selection:text-white">
+    <div className="min-h-screen bg-surface-primary text-primary selection:bg-accent/30 selection:text-white font-sans">
       
       {/* --- NAV --- */}
-      <header className="fixed top-0 inset-x-0 z-50 bg-surface-primary border-b border-white/[0.08]">
+      <header className="fixed top-0 inset-x-0 z-50 bg-surface-primary/80 backdrop-blur-md border-b border-white/[0.08] transition-all duration-300">
         <nav className="mx-auto max-w-[1400px] px-6 lg:px-12 h-20 flex items-center justify-between">
           <Link
             href="/"
-            className="flex items-center gap-3"
+            className="flex items-center gap-3 group"
             aria-label="Rain Check home"
           >
-            <div className="bg-accent h-8 w-8 flex items-center justify-center font-bold text-white text-lg tracking-tighter">
+            <div className="bg-accent h-8 w-8 flex items-center justify-center font-bold text-white text-lg tracking-tighter rounded shadow-[0_0_15px_rgba(25,175,255,0.4)] group-hover:scale-105 transition-transform duration-300">
               RC
             </div>
-            <span className="font-bold text-lg tracking-tight">Rain Check</span>
+            <span className="font-bold text-lg tracking-tight group-hover:text-white transition-colors">Rain Check</span>
           </Link>
 
           <div className="hidden md:flex items-center gap-10">
@@ -123,7 +123,7 @@ export default function LandingPage() {
               <a
                 key={l.href}
                 href={l.href}
-                className="text-body-sm font-medium text-muted hover:text-white transition-colors"
+                className="text-body-sm font-bold tracking-wide text-muted hover:text-white transition-colors"
               >
                 {l.label}
               </a>
@@ -133,7 +133,7 @@ export default function LandingPage() {
           <div className="hidden md:flex items-center gap-6">
             <Link
               href="/dashboard"
-              className="text-body-sm font-bold bg-accent hover:bg-accent-hover text-white px-6 py-2.5 transition-colors uppercase tracking-wider"
+              className="text-body-sm font-bold bg-white text-surface-primary hover:bg-accent hover:text-white px-6 py-2.5 transition-all duration-300 uppercase tracking-wider rounded"
             >
               {isSignedIn ? 'Go to Dashboard' : 'Get Started'}
             </Link>
@@ -149,13 +149,13 @@ export default function LandingPage() {
         </nav>
 
         {menuOpen && (
-          <div className="md:hidden border-t border-white/[0.08] bg-surface-primary px-6 pb-6 pt-4">
+          <div className="md:hidden border-t border-white/[0.08] bg-surface-primary/95 backdrop-blur-xl px-6 pb-6 pt-4">
             {NAV_LINKS.map((l) => (
               <a
                 key={l.href}
                 href={l.href}
                 onClick={() => setMenuOpen(false)}
-                className="block py-4 text-body font-medium text-muted hover:text-white transition-colors border-b border-white/[0.04]"
+                className="block py-4 text-body font-bold tracking-wide text-muted hover:text-white transition-colors border-b border-white/[0.04]"
               >
                 {l.label}
               </a>
@@ -163,7 +163,7 @@ export default function LandingPage() {
             <div className="mt-6">
               <Link
                 href="/dashboard"
-                className="block text-center bg-accent hover:bg-accent-hover text-white font-bold py-4 transition-colors uppercase tracking-wider"
+                className="block text-center bg-white text-surface-primary hover:bg-accent hover:text-white font-bold py-4 transition-all duration-300 uppercase tracking-wider rounded"
               >
                 {isSignedIn ? 'Go to Dashboard' : 'Get Started'}
               </Link>
@@ -172,86 +172,91 @@ export default function LandingPage() {
         )}
       </header>
 
-      <main className="pt-20">
-        {/* --- SPLIT HERO --- */}
-        <section className="relative grid lg:grid-cols-2 min-h-[calc(100vh-80px)] border-b border-white/[0.08] overflow-hidden">
-          {/* Backdrop texture */}
-          <div
-            className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat pointer-events-none opacity-10"
-            style={{ backgroundImage: "url('/rain-backdrop.jpg')" }}
-          />
+      <main>
+        {/* --- CINEMATIC HERO (Vibe Design) --- */}
+        <section className="relative min-h-screen flex items-center border-b border-white/[0.08] overflow-hidden pt-20 lg:pt-0">
+          {/* 4K Background Image */}
+          <div className="absolute inset-0 z-0">
+            <Image
+              src="/hero-cinematic-storm.png"
+              alt="Cinematic storm over construction site"
+              fill
+              className="object-cover object-center grayscale-[0.2] contrast-[1.1] opacity-50 scale-105 animate-[pulse_20s_ease-in-out_infinite_alternate]"
+              priority
+            />
+            {/* Gradient Fade to Surface */}
+            <div className="absolute inset-0 bg-gradient-to-t from-surface-primary via-surface-primary/80 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-r from-surface-primary via-surface-primary/40 to-transparent" />
+          </div>
 
-          {/* Left: Copy */}
-          <div className="relative z-10 flex flex-col justify-center px-6 lg:px-20 py-20 lg:py-0 border-r border-white/[0.08]">
-            <div className="max-w-2xl">
-              <div className="inline-flex items-center gap-3 border border-white/[0.12] bg-surface-secondary px-4 py-2 text-caption font-bold text-muted uppercase tracking-widest mb-10">
-                <span className="h-2 w-2 bg-status-green animate-pulse" />
+          <div className="relative z-10 w-full mx-auto max-w-[1400px] px-6 lg:px-12 flex flex-col xl:flex-row items-center justify-between gap-16 py-20">
+            {/* Hero Copy */}
+            <div className="max-w-3xl flex-1">
+              <div className="inline-flex items-center gap-3 border border-white/[0.12] backdrop-blur-md bg-surface-secondary/40 px-5 py-2.5 text-caption font-bold text-white uppercase tracking-widest mb-8 rounded-full shadow-2xl">
+                <span className="h-2 w-2 rounded-full bg-status-green animate-pulse shadow-[0_0_10px_rgba(52,211,153,0.8)]" />
                 Live: Monitoring 5,000+ Schedules
               </div>
 
-              <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold tracking-tighter leading-[1.05] mb-8">
+              <h1 className="text-6xl sm:text-7xl lg:text-8xl font-extrabold tracking-tighter leading-[0.95] mb-8 text-white drop-shadow-2xl">
                 Weather delays <br />
                 cost you <br />
-                <span className="text-accent underline decoration-4 underline-offset-8">
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent via-sky-400 to-white">
                   $47K a year.
                 </span>
               </h1>
 
-              <p className="text-body sm:text-lg text-secondary mb-12 leading-relaxed max-w-xl">
+              <p className="text-xl sm:text-2xl text-primary/70 mb-12 leading-relaxed max-w-2xl font-medium">
                 Rain Check monitors conditions around the clock and auto-reschedules jobs 
                 before the weather hits. Trade-specific rules. Instant notifications. 
                 Zero lost revenue.
               </p>
 
-              <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex flex-col sm:flex-row gap-5">
                 <Link
                   href="/dashboard"
-                  className="inline-flex items-center justify-center gap-3 bg-accent hover:bg-accent-hover text-white px-8 py-4 font-bold text-body transition-colors uppercase tracking-wide"
+                  className="inline-flex items-center justify-center gap-3 bg-accent hover:bg-accent-hover text-white px-10 py-5 font-extrabold text-body transition-all hover:scale-105 uppercase tracking-widest rounded shadow-[0_0_40px_rgba(25,175,255,0.3)]"
                 >
                   Start Free Trial
                   <ArrowRight className="h-5 w-5" />
                 </Link>
                 <a
                   href="#how-it-works"
-                  className="inline-flex items-center justify-center gap-3 border border-white/[0.12] hover:bg-surface-elevated text-white px-8 py-4 font-bold text-body transition-colors uppercase tracking-wide"
+                  className="inline-flex items-center justify-center gap-3 border border-white/[0.2] backdrop-blur-md bg-white/[0.03] hover:bg-white/[0.08] text-white px-10 py-5 font-bold text-body transition-all uppercase tracking-widest rounded"
                 >
                   View Workflow
                 </a>
               </div>
             </div>
-          </div>
 
-          {/* Right: Image */}
-          <div className="relative hidden lg:block bg-surface-secondary">
-            <Image
-              src="/hero-storm-truck.png"
-              alt="Contractor truck at job site under storm clouds"
-              fill
-              className="object-cover object-center grayscale-[0.2] contrast-[1.1]"
-              priority
-            />
-            {/* Hard-edged Status Overlay */}
-            <div className="absolute bottom-12 left-12 right-12 bg-surface-primary border border-white/[0.08] p-6 shadow-2xl">
-              <div className="flex items-center justify-between mb-6 border-b border-white/[0.08] pb-4">
-                <span className="text-body font-bold uppercase tracking-widest text-secondary">Live Schedule Monitor</span>
-                <span className="text-caption font-mono text-muted">{new Date().toLocaleTimeString()}</span>
+            {/* Frost Hero Component (Premium UI Sniping) */}
+            <div className="w-full xl:w-[480px] shrink-0 backdrop-blur-2xl bg-surface-primary/60 border border-white/[0.12] p-8 shadow-[0_0_50px_rgba(0,0,0,0.8)] rounded-2xl relative overflow-hidden group transform hover:-translate-y-2 transition-transform duration-700">
+              <div className="absolute inset-0 bg-gradient-to-br from-white/[0.05] to-transparent pointer-events-none" />
+              <div className="flex items-center justify-between mb-8 border-b border-white/[0.08] pb-5">
+                <span className="text-body font-bold uppercase tracking-widest text-white flex items-center gap-2">
+                  <Activity className="w-4 h-4 text-accent" />
+                  Live Monitor
+                </span>
+                <span className="text-caption font-mono text-accent bg-accent/10 px-3 py-1.5 rounded">{new Date().toLocaleTimeString()}</span>
               </div>
               
-              <div className="space-y-3">
-                <div className="flex items-center justify-between p-3 border-l-4 border-status-green bg-surface-secondary">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between p-5 border border-status-green/20 bg-status-green/[0.03] rounded-xl group-hover:bg-status-green/[0.06] transition-colors duration-500">
                   <div className="flex flex-col">
-                    <span className="font-bold text-body-sm">Johnson Roof Repair</span>
-                    <span className="text-caption text-muted">9:00 AM â€¢ 123 Oak St</span>
+                    <span className="font-bold text-body text-white tracking-tight">Johnson Roof Repair</span>
+                    <span className="text-caption font-medium text-primary/50 mt-1.5">9:00 AM &bull; 123 Oak St</span>
                   </div>
-                  <span className="bg-status-green/10 text-status-green font-bold text-caption uppercase tracking-widest px-3 py-1">Clear</span>
+                  <span className="bg-status-green/20 text-status-green font-bold text-caption uppercase tracking-widest px-4 py-1.5 rounded shadow-[0_0_15px_rgba(52,211,153,0.2)]">Clear</span>
                 </div>
                 
-                <div className="flex items-center justify-between p-3 border-l-4 border-status-red bg-surface-secondary">
-                  <div className="flex flex-col">
-                    <span className="font-bold text-body-sm">Chen Concrete Pour</span>
-                    <span className="text-caption text-status-red">Rain 80% â€¢ Rescheduled to {rescheduledDate}</span>
+                <div className="flex items-center justify-between p-5 border border-status-red/30 bg-status-red/[0.05] rounded-xl group-hover:bg-status-red/[0.08] transition-colors duration-500 relative overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-r from-status-red/10 to-transparent pointer-events-none" />
+                  <div className="flex flex-col relative z-10">
+                    <span className="font-bold text-body text-white tracking-tight">Chen Concrete Pour</span>
+                    <span className="text-caption font-bold text-status-red mt-1.5 flex items-center gap-1.5">
+                      <CloudLightning className="w-3.5 h-3.5"/> Rain 80%
+                    </span>
                   </div>
-                  <span className="bg-status-red/10 text-status-red font-bold text-caption uppercase tracking-widest px-3 py-1">Moved</span>
+                  <span className="relative z-10 bg-status-red/20 text-status-red font-bold text-caption uppercase tracking-widest px-4 py-1.5 rounded shadow-[0_0_15px_rgba(248,113,113,0.3)] animate-pulse">Moved</span>
                 </div>
               </div>
             </div>
@@ -259,126 +264,160 @@ export default function LandingPage() {
         </section>
 
         {/* --- DATA BAR --- */}
-        <section className="border-b border-white/[0.08] bg-surface-secondary overflow-hidden">
-          <div className="mx-auto max-w-[1400px] flex flex-col md:flex-row">
+        <section className="border-b border-white/[0.08] bg-surface-primary overflow-hidden relative">
+          <div className="absolute inset-0 bg-gradient-to-b from-white/[0.02] to-transparent pointer-events-none" />
+          <div className="mx-auto max-w-[1400px] flex flex-col md:flex-row divide-y md:divide-y-0 md:divide-x divide-white/[0.08]">
             {[
               { label: 'Avg Revenue Protected', value: '$47,000' },
               { label: 'Weather Response', value: '< 8s' },
               { label: 'Fewer Complaints', value: '94%' },
               { label: 'Active Contractors', value: '5,000+' },
             ].map((stat, i) => (
-              <div key={i} className="flex-1 p-8 md:p-12 border-b md:border-b-0 md:border-r border-white/[0.08] last:border-0 flex flex-col justify-center">
-                <div className="text-4xl font-extrabold tracking-tighter mb-2">{stat.value}</div>
-                <div className="text-caption font-bold text-muted uppercase tracking-widest">{stat.label}</div>
+              <div key={i} className="flex-1 p-10 lg:p-14 flex flex-col justify-center relative group overflow-hidden">
+                <div className="absolute inset-0 bg-white/[0.02] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <div className="text-5xl lg:text-6xl font-extrabold tracking-tighter mb-3 text-white drop-shadow-lg transition-transform duration-500 group-hover:-translate-y-1">{stat.value}</div>
+                <div className="text-caption font-bold text-accent uppercase tracking-widest transition-transform duration-500 group-hover:-translate-y-1">{stat.label}</div>
               </div>
             ))}
           </div>
         </section>
 
-        {/* --- FEATURES (RADAR INSET) --- */}
-        <section id="features" className="py-24 lg:py-32 px-6 lg:px-12 border-b border-white/[0.08]">
-          <div id="how-it-works" className="mx-auto max-w-[1400px]">
-            <div className="mb-20 max-w-3xl">
-              <h2 className="text-4xl lg:text-5xl font-extrabold tracking-tight mb-6 leading-tight">
-                Weather intelligence built explicitly for your trade.
+        {/* --- BENTO BOX FEATURES --- */}
+        <section id="features" className="py-32 lg:py-40 px-6 lg:px-12 border-b border-white/[0.08] bg-surface-primary relative">
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-accent/5 rounded-full blur-[120px] pointer-events-none" />
+          <div id="how-it-works" className="mx-auto max-w-[1400px] relative z-10">
+            <div className="mb-24 max-w-3xl">
+              <div className="inline-flex items-center gap-2 px-3 py-1 border border-accent/30 bg-accent/10 rounded text-accent text-caption font-bold uppercase tracking-widest mb-6">
+                Design Intelligence
+              </div>
+              <h2 className="text-5xl lg:text-7xl font-extrabold tracking-tighter mb-8 leading-[1.05] text-white">
+                Intelligence built <br/>
+                <span className="text-accent">explicitly for your trade.</span>
               </h2>
-              <p className="text-lg text-secondary leading-relaxed">
+              <p className="text-xl lg:text-2xl text-secondary leading-relaxed font-medium">
                 We replaced generic forecasts with deterministic rules engines. NRCA-compliant wind thresholds for roofers. 
                 Surface temp checks for concrete. No AI guessing, just pure, reliable automation.
               </p>
             </div>
 
-            <div className="grid lg:grid-cols-2 gap-12 lg:gap-24 items-center">
-              <div className="space-y-8">
-                {[
-                  { title: "Trade-Specific Rules", desc: "Select roofing, painting, or concrete. We load the industry-standard thresholds instantly.", icon: <CloudLightning className="w-6 h-6 text-accent" /> },
-                  { title: "Deterministic Actions", desc: "If Wind >= 25mph, then Reschedule. Precise, undeniable logic ensures you never miss a threat.", icon: <Wind className="w-6 h-6 text-accent" /> },
-                  { title: "Zero-Touch Comms", desc: "Clients and crews receive instant SMS/Email updates the second a job is moved. No manual calls.", icon: <BellRing className="w-6 h-6 text-accent" /> },
-                  { title: "Revenue Audit", desc: "Track every dollar saved. Provide undeniable proof to ownership of how much capital was protected.", icon: <Activity className="w-6 h-6 text-accent" /> }
-                ].map((f, i) => (
-                  <div key={i} className="flex gap-6 items-start border-l-2 border-white/[0.08] pl-6 hover:border-accent transition-colors">
-                    <div className="mt-1 bg-surface-secondary p-3 border border-white/[0.08]">
-                      {f.icon}
+            {/* Bento Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[minmax(320px,auto)]">
+              
+              {/* Feature 1: Large Engine Block (Spans 2 cols, 2 rows) */}
+              <div className="md:col-span-2 md:row-span-2 relative group overflow-hidden border border-white/[0.1] bg-surface-secondary rounded-3xl p-10 lg:p-16 flex flex-col justify-between hover:border-accent/40 hover:shadow-[0_0_80px_rgba(25,175,255,0.1)] transition-all duration-700">
+                <div className="absolute inset-0 z-0 opacity-10 group-hover:opacity-30 transition-opacity duration-700 group-hover:scale-105">
+                  <Image src="/radar-texture.png" alt="Radar texture" fill className="object-cover" />
+                </div>
+                <div className="absolute inset-0 bg-gradient-to-t from-surface-secondary via-surface-secondary/80 to-transparent z-10" />
+                
+                <div className="relative z-20 flex-1 flex flex-col justify-center items-center mb-12">
+                  {/* Premium Code Snippet */}
+                  <div className="w-full max-w-xl backdrop-blur-xl bg-surface-primary/80 border border-white/[0.1] p-8 shadow-2xl rounded-2xl font-mono text-sm leading-loose text-secondary transform group-hover:-translate-y-4 transition-transform duration-700">
+                    <div className="flex gap-2 mb-6">
+                      <div className="w-3 h-3 rounded-full bg-white/20" />
+                      <div className="w-3 h-3 rounded-full bg-white/20" />
+                      <div className="w-3 h-3 rounded-full bg-white/20" />
                     </div>
-                    <div>
-                      <h3 className="text-xl font-bold tracking-tight mb-2">{f.title}</h3>
-                      <p className="text-secondary leading-relaxed text-body-sm">{f.desc}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <div className="relative aspect-square lg:aspect-auto lg:h-[600px] border border-white/[0.12] bg-surface-secondary p-4">
-                <Image
-                  src="/radar-texture.png"
-                  alt="High contrast weather radar"
-                  fill
-                  className="object-cover object-center grayscale-[0.5] contrast-125 opacity-40 p-4"
-                />
-                {/* Simulated Code Block Overlay */}
-                <div className="absolute inset-8 bg-surface-primary border border-white/[0.08] p-8 shadow-2xl flex flex-col justify-center">
-                  <div className="font-mono text-sm leading-loose text-secondary">
-                    <div className="text-muted mb-4">// active_preset: ROOFING_NRCA</div>
-                    <div><span className="text-accent">evaluate_conditions</span>(job_id_8832) {'{'}</div>
-                    <div className="pl-4">fetch_radar_data()</div>
-                    <div className="pl-4 text-white">wind_gust = <span className="text-status-red">32mph</span>;</div>
-                    <div className="pl-4">threshold = 25mph;</div>
-                    <br/>
-                    <div className="pl-4 text-status-green">if (wind_gust &gt; threshold) {'{'}</div>
-                    <div className="pl-8 text-white">status = <span className="text-status-red">'RESCHEDULE'</span>;</div>
-                    <div className="pl-8 text-white">notify_client(template: 'High_Wind');</div>
-                    <div className="pl-4 text-status-green">{'}'}</div>
+                    <div className="text-muted mb-4 font-bold">// active_preset: ROOFING_NRCA</div>
+                    <div><span className="text-accent font-bold">evaluate_conditions</span>(job_8832) {'{'}</div>
+                    <div className="pl-6">wind_gust = <span className="text-status-red font-bold">32mph</span>;</div>
+                    <div className="pl-6">threshold = 25mph;</div>
+                    <div className="pl-6 text-status-green font-bold mt-4">if (wind_gust &gt; threshold) {'{'}</div>
+                    <div className="pl-12 text-white">status = <span className="text-status-red font-bold">'RESCHEDULE'</span>;</div>
+                    <div className="pl-12 text-white">notify_client('High_Wind');</div>
+                    <div className="pl-6 text-status-green font-bold">{'}'}</div>
                     <div>{'}'}</div>
-                    <br/>
-                    <div className="text-muted">// Output: Job safely moved. Client notified.</div>
                   </div>
                 </div>
+
+                <div className="relative z-20 max-w-lg">
+                  <div className="inline-flex items-center justify-center w-14 h-14 bg-accent/10 rounded-2xl mb-6 border border-accent/20">
+                    <Wind className="w-7 h-7 text-accent" />
+                  </div>
+                  <h3 className="text-4xl font-extrabold tracking-tight mb-4 text-white">Deterministic Actions</h3>
+                  <p className="text-xl text-secondary leading-relaxed font-medium">
+                    If Wind &gt;= 25mph, then Reschedule. Precise, undeniable logic ensures you never miss a threat.
+                  </p>
+                </div>
               </div>
+
+              {/* Feature 2: Small Top Right */}
+              <div className="relative group overflow-hidden border border-white/[0.1] bg-surface-secondary rounded-3xl p-10 flex flex-col justify-between hover:border-accent/40 hover:shadow-[0_0_50px_rgba(25,175,255,0.05)] transition-all duration-700">
+                <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-20 transition-opacity duration-500">
+                  <CloudLightning className="w-32 h-32 text-accent" />
+                </div>
+                <div className="relative z-10 inline-flex items-center justify-center w-14 h-14 bg-white/[0.04] rounded-2xl mb-8 border border-white/[0.08] group-hover:bg-accent/10 group-hover:border-accent/20 transition-colors duration-500">
+                  <CloudLightning className="w-7 h-7 text-white group-hover:text-accent transition-colors duration-500" />
+                </div>
+                <div className="relative z-10">
+                  <h3 className="text-2xl font-bold tracking-tight mb-4 text-white">Trade-Specific</h3>
+                  <p className="text-lg text-secondary leading-relaxed">
+                    Select roofing, painting, or concrete. We load the industry-standard thresholds instantly.
+                  </p>
+                </div>
+              </div>
+
+              {/* Feature 3: Small Middle Right */}
+              <div className="relative group overflow-hidden border border-white/[0.1] bg-surface-secondary rounded-3xl p-10 flex flex-col justify-between hover:border-accent/40 hover:shadow-[0_0_50px_rgba(25,175,255,0.05)] transition-all duration-700">
+                <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-20 transition-opacity duration-500">
+                  <BellRing className="w-32 h-32 text-accent" />
+                </div>
+                <div className="relative z-10 inline-flex items-center justify-center w-14 h-14 bg-white/[0.04] rounded-2xl mb-8 border border-white/[0.08] group-hover:bg-accent/10 group-hover:border-accent/20 transition-colors duration-500">
+                  <BellRing className="w-7 h-7 text-white group-hover:text-accent transition-colors duration-500" />
+                </div>
+                <div className="relative z-10">
+                  <h3 className="text-2xl font-bold tracking-tight mb-4 text-white">Zero-Touch Comms</h3>
+                  <p className="text-lg text-secondary leading-relaxed">
+                    Clients and crews receive instant SMS updates the second a job is moved.
+                  </p>
+                </div>
+              </div>
+
             </div>
           </div>
         </section>
 
         {/* --- PRICING --- */}
-        <section id="pricing" className="py-24 lg:py-32 px-6 lg:px-12 bg-surface-secondary">
+        <section id="pricing" className="py-32 lg:py-40 px-6 lg:px-12 bg-surface-primary">
           <div className="mx-auto max-w-[1400px]">
-            <div className="mb-16">
-              <h2 className="text-4xl lg:text-5xl font-extrabold tracking-tight mb-4">
+            <div className="mb-20">
+              <h2 className="text-5xl lg:text-7xl font-extrabold tracking-tighter mb-6 text-white">
                 Transparent Pricing.
               </h2>
-              <p className="text-lg text-secondary">
+              <p className="text-xl lg:text-2xl text-secondary font-medium">
                 Start free. Upgrade when the ROI is undeniable.
               </p>
             </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
               {PRICING.map((t) => (
                 <div
                   key={t.name}
-                  className={`flex flex-col border bg-surface-primary p-8 transition-all ${
+                  className={`flex flex-col border rounded-3xl p-10 transition-all duration-500 ${
                     t.pop
-                      ? 'border-accent shadow-[0_0_30px_rgba(25,175,255,0.1)] scale-[1.02] z-10'
-                      : 'border-white/[0.08] hover:border-white/[0.2]'
+                      ? 'bg-surface-secondary border-accent shadow-[0_0_50px_rgba(25,175,255,0.15)] scale-[1.02] z-10'
+                      : 'bg-surface-secondary border-white/[0.08] hover:border-white/[0.2] hover:-translate-y-1'
                   }`}
                 >
                   {t.pop && (
-                    <div className="bg-accent text-white text-caption font-bold px-3 py-1 tracking-widest uppercase self-start mb-6">
+                    <div className="bg-accent text-white text-caption font-bold px-4 py-1.5 rounded-full tracking-widest uppercase self-start mb-8 shadow-lg">
                       Recommended
                     </div>
                   )}
 
-                  <div className="mb-8">
-                    <h3 className="text-xl font-bold tracking-tight mb-2">{t.name}</h3>
-                    <p className="text-caption text-muted font-mono mb-4">{t.tag}</p>
-                    <div className="flex items-baseline gap-1">
-                      <span className="text-4xl font-extrabold tracking-tighter">{t.price}</span>
-                      <span className="text-body-sm text-secondary font-medium">{t.period}</span>
+                  <div className="mb-10">
+                    <h3 className="text-2xl font-bold tracking-tight mb-2 text-white">{t.name}</h3>
+                    <p className="text-caption text-accent font-mono mb-6 uppercase tracking-widest font-bold">{t.tag}</p>
+                    <div className="flex items-baseline gap-1.5">
+                      <span className="text-5xl font-extrabold tracking-tighter text-white">{t.price}</span>
+                      <span className="text-body text-secondary font-bold">{t.period}</span>
                     </div>
                   </div>
 
-                  <ul className="space-y-4 mb-10 flex-1">
+                  <ul className="space-y-5 mb-12 flex-1">
                     {t.features.map((f) => (
-                      <li key={f} className="flex items-start gap-3 text-body-sm text-secondary">
-                        <CheckSquare className="h-5 w-5 text-accent shrink-0" />
+                      <li key={f} className="flex items-start gap-4 text-body text-secondary font-medium">
+                        <CheckSquare className="h-6 w-6 text-accent shrink-0" />
                         {f}
                       </li>
                     ))}
@@ -386,10 +425,10 @@ export default function LandingPage() {
 
                   <Link
                     href={t.name === 'Storm Command' ? '#contact' : '/sign-up'}
-                    className={`block text-center font-bold py-4 uppercase tracking-wider transition-colors ${
+                    className={`block text-center font-bold py-5 uppercase tracking-widest transition-all duration-300 rounded-xl ${
                       t.pop
-                        ? 'bg-accent hover:bg-accent-hover text-white'
-                        : 'border border-white/[0.12] hover:bg-surface-elevated text-white'
+                        ? 'bg-accent hover:bg-accent-hover text-white shadow-lg hover:shadow-accent/50'
+                        : 'bg-white/[0.04] border border-white/[0.08] hover:bg-white/[0.08] text-white'
                     }`}
                   >
                     {t.cta}
@@ -401,38 +440,39 @@ export default function LandingPage() {
         </section>
 
         {/* --- CTA --- */}
-        <section className="py-32 px-6 border-t border-white/[0.08]">
-          <div className="mx-auto max-w-4xl text-center">
-            <h2 className="text-5xl lg:text-7xl font-extrabold tracking-tighter mb-8 leading-tight">
-              Stop bleeding cash to the forecast.
+        <section className="py-40 px-6 border-t border-white/[0.08] relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-b from-surface-primary to-accent/10 pointer-events-none" />
+          <div className="mx-auto max-w-4xl text-center relative z-10">
+            <h2 className="text-6xl lg:text-8xl font-extrabold tracking-tighter mb-10 leading-[0.95] text-white drop-shadow-xl">
+              Stop bleeding cash <br/> to the forecast.
             </h2>
-            <p className="text-xl text-secondary mb-12 max-w-2xl mx-auto">
+            <p className="text-2xl text-secondary mb-14 max-w-2xl mx-auto font-medium">
               Join the 5,000+ top-tier contractors who automated their weather risk. 30-day free trial, no credit card required.
             </p>
             <Link
               href="/dashboard"
-              className="inline-flex items-center gap-3 bg-accent hover:bg-accent-hover text-white px-10 py-5 font-bold text-lg uppercase tracking-wide transition-colors"
+              className="inline-flex items-center gap-4 bg-accent hover:bg-accent-hover text-white px-12 py-6 font-extrabold text-xl uppercase tracking-widest transition-all hover:scale-105 rounded-xl shadow-[0_0_50px_rgba(25,175,255,0.4)]"
             >
               Start Free Trial
-              <ArrowRight className="h-6 w-6" />
+              <ArrowRight className="h-7 w-7" />
             </Link>
           </div>
         </section>
       </main>
 
       {/* --- FOOTER --- */}
-      <footer className="border-t border-white/[0.08] bg-surface-secondary py-12 px-6 lg:px-12">
-        <div className="mx-auto max-w-[1400px] flex flex-col md:flex-row items-center justify-between gap-6">  
-          <div className="flex items-center gap-3">
-            <div className="bg-accent h-6 w-6 flex items-center justify-center font-bold text-white text-caption tracking-tighter">
+      <footer className="border-t border-white/[0.08] bg-surface-primary py-16 px-6 lg:px-12 relative z-10">
+        <div className="mx-auto max-w-[1400px] flex flex-col md:flex-row items-center justify-between gap-8">  
+          <div className="flex items-center gap-4">
+            <div className="bg-accent h-8 w-8 flex items-center justify-center font-bold text-white text-caption tracking-tighter rounded">
               RC
             </div>
-            <span className="font-bold tracking-tight text-secondary">Rain Check.</span>
+            <span className="font-bold tracking-tight text-secondary text-lg">Rain Check.</span>
           </div>
-          <div className="text-caption font-mono text-muted">
+          <div className="text-caption font-mono text-muted uppercase tracking-widest font-bold">
             &copy; {new Date().getFullYear()} APEX AI SYSTEMS. ALL RIGHTS RESERVED.
           </div>
-          <div className="flex gap-8 text-caption font-bold tracking-widest uppercase text-muted">
+          <div className="flex gap-10 text-caption font-bold tracking-widest uppercase text-muted">
             <a href="/privacy" className="hover:text-white transition-colors">Privacy</a>
             <a href="/terms" className="hover:text-white transition-colors">Terms</a>
           </div>
@@ -441,4 +481,3 @@ export default function LandingPage() {
     </div>
   );
 }
-
