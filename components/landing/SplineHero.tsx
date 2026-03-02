@@ -1,6 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense, lazy } from 'react';
+
+const Spline = lazy(() => import('@splinetool/react-spline'));
 
 interface SplineHeroProps {
   sceneUrl: string;
@@ -18,17 +20,16 @@ export function SplineHero({ sceneUrl }: SplineHeroProps) {
         </div>
       )}
 
-      {/* Spline iframe embed */}
-      <iframe
-        src={sceneUrl}
-        className={`w-full h-full rounded-2xl transition-opacity duration-700 ${
-          loaded ? 'opacity-100' : 'opacity-0'
-        }`}
-        style={{ border: 'none' }}
-        onLoad={() => setLoaded(true)}
-        title="AutomationNation 3D Hero"
-        allow="autoplay"
-      />
+      {/* Spline 3D scene */}
+      <Suspense fallback={null}>
+        <Spline
+          scene={sceneUrl}
+          onLoad={() => setLoaded(true)}
+          className={`w-full h-full rounded-2xl transition-opacity duration-700 ${
+            loaded ? 'opacity-100' : 'opacity-0'
+          }`}
+        />
+      </Suspense>
 
       {/* Subtle glow behind the scene */}
       <div
