@@ -10,9 +10,9 @@ const raleway = Raleway({
 });
 
 export const metadata: Metadata = {
-  title: "Rain Check — Weather Scheduling for Contractors",
+  title: "AutomationNation — AI Automation That Runs Your Business",
   description:
-    "Automated weather monitoring and job rescheduling for roofing, painting, landscaping, and concrete contractors. Protect $47K+ in annual revenue.",
+    "We build deterministic AI systems, weather automation, and custom SaaS products for service businesses. Elite stack: Next.js, Convex, Claude Code, Stripe.",
 };
 
 export default function RootLayout({
