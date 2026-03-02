@@ -27,20 +27,20 @@ export function WeatherStatsBar({
       <StatCard
         label="Rescheduled"
         value={rescheduled}
-        color="text-red-400"
-        accent="bg-red-400"
+        color="text-status-red"
+        accent="bg-status-red"
       />
       <StatCard
         label="Proceeding"
         value={proceeding}
-        color="text-emerald-400"
-        accent="bg-emerald-400"
+        color="text-status-green"
+        accent="bg-status-green"
       />
       <StatCard
         label="Warnings"
         value={warnings}
-        color="text-amber-400"
-        accent="bg-amber-400"
+        color="text-status-yellow"
+        accent="bg-status-yellow"
       />
       <StatCard
         label="Revenue Protected"
@@ -49,10 +49,10 @@ export function WeatherStatsBar({
         accent="bg-accent"
       />
       <div className="flex flex-col justify-center rounded bg-surface-secondary border border-white/[0.04] px-4 py-3">
-        <span className="text-[10px] text-muted uppercase tracking-widest">
+        <span className="text-caption text-muted uppercase tracking-widest font-bold">
           Last Check
         </span>
-        <span className="text-lg font-semibold text-secondary mt-1">
+        <span className="text-lg font-bold text-secondary mt-1 tracking-tight">
           {lastCheckTime}
         </span>
       </div>
@@ -74,12 +74,12 @@ function StatCard({
   return (
     <div className="flex flex-col justify-center rounded bg-surface-secondary border border-white/[0.04] px-4 py-3">
       <div className="flex items-center gap-2 mb-1">
-        <div className={`h-1 w-1 rounded-full ${accent}`} />
-        <span className="text-[10px] text-muted uppercase tracking-widest">
+        <div className={`h-1.5 w-1.5 rounded-full ${accent}`} />
+        <span className="text-caption text-muted uppercase tracking-widest font-bold">
           {label}
         </span>
       </div>
-      <span className={`text-2xl font-bold tracking-tight ${color}`}>{value}</span>
+      <span className={`text-2xl font-extrabold tracking-tighter ${color}`}>{value}</span>
     </div>
   );
 }

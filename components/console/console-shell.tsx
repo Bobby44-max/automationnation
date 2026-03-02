@@ -14,16 +14,16 @@ function ShellInner({ children }: { children: ReactNode }) {
       <div className="flex-1 flex flex-col min-w-0">
         <Topbar businessName={businessName} />
         <main className="flex-1 relative overflow-hidden">
-          {/* Rain backdrop â€” fixed behind all dashboard content */}
+          {/* Rain backdrop — fixed behind all dashboard content */}
           <div
             className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat pointer-events-none"
             style={{
               backgroundImage: "url('/rain-backdrop.jpg')",
-              opacity: 0.08,
+              opacity: 0.12,
             }}
             aria-hidden="true"
           />
-          <div className="relative z-10">{children}</div>
+          <div className="relative z-10 h-full">{children}</div>
         </main>
       </div>
     </div>

@@ -61,7 +61,7 @@ export function WeatherSchedulingClient() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-xl font-bold tracking-tight">Weather Scheduling</h1>
-            <p className="text-[12px] text-muted mt-1">
+            <p className="text-caption text-muted mt-1 font-mono uppercase tracking-widest">
               {new Date().toLocaleDateString("en-US", {
                 weekday: "long",
                 year: "numeric",
@@ -78,17 +78,17 @@ export function WeatherSchedulingClient() {
             <button
               onClick={() => setShowAddJob(true)}
               disabled={!businessId}
-              className="rounded bg-accent px-3.5 py-2 text-body-sm font-medium text-white hover:bg-accent-hover disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-150 min-h-[40px] inline-flex items-center gap-2"
+              className="rounded bg-accent px-4 py-2 text-body-sm font-bold text-white hover:bg-accent-hover disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-150 min-h-[40px] inline-flex items-center gap-2 uppercase tracking-wide"
             >
-              <Plus className="h-3.5 w-3.5" />
+              <Plus className="h-4 w-4" />
               Add Job
             </button>
             <button
               onClick={handleCheckWeatherNow}
               disabled={isChecking || !businessId}
-              className="rounded bg-surface-tertiary border border-white/[0.06] px-3.5 py-2 text-body-sm font-medium text-secondary hover:text-white hover:bg-surface-elevated disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-150 min-h-[40px] inline-flex items-center gap-2"
+              className="rounded bg-surface-tertiary border border-white/[0.06] px-4 py-2 text-body-sm font-bold text-secondary hover:text-white hover:bg-surface-elevated disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-150 min-h-[40px] inline-flex items-center gap-2 uppercase tracking-wide"
             >
-              <RefreshCw className={`h-3.5 w-3.5 ${isChecking ? "animate-spin" : ""}`} />
+              <RefreshCw className={`h-4 w-4 ${isChecking ? "animate-spin" : ""}`} />
               {isChecking ? "Checking" : "Check Weather"}
             </button>
           </div>
@@ -118,25 +118,28 @@ export function WeatherSchedulingClient() {
             ))}
           </div>
         ) : (
-          <div className="text-center py-24">
-            <p className="text-body text-muted">
+          <div className="text-center py-32 border border-dashed border-white/[0.06] rounded-lg">
+            <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-surface-tertiary mb-4">
+              <Plus className="h-6 w-6 text-dim" />
+            </div>
+            <p className="text-body font-medium text-white">
               {businessId
                 ? "No jobs scheduled for today"
                 : "Loading..."}
             </p>
-            <p className="text-[12px] text-dim mt-2">
+            <p className="text-caption text-muted mt-2">
               {businessId ? (
                 <>
                   <button
                     onClick={() => setShowAddJob(true)}
-                    className="text-accent hover:text-[accent-hover] transition-colors"
+                    className="text-accent font-bold hover:underline transition-all"
                   >
                     Add a job
                   </button>
                   {" "}to start weather monitoring.
                 </>
               ) : (
-                "Connecting..."
+                "Connecting to weather engine..."
               )}
             </p>
           </div>

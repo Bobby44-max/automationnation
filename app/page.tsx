@@ -135,7 +135,7 @@ export default function LandingPage() {
               href="/dashboard"
               className="text-body-sm font-bold bg-accent hover:bg-accent-hover text-white px-6 py-2.5 transition-colors uppercase tracking-wider"
             >
-              {isSignedIn ? 'CONSOLE ?' : 'GET STARTED'}
+              {isSignedIn ? 'Go to Dashboard' : 'Get Started'}
             </Link>
           </div>
 
@@ -165,7 +165,7 @@ export default function LandingPage() {
                 href="/dashboard"
                 className="block text-center bg-accent hover:bg-accent-hover text-white font-bold py-4 transition-colors uppercase tracking-wider"
               >
-                {isSignedIn ? 'CONSOLE ?' : 'GET STARTED'}
+                {isSignedIn ? 'Go to Dashboard' : 'Get Started'}
               </Link>
             </div>
           </div>
@@ -174,12 +174,18 @@ export default function LandingPage() {
 
       <main className="pt-20">
         {/* --- SPLIT HERO --- */}
-        <section className="grid lg:grid-cols-2 min-h-[calc(100vh-80px)] border-b border-white/[0.08]">
+        <section className="relative grid lg:grid-cols-2 min-h-[calc(100vh-80px)] border-b border-white/[0.08] overflow-hidden">
+          {/* Backdrop texture */}
+          <div
+            className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat pointer-events-none opacity-10"
+            style={{ backgroundImage: "url('/rain-backdrop.jpg')" }}
+          />
+
           {/* Left: Copy */}
-          <div className="flex flex-col justify-center px-6 lg:px-20 py-20 lg:py-0 border-r border-white/[0.08]">
+          <div className="relative z-10 flex flex-col justify-center px-6 lg:px-20 py-20 lg:py-0 border-r border-white/[0.08]">
             <div className="max-w-2xl">
-              <div className="inline-flex items-center gap-3 border border-white/[0.12] bg-surface-secondary px-4 py-2 text-[10px] font-bold text-muted uppercase tracking-widest mb-10">
-                <span className="h-2 w-2 bg-emerald-500 animate-pulse" />
+              <div className="inline-flex items-center gap-3 border border-white/[0.12] bg-surface-secondary px-4 py-2 text-caption font-bold text-muted uppercase tracking-widest mb-10">
+                <span className="h-2 w-2 bg-status-green animate-pulse" />
                 Live: Monitoring 5,000+ Schedules
               </div>
 
@@ -232,20 +238,20 @@ export default function LandingPage() {
               </div>
               
               <div className="space-y-3">
-                <div className="flex items-center justify-between p-3 border-l-4 border-emerald-500 bg-surface-secondary">
+                <div className="flex items-center justify-between p-3 border-l-4 border-status-green bg-surface-secondary">
                   <div className="flex flex-col">
                     <span className="font-bold text-body-sm">Johnson Roof Repair</span>
                     <span className="text-caption text-muted">9:00 AM â€¢ 123 Oak St</span>
                   </div>
-                  <span className="bg-emerald-500/10 text-emerald-500 font-bold text-[10px] uppercase tracking-widest px-3 py-1">Clear</span>
+                  <span className="bg-status-green/10 text-status-green font-bold text-caption uppercase tracking-widest px-3 py-1">Clear</span>
                 </div>
                 
-                <div className="flex items-center justify-between p-3 border-l-4 border-red-500 bg-surface-secondary">
+                <div className="flex items-center justify-between p-3 border-l-4 border-status-red bg-surface-secondary">
                   <div className="flex flex-col">
                     <span className="font-bold text-body-sm">Chen Concrete Pour</span>
-                    <span className="text-caption text-red-400">Rain 80% â€¢ Rescheduled to {rescheduledDate}</span>
+                    <span className="text-caption text-status-red">Rain 80% â€¢ Rescheduled to {rescheduledDate}</span>
                   </div>
-                  <span className="bg-red-500/10 text-red-500 font-bold text-[10px] uppercase tracking-widest px-3 py-1">Moved</span>
+                  <span className="bg-status-red/10 text-status-red font-bold text-caption uppercase tracking-widest px-3 py-1">Moved</span>
                 </div>
               </div>
             </div>
@@ -271,7 +277,7 @@ export default function LandingPage() {
 
         {/* --- FEATURES (RADAR INSET) --- */}
         <section id="features" className="py-24 lg:py-32 px-6 lg:px-12 border-b border-white/[0.08]">
-          <div className="mx-auto max-w-[1400px]">
+          <div id="how-it-works" className="mx-auto max-w-[1400px]">
             <div className="mb-20 max-w-3xl">
               <h2 className="text-4xl lg:text-5xl font-extrabold tracking-tight mb-6 leading-tight">
                 Weather intelligence built explicitly for your trade.
@@ -315,13 +321,13 @@ export default function LandingPage() {
                     <div className="text-muted mb-4">// active_preset: ROOFING_NRCA</div>
                     <div><span className="text-accent">evaluate_conditions</span>(job_id_8832) {'{'}</div>
                     <div className="pl-4">fetch_radar_data()</div>
-                    <div className="pl-4 text-white">wind_gust = <span className="text-red-400">32mph</span>;</div>
+                    <div className="pl-4 text-white">wind_gust = <span className="text-status-red">32mph</span>;</div>
                     <div className="pl-4">threshold = 25mph;</div>
                     <br/>
-                    <div className="pl-4 text-emerald-400">if (wind_gust &gt; threshold) {'{'}</div>
-                    <div className="pl-8 text-white">status = <span className="text-red-400">'RESCHEDULE'</span>;</div>
+                    <div className="pl-4 text-status-green">if (wind_gust &gt; threshold) {'{'}</div>
+                    <div className="pl-8 text-white">status = <span className="text-status-red">'RESCHEDULE'</span>;</div>
                     <div className="pl-8 text-white">notify_client(template: 'High_Wind');</div>
-                    <div className="pl-4 text-emerald-400">{'}'}</div>
+                    <div className="pl-4 text-status-green">{'}'}</div>
                     <div>{'}'}</div>
                     <br/>
                     <div className="text-muted">// Output: Job safely moved. Client notified.</div>
@@ -355,7 +361,7 @@ export default function LandingPage() {
                   }`}
                 >
                   {t.pop && (
-                    <div className="bg-accent text-white text-[10px] font-bold px-3 py-1 tracking-widest uppercase self-start mb-6">
+                    <div className="bg-accent text-white text-caption font-bold px-3 py-1 tracking-widest uppercase self-start mb-6">
                       Recommended
                     </div>
                   )}
@@ -418,7 +424,7 @@ export default function LandingPage() {
       <footer className="border-t border-white/[0.08] bg-surface-secondary py-12 px-6 lg:px-12">
         <div className="mx-auto max-w-[1400px] flex flex-col md:flex-row items-center justify-between gap-6">  
           <div className="flex items-center gap-3">
-            <div className="bg-accent h-6 w-6 flex items-center justify-center font-bold text-white text-[10px] tracking-tighter">
+            <div className="bg-accent h-6 w-6 flex items-center justify-center font-bold text-white text-caption tracking-tighter">
               RC
             </div>
             <span className="font-bold tracking-tight text-secondary">Rain Check.</span>

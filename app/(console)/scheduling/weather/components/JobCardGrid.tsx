@@ -48,49 +48,51 @@ export function JobCardGrid({ jobs }: JobCardGridProps) {
   return (
     <div>
       {/* Controls */}
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-muted">Filter:</span>
-          {(["all", "red", "yellow", "green"] as const).map((opt) => (
-            <button
-              key={opt}
-              onClick={() => setFilterBy(opt)}
-              className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
-                filterBy === opt
-                  ? "bg-surface-elevated text-white"
-                  : "text-muted hover:text-secondary"
-              }`}
-            >
-              {opt === "all" ? "All" : opt.charAt(0).toUpperCase() + opt.slice(1)}
-              {opt !== "all" && (
-                <span className="ml-1 opacity-60">
-                  (
-                  {
-                    jobs.filter(
-                      (j) => (j.weatherStatus?.status || "green") === opt
-                    ).length
-                  }
-                  )
-                </span>
-              )}
-            </button>
-          ))}
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-3">
+          <span className="text-caption text-dim font-bold uppercase tracking-widest">Filter</span>
+          <div className="flex items-center gap-1.5 bg-surface-secondary border border-white/[0.04] p-1 rounded">
+            {(["all", "red", "yellow", "green"] as const).map((opt) => (
+              <button
+                key={opt}
+                onClick={() => setFilterBy(opt)}
+                className={`px-3 py-1.5 rounded text-caption font-bold transition-all uppercase tracking-tighter ${
+                  filterBy === opt
+                    ? "bg-surface-elevated text-white shadow-sm"
+                    : "text-muted hover:text-secondary hover:bg-white/[0.02]"
+                }`}
+              >
+                {opt === "all" ? "All" : opt.charAt(0).toUpperCase() + opt.slice(1)}
+                {opt !== "all" && (
+                  <span className="ml-1 opacity-40 font-mono">
+                    {
+                      jobs.filter(
+                        (j) => (j.weatherStatus?.status || "green") === opt
+                      ).length
+                    }
+                  </span>
+                )}
+              </button>
+            ))}
+          </div>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-muted">Sort:</span>
-          {(["status", "time", "client"] as const).map((opt) => (
-            <button
-              key={opt}
-              onClick={() => setSortBy(opt)}
-              className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
-                sortBy === opt
-                  ? "bg-surface-elevated text-white"
-                  : "text-muted hover:text-secondary"
-              }`}
-            >
-              {opt.charAt(0).toUpperCase() + opt.slice(1)}
-            </button>
-          ))}
+        <div className="flex items-center gap-3">
+          <span className="text-caption text-dim font-bold uppercase tracking-widest">Sort</span>
+          <div className="flex items-center gap-1.5 bg-surface-secondary border border-white/[0.04] p-1 rounded">
+            {(["status", "time", "client"] as const).map((opt) => (
+              <button
+                key={opt}
+                onClick={() => setSortBy(opt)}
+                className={`px-3 py-1.5 rounded text-caption font-bold transition-all uppercase tracking-tighter ${
+                  sortBy === opt
+                    ? "bg-surface-elevated text-white shadow-sm"
+                    : "text-muted hover:text-secondary hover:bg-white/[0.02]"
+                }`}
+              >
+                {opt.charAt(0).toUpperCase() + opt.slice(1)}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 

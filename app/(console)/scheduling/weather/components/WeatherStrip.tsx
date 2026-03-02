@@ -76,83 +76,82 @@ export function WeatherStrip({ businessId }: WeatherStripProps) {
           unit="%"
           severity={currentConditions.rainProb >= 60 ? "danger" : "neutral"}
         />
-        <div className="ml-auto text-caption text-muted">
-          {weatherSummary
-            ? `Updated ${new Date(weatherSummary.timestamp).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}`
-            : "Rain expected 10a â€“ 3p"}
+        <div className="ml-auto text-caption text-muted font-medium">
+        {weatherSummary
+          ? `Updated ${new Date(weatherSummary.timestamp).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}`
+          : "Rain expected 10a â€“ 3p"}
         </div>
-      </div>
+        </div>
 
-      {/* Hourly Timeline */}
-      <div className="flex gap-px h-14 items-end">
+        {/* Hourly Timeline */}
+        <div className="flex gap-px h-14 items-end">
         {hours.map((h) => {
-          const height = Math.max(2, (h.rainProb / 100) * 56);
-          const isNow = h.hour === currentHour;
-          const color =
-            h.status === "rain"
-              ? "bg-red-400"
-              : h.status === "borderline"
-                ? "bg-amber-400"
-                : "bg-emerald-400/60";
+        const height = Math.max(2, (h.rainProb / 100) * 56);
+        const isNow = h.hour === currentHour;
+        const color =
+          h.status === "rain"
+            ? "bg-status-red"
+            : h.status === "borderline"
+              ? "bg-status-yellow"
+              : "bg-status-green/60";
 
-          return (
-            <div key={h.hour} className="flex-1 flex flex-col items-center">
-              <div
-                className={`w-full rounded-t-sm ${color} ${isNow ? "ring-1 ring-white ring-offset-1 ring-offset-surface-secondary" : "opacity-80"} transition-all`}
-                style={{ height: `${height}px` }}
-                title={`${h.hour}:00 â€” ${h.rainProb}% rain`}
-              />
-              {h.hour % 4 === 0 && (
-                <span className="text-[9px] text-dim mt-1.5 font-medium">
-                  {h.hour === 0
-                    ? "12a"
-                    : h.hour === 12
-                      ? "12p"
-                      : h.hour > 12
-                        ? `${h.hour - 12}p`
-                        : `${h.hour}a`}
-                </span>
-              )}
-            </div>
-          );
+        return (
+          <div key={h.hour} className="flex-1 flex flex-col items-center">
+            <div
+              className={`w-full rounded-t-sm ${color} ${isNow ? "ring-1 ring-white ring-offset-1 ring-offset-surface-secondary" : "opacity-80"} transition-all`}
+              style={{ height: `${height}px` }}
+              title={`${h.hour}:00 â€” ${h.rainProb}% rain`}
+            />
+            {h.hour % 4 === 0 && (
+              <span className="text-caption text-dim mt-2 font-bold tracking-tighter">
+                {h.hour === 0
+                  ? "12a"
+                  : h.hour === 12
+                    ? "12p"
+                    : h.hour > 12
+                      ? `${h.hour - 12}p`
+                      : `${h.hour}a`}
+              </span>
+            )}
+          </div>
+        );
         })}
-      </div>
-    </div>
-  );
-}
+        </div>
+        </div>
+        );
+        }
 
-function ConditionBadge({
-  label,
-  value,
-  unit,
-  severity,
-}: {
-  label: string;
-  value: string;
-  unit: string;
-  severity: "neutral" | "warn" | "danger";
-}) {
-  const colors = {
-    neutral: "text-white",
-    warn: "text-amber-400",
-    danger: "text-red-400",
-  };
+        function ConditionBadge({
+        label,
+        value,
+        unit,
+        severity,
+        }: {
+        label: string;
+        value: string;
+        unit: string;
+        severity: "neutral" | "warn" | "danger";
+        }) {
+        const colors = {
+        neutral: "text-white",
+        warn: "text-status-yellow",
+        danger: "text-status-red",
+        };
 
-  return (
-    <div>
-      <div className="text-[10px] text-muted uppercase tracking-widest mb-1">
+        return (
+        <div>
+        <div className="text-caption text-muted uppercase tracking-widest mb-1 font-bold">
         {label}
-      </div>
-      <div className="flex items-baseline gap-0.5">
+        </div>
+        <div className="flex items-baseline gap-1">
         <span className={`text-xl font-bold tracking-tight ${colors[severity]}`}>
-          {value}
+        {value}
         </span>
-        <span className="text-[10px] text-muted">{unit}</span>
-      </div>
-    </div>
-  );
-}
-
+        <span className="text-caption text-dim font-bold">{unit}</span>
+        </div>
+        </div>
+        );
+        }
 
 
 

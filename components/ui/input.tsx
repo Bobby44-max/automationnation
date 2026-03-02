@@ -8,11 +8,11 @@ export const Input = forwardRef<
   <input
     ref={ref}
     className={cn(
-      "w-full rounded border border-white/[0.06] bg-surface-secondary px-3 py-2 text-sm text-white",
-      "placeholder-muted min-h-[40px]",
-      "focus:outline-none focus:ring-1 focus:ring-accent focus:border-accent/30",
+      "w-full rounded border border-white/[0.08] bg-surface-secondary px-4 py-2 text-body-sm text-white",
+      "placeholder-muted min-h-[44px]",
+      "focus:outline-none focus:ring-1 focus:ring-accent focus:border-accent/40",
       "disabled:opacity-40 disabled:cursor-not-allowed",
-      "transition-colors duration-150",
+      "transition-all duration-150",
       className
     )}
     {...props}
