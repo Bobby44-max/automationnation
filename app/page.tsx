@@ -5,7 +5,7 @@ import { Footer } from "@/components/landing/Footer";
 import Link from "next/link";
 
 const SPLINE_SCENE_URL =
-  "https://my.spline.design/b448c525-9f4b-4075-816b-ca3a980e1db6/";
+  "https://prod.spline.design/asJplmvhsg0TvCTn/scene.splinecode";
 
 const stats = [
   { value: "50+", label: "Automations Built" },
@@ -16,28 +16,28 @@ const stats = [
 
 const services = [
   {
-    icon: "⚡",
+    icon: "\u26A1",
     title: "AI Workflow Automation",
     description:
       "End-to-end automation pipelines that eliminate manual tasks. From data ingestion to decision-making, we build systems that run themselves.",
   },
   {
-    icon: "🔧",
+    icon: "\uD83D\uDD27",
     title: "Custom SaaS Development",
     description:
-      "Full-stack SaaS products built on the Elite Stack — Next.js, Convex, Clerk, Stripe. Production-ready in weeks, not months.",
+      "Full-stack SaaS products built on the Elite Stack \u2014 Next.js, Convex, Clerk, Stripe. Production-ready in weeks, not months.",
   },
   {
-    icon: "🧠",
+    icon: "\uD83E\uDDE0",
     title: "AI Consulting & Strategy",
     description:
       "Strategic guidance on where AI fits your business. We identify the highest-ROI automation opportunities and build the roadmap.",
   },
   {
-    icon: "🔗",
+    icon: "\uD83D\uDD17",
     title: "Integration Engineering",
     description:
-      "Connect your tools into a unified system. Stripe, Twilio, n8n, Supabase — we wire it all together with bulletproof reliability.",
+      "Connect your tools into a unified system. Stripe, Twilio, n8n, Supabase \u2014 we wire it all together with bulletproof reliability.",
   },
 ];
 
@@ -71,13 +71,13 @@ const testimonials = [
   },
   {
     quote:
-      "The Elite Stack they recommended is genuinely next-level. Real-time data, instant auth, seamless payments — all working together flawlessly.",
+      "The Elite Stack they recommended is genuinely next-level. Real-time data, instant auth, seamless payments \u2014 all working together flawlessly.",
     author: "CTO",
     company: "Growing SaaS Startup",
   },
   {
     quote:
-      "We went from idea to production SaaS in 6 weeks. Their process is dialed — discovery, build, launch. No wasted time.",
+      "We went from idea to production SaaS in 6 weeks. Their process is dialed \u2014 discovery, build, launch. No wasted time.",
     author: "Founder",
     company: "AI-First Agency",
   },
@@ -249,7 +249,7 @@ export default function AutomationNationLanding() {
               {/* Product Visual */}
               <div className="relative bg-gradient-to-br from-[#19AFFF]/10 to-[#7C3AED]/10 p-8 lg:p-12 flex items-center justify-center min-h-[300px]">
                 <div className="text-center">
-                  <div className="text-6xl mb-4">🌦️</div>
+                  <div className="text-6xl mb-4">{"\uD83C\uDF26\uFE0F"}</div>
                   <p className="text-2xl font-bold mb-2">Rain Check</p>
                   <p className="text-gray-400">Weather-Smart Scheduling</p>
                   <div className="mt-6 flex justify-center gap-4">
