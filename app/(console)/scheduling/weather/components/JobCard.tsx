@@ -76,26 +76,32 @@ export function JobCard({ job }: JobCardProps) {
       onClick={() => setExpanded(!expanded)}
     >
       {/* Header */}
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-2.5">
-          <div className={`w-2 h-2 rounded-full ${styles.accent}`} />
-          <span className={`text-caption font-bold uppercase tracking-widest ${styles.labelColor}`}>
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-3">
+          <div className="relative h-2.5 w-2.5">
+            <div className={`absolute inset-0 rounded-full ${styles.accent} animate-ping opacity-40`} />
+            <div className={`relative h-2.5 w-2.5 rounded-full ${styles.accent} shadow-[0_0_8px_var(--color-accent)]`} />
+          </div>
+          <span className={`text-caption font-extrabold uppercase tracking-[0.2em] ${styles.labelColor}`}>
             {styles.label}
           </span>
         </div>
-        <span className="text-caption text-muted font-mono">
-          {job.startTime}
-        </span>
+        <div className="flex flex-col items-end">
+          <span className="text-[10px] text-muted font-mono uppercase tracking-tighter opacity-50 mb-0.5">Scan Time</span>
+          <span className="text-caption text-secondary font-mono font-bold tracking-tight">
+            {job.startTime}
+          </span>
+        </div>
       </div>
 
       {/* Client Name */}
-      <h3 className="text-body font-bold text-white tracking-tight mb-1.5">
+      <h3 className="font-heading text-lg font-bold text-white tracking-tight mb-2">
         {job.client?.name || "Unknown Client"}
       </h3>
 
       {/* Meta row */}
-      <div className="flex items-center gap-3 text-caption font-medium text-muted">
-        <span>{TRADE_LABELS[job.trade] || job.trade}</span>
+      <div className="flex items-center gap-3 text-caption font-bold text-muted/80 mb-4">
+        <span className="bg-white/[0.04] px-2 py-0.5 rounded border border-white/[0.04]">{TRADE_LABELS[job.trade] || job.trade}</span>
         {job.crewLead && (
           <>
             <span className="text-dim">/</span>
@@ -105,9 +111,23 @@ export function JobCard({ job }: JobCardProps) {
         {job.estimatedRevenue && (
           <>
             <span className="text-dim">/</span>
-            <span className="text-accent font-bold">${job.estimatedRevenue.toLocaleString()}</span>
+            <span className="text-accent font-extrabold">${job.estimatedRevenue.toLocaleString()}</span>
           </>
         )}
+      </div>
+
+      {/* Confidence Telemetry */}
+      <div className="mb-4">
+        <div className="flex justify-between items-center text-[10px] uppercase font-bold tracking-widest text-muted mb-1.5">
+          <span>Confidence Telemetry</span>
+          <span>{job.weatherStatus?.confidence || 0}%</span>
+        </div>
+        <div className="h-1 w-full bg-white/[0.04] rounded-full overflow-hidden">
+          <div 
+            className={`h-full ${styles.accent} transition-all duration-1000`} 
+            style={{ width: `${job.weatherStatus?.confidence || 0}%` }}
+          />
+        </div>
       </div>
 
       {/* Status Message */}

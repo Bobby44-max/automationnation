@@ -84,33 +84,36 @@ export function WeatherStrip({ businessId }: WeatherStripProps) {
         </div>
 
         {/* Hourly Timeline */}
-        <div className="flex gap-px h-14 items-end">
+        <div className="flex gap-px h-16 items-end relative">
+        {/* Tactical Scanline */}
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-accent/5 to-transparent animate-[scan_4s_linear_infinite] pointer-events-none" />
+        
         {hours.map((h) => {
-        const height = Math.max(2, (h.rainProb / 100) * 56);
+        const height = Math.max(2, (h.rainProb / 100) * 64);
         const isNow = h.hour === currentHour;
         const color =
           h.status === "rain"
-            ? "bg-status-red"
+            ? "bg-status-red shadow-[0_0_10px_rgba(239,68,68,0.4)]"
             : h.status === "borderline"
-              ? "bg-status-yellow"
-              : "bg-status-green/60";
+              ? "bg-status-yellow shadow-[0_0_10px_rgba(245,158,11,0.3)]"
+              : "bg-accent/40 group-hover:bg-accent/60";
 
         return (
-          <div key={h.hour} className="flex-1 flex flex-col items-center">
+          <div key={h.hour} className="flex-1 flex flex-col items-center group relative">
             <div
-              className={`w-full rounded-t-sm ${color} ${isNow ? "ring-1 ring-white ring-offset-1 ring-offset-surface-secondary" : "opacity-80"} transition-all`}
+              className={`w-full rounded-t-sm ${color} ${isNow ? "ring-1 ring-white ring-offset-1 ring-offset-surface-secondary" : "opacity-80"} transition-all duration-500`}
               style={{ height: `${height}px` }}
               title={`${h.hour}:00 â€” ${h.rainProb}% rain`}
             />
             {h.hour % 4 === 0 && (
-              <span className="text-caption text-dim mt-2 font-bold tracking-tighter">
+              <span className="text-[10px] text-muted mt-2 font-bold tracking-tighter uppercase opacity-60 group-hover:opacity-100 transition-opacity">
                 {h.hour === 0
-                  ? "12a"
+                  ? "0000"
                   : h.hour === 12
-                    ? "12p"
+                    ? "1200"
                     : h.hour > 12
-                      ? `${h.hour - 12}p`
-                      : `${h.hour}a`}
+                      ? `${h.hour - 12}P`
+                      : `${h.hour}A`}
               </span>
             )}
           </div>

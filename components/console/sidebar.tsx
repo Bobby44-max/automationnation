@@ -41,14 +41,11 @@ export function Sidebar() {
       >
         {/* Logo */}
         <div className="flex items-center justify-between px-5 py-6 border-b border-white/[0.04]">        
-          <Link href="/dashboard" className="flex items-center">
-            <Image
-              src="/logo.jpg"
-              alt="Rain Check"
-              width={120}
-              height={30}
-              className="h-6 w-auto"
-            />
+          <Link href="/dashboard" className="flex items-center gap-3">
+            <div className="bg-accent h-7 w-7 flex items-center justify-center font-bold text-white text-caption tracking-tighter rounded">
+              AN
+            </div>
+            <span className="font-heading font-bold text-body tracking-tight text-white">Automation Nation</span>
           </Link>
           <button
             onClick={() => setMobileOpen(false)}
@@ -88,7 +85,7 @@ export function Sidebar() {
 
         {/* Footer */}
         <div className="px-5 py-5 border-t border-white/[0.04]">
-          <p className="text-caption text-dim tracking-wide">Rain Check v1.0</p>
+          <p className="text-caption text-dim tracking-wide">Automation Nation v1.0</p>
         </div>
       </aside>
     </>

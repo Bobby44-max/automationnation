@@ -30,27 +30,27 @@ const NAV_LINKS = [
 
 const PRICING = [
   {
-    name: 'Storm Watch',
+    name: 'The Observer',
     price: '$0',
     period: '/mo',
-    tag: 'Try it out',
+    tag: 'Solo Pros',
     features: [
       '1 trade preset',
       '5 jobs per week',
       'Email notifications',
-      '3-day forecast',
+      'Morning-of Intel',
     ],
     cta: 'Start free',
     pop: false,
   },
   {
-    name: 'Clear Day',
-    price: '$29',
+    name: 'The Operator',
+    price: '$49',
     period: '/mo',
-    tag: 'Small crews',
+    tag: 'Growing crews',
     features: [
-      '1 trade preset',
-      '10 jobs per day',
+      '3 trade presets',
+      'Auto-Reschedule Engine',
       '50 SMS/month',
       'Email + SMS alerts',
       'Revenue tracking',
@@ -59,15 +59,15 @@ const PRICING = [
     pop: false,
   },
   {
-    name: 'All Clear',
-    price: '$79',
+    name: 'The Commander',
+    price: '$99',
     period: '/mo',
-    tag: 'Growing businesses',
+    tag: 'Professional Ops',
     features: [
       'Unlimited trades',
-      'Unlimited jobs',
+      'Bulk Route Delay',
       '500 SMS/month',
-      'Bulk actions',
+      'Radar Job Pins',
       'Custom rules',
       'Priority support',
     ],
@@ -75,14 +75,14 @@ const PRICING = [
     pop: true,
   },
   {
-    name: 'Storm Command',
-    price: '$149',
+    name: 'The National',
+    price: '$249',
     period: '/mo',
-    tag: 'Large operations',
+    tag: 'Scale operations',
     features: [
-      'Everything in All Clear',
-      'Weather windows',
-      'Revenue scoring',
+      'Everything in Commander',
+      'Revenue Impact Scoring',
+      'Multi-variable logic',
       'API access',
       'Dedicated support',
       'Multi-location',
@@ -110,12 +110,12 @@ export default function LandingPage() {
           <Link
             href="/"
             className="flex items-center gap-3 group"
-            aria-label="Rain Check home"
+            aria-label="Automation Nation home"
           >
-            <div className="bg-accent h-8 w-8 flex items-center justify-center font-bold text-white text-lg tracking-tighter rounded shadow-[0_0_15px_rgba(25,175,255,0.4)] group-hover:scale-105 transition-transform duration-300">
-              RC
+            <div className="bg-accent h-8 w-8 flex items-center justify-center font-bold text-white text-lg tracking-tighter rounded shadow-[0_0_15px_rgba(16,185,129,0.4)] group-hover:scale-105 transition-transform duration-300">
+              AN
             </div>
-            <span className="font-bold text-lg tracking-tight group-hover:text-white transition-colors">Rain Check</span>
+            <span className="font-heading font-bold text-lg tracking-tight group-hover:text-white transition-colors">Automation Nation</span>
           </Link>
 
           <div className="hidden md:flex items-center gap-10">
@@ -173,18 +173,18 @@ export default function LandingPage() {
       </header>
 
       <main>
-        {/* --- CINEMATIC HERO (Vibe Design) --- */}
+        {/* --- CINEMATIC HERO (Tactical Command) --- */}
         <section className="relative min-h-screen flex items-center border-b border-white/[0.08] overflow-hidden pt-20 lg:pt-0">
-          {/* 4K Background Image */}
+          {/* 4K Strategic Hero Image */}
           <div className="absolute inset-0 z-0">
             <Image
-              src="/hero-cinematic-storm.png"
-              alt="Cinematic storm over construction site"
+              src="/automation-nation-strategic-hero.png"
+              alt="Automation Nation Command Center"
               fill
-              className="object-cover object-center grayscale-[0.2] contrast-[1.1] opacity-50 scale-105 animate-[pulse_20s_ease-in-out_infinite_alternate]"
+              className="object-cover object-center contrast-[1.1] opacity-60 scale-105 animate-[pulse_20s_ease-in-out_infinite_alternate]"
               priority
             />
-            {/* Gradient Fade to Surface */}
+            {/* Tactical Overlays */}
             <div className="absolute inset-0 bg-gradient-to-t from-surface-primary via-surface-primary/80 to-transparent" />
             <div className="absolute inset-0 bg-gradient-to-r from-surface-primary via-surface-primary/40 to-transparent" />
           </div>
@@ -192,49 +192,49 @@ export default function LandingPage() {
           <div className="relative z-10 w-full mx-auto max-w-[1400px] px-6 lg:px-12 flex flex-col xl:flex-row items-center justify-between gap-16 py-20">
             {/* Hero Copy */}
             <div className="max-w-3xl flex-1">
-              <div className="inline-flex items-center gap-3 border border-white/[0.12] backdrop-blur-md bg-surface-secondary/40 px-5 py-2.5 text-caption font-bold text-white uppercase tracking-widest mb-8 rounded-full shadow-2xl">
-                <span className="h-2 w-2 rounded-full bg-status-green animate-pulse shadow-[0_0_10px_rgba(52,211,153,0.8)]" />
-                Live: Monitoring 5,000+ Schedules
+              <div className="inline-flex items-center gap-3 border border-accent/20 backdrop-blur-md bg-accent/5 px-5 py-2.5 text-caption font-bold text-accent uppercase tracking-widest mb-8 rounded-full shadow-2xl">
+                <span className="h-2 w-2 rounded-full bg-status-green animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.8)]" />
+                Recovered $2.4M in Lost Revenue Today
               </div>
 
-              <h1 className="text-6xl sm:text-7xl lg:text-8xl font-extrabold tracking-tighter leading-[0.95] mb-8 text-white drop-shadow-2xl">
-                Weather delays <br />
-                cost you <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent via-sky-400 to-white">
-                  $47K a year.
+              <h1 className="font-heading text-6xl sm:text-7xl lg:text-8xl font-extrabold tracking-tighter leading-[0.95] mb-8 text-white drop-shadow-2xl">
+                Every cloud <br />
+                costs you <br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent via-emerald-400 to-white">
+                  $2,400 per crew.
                 </span>
               </h1>
 
               <p className="text-xl sm:text-2xl text-primary/70 mb-12 leading-relaxed max-w-2xl font-medium">
-                Rain Check monitors conditions around the clock and auto-reschedules jobs 
-                before the weather hits. Trade-specific rules. Instant notifications. 
-                Zero lost revenue.
+                Automation Nation is the weather-intelligent brain for your trade business. 
+                We auto-reschedule crews, notify clients, and protect your margins 
+                before the first raindrop hits.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-5">
                 <Link
                   href="/dashboard"
-                  className="inline-flex items-center justify-center gap-3 bg-accent hover:bg-accent-hover text-white px-10 py-5 font-extrabold text-body transition-all hover:scale-105 uppercase tracking-widest rounded shadow-[0_0_40px_rgba(25,175,255,0.3)]"
+                  className="inline-flex items-center justify-center gap-3 bg-accent hover:bg-accent-hover text-white px-10 py-5 font-extrabold text-body transition-all hover:scale-105 uppercase tracking-widest rounded shadow-[0_0_40px_rgba(16,185,129,0.3)]"
                 >
-                  Start Free Trial
+                  Start Revenue Recovery
                   <ArrowRight className="h-5 w-5" />
                 </Link>
                 <a
                   href="#how-it-works"
                   className="inline-flex items-center justify-center gap-3 border border-white/[0.2] backdrop-blur-md bg-white/[0.03] hover:bg-white/[0.08] text-white px-10 py-5 font-bold text-body transition-all uppercase tracking-widest rounded"
                 >
-                  View Workflow
+                  Command Workflow
                 </a>
               </div>
             </div>
 
-            {/* Frost Hero Component (Premium UI Sniping) */}
+            {/* Tactical Monitor Component */}
             <div className="w-full xl:w-[480px] shrink-0 backdrop-blur-2xl bg-surface-primary/60 border border-white/[0.12] p-8 shadow-[0_0_50px_rgba(0,0,0,0.8)] rounded-2xl relative overflow-hidden group transform hover:-translate-y-2 transition-transform duration-700">
-              <div className="absolute inset-0 bg-gradient-to-br from-white/[0.05] to-transparent pointer-events-none" />
+              <div className="absolute inset-0 bg-gradient-to-br from-accent/10 to-transparent pointer-events-none" />
               <div className="flex items-center justify-between mb-8 border-b border-white/[0.08] pb-5">
                 <span className="text-body font-bold uppercase tracking-widest text-white flex items-center gap-2">
                   <Activity className="w-4 h-4 text-accent" />
-                  Live Monitor
+                  Tactical Ops Monitor
                 </span>
                 <span className="text-caption font-mono text-accent bg-accent/10 px-3 py-1.5 rounded">{new Date().toLocaleTimeString()}</span>
               </div>
@@ -242,21 +242,21 @@ export default function LandingPage() {
               <div className="space-y-4">
                 <div className="flex items-center justify-between p-5 border border-status-green/20 bg-status-green/[0.03] rounded-xl group-hover:bg-status-green/[0.06] transition-colors duration-500">
                   <div className="flex flex-col">
-                    <span className="font-bold text-body text-white tracking-tight">Johnson Roof Repair</span>
-                    <span className="text-caption font-medium text-primary/50 mt-1.5">9:00 AM &bull; 123 Oak St</span>
+                    <span className="font-bold text-body text-white tracking-tight">Roofing: 3 Crews Active</span>
+                    <span className="text-caption font-medium text-primary/50 mt-1.5">No threats detected until 4 PM</span>
                   </div>
-                  <span className="bg-status-green/20 text-status-green font-bold text-caption uppercase tracking-widest px-4 py-1.5 rounded shadow-[0_0_15px_rgba(52,211,153,0.2)]">Clear</span>
+                  <span className="bg-status-green/20 text-status-green font-bold text-caption uppercase tracking-widest px-4 py-1.5 rounded shadow-[0_0_15px_rgba(16,185,129,0.2)]">All Clear</span>
                 </div>
                 
-                <div className="flex items-center justify-between p-5 border border-status-red/30 bg-status-red/[0.05] rounded-xl group-hover:bg-status-red/[0.08] transition-colors duration-500 relative overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-r from-status-red/10 to-transparent pointer-events-none" />
+                <div className="flex items-center justify-between p-5 border border-status-yellow/30 bg-status-yellow/[0.05] rounded-xl group-hover:bg-status-yellow/[0.08] transition-colors duration-500 relative overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-r from-status-yellow/10 to-transparent pointer-events-none" />
                   <div className="flex flex-col relative z-10">
-                    <span className="font-bold text-body text-white tracking-tight">Chen Concrete Pour</span>
-                    <span className="text-caption font-bold text-status-red mt-1.5 flex items-center gap-1.5">
-                      <CloudLightning className="w-3.5 h-3.5"/> Rain 80%
+                    <span className="font-bold text-body text-white tracking-tight">Paint: Humidity Warning</span>
+                    <span className="text-caption font-bold text-status-yellow mt-1.5 flex items-center gap-1.5">
+                      <Activity className="w-3.5 h-3.5"/> 88% Humidity - High Risk
                     </span>
                   </div>
-                  <span className="relative z-10 bg-status-red/20 text-status-red font-bold text-caption uppercase tracking-widest px-4 py-1.5 rounded shadow-[0_0_15px_rgba(248,113,113,0.3)] animate-pulse">Moved</span>
+                  <span className="relative z-10 bg-status-yellow/20 text-status-yellow font-bold text-caption uppercase tracking-widest px-4 py-1.5 rounded shadow-[0_0_15px_rgba(245,158,11,0.3)]">Analyzing</span>
                 </div>
               </div>
             </div>

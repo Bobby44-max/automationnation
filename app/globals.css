@@ -1,47 +1,47 @@
 @import "tailwindcss";
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Rain Check Ã¢â‚¬â€ Monopo-inspired Design System Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
-   Sharp corners Ã‚Â· Deep blacks Ã‚Â· #19AFFF accent Ã‚Â· Generous spacing
-   "It just breathes"
+/* âââ Automation Nation â Tactical Radar Design System âââ
+   Obsidian Midnight Â· Emerald Neon Â· Space Grotesk Headings
+   "Mission Critical Operational Control"
 */
 
 @theme {
-  /* Typography Ã¢â‚¬â€ Raleway headings, system body */
-  --font-sans: var(--font-raleway), "Raleway", system-ui, -apple-system, sans-serif;
-  --font-heading: var(--font-raleway), "Raleway", system-ui, sans-serif;
+  /* Typography â Space Grotesk headings, Inter body */
+  --font-sans: var(--font-inter), "Inter", system-ui, -apple-system, sans-serif;
+  --font-heading: var(--font-space-grotesk), "Space Grotesk", system-ui, sans-serif;
 
   /* Typography scale */
   --font-size-caption: 11px;
   --font-size-body-sm: 13px;
   --font-size-body: 15px;
 
-  /* Surface palette Ã¢â‚¬â€ deep blacks */
-  --color-surface-primary: #0A0D10;
-  --color-surface-secondary: #0E1216;
-  --color-surface-tertiary: #151A1F;
-  --color-surface-elevated: #1C2228;
-  --color-surface-card: #0E1216;
+  /* Surface palette â Obsidian Midnight */
+  --color-surface-primary: #020617;
+  --color-surface-secondary: #0F172A;
+  --color-surface-tertiary: #1E293B;
+  --color-surface-elevated: #334155;
+  --color-surface-card: #0F172A;
 
-  /* Accent Ã¢â‚¬â€ monopo bright blue */
-  --color-accent: #19AFFF;
-  --color-accent-hover: #0D9AEB;
-  --color-accent-muted: rgba(25, 175, 255, 0.08);
+  /* Accent â Emerald Neon */
+  --color-accent: #10B981;
+  --color-accent-hover: #059669;
+  --color-accent-muted: rgba(16, 185, 129, 0.08);
 
   /* Semantic status */
-  --color-status-green: #34D399;
-  --color-status-yellow: #FBBF24;
-  --color-status-red: #F87171;
-  --color-status-blue: #19AFFF;
+  --color-status-green: #10B981;
+  --color-status-yellow: #F59E0B;
+  --color-status-red: #EF4444;
+  --color-status-blue: #38BDF8;
 
   /* Text palette */
-  --color-primary: #F0F2F4;
-  --color-secondary: #8B939E;
-  --color-muted: #5A6370;
-  --color-dim: #3A424D;
+  --color-primary: #F8FAFC;
+  --color-secondary: #94A3B8;
+  --color-muted: #64748B;
+  --color-dim: #475569;
 
   /* Borders */
-  --color-border: rgba(255, 255, 255, 0.06);
-  --color-border-hover: rgba(255, 255, 255, 0.12);
+  --color-border: rgba(255, 255, 255, 0.08);
+  --color-border-hover: rgba(255, 255, 255, 0.16);
 }
 
 /* Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Base Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ */
