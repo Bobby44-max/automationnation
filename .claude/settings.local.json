@@ -45,7 +45,14 @@
       "mcp__filesystem__read_text_file",
       "Bash(git:*)",
       "mcp__filesystem__list_allowed_directories",
-      "Bash(cd:*)"
+      "Bash(cd:*)",
+      "Bash(where vercel)",
+      "Bash(npx --yes vercel domains ls --token)",
+      "Bash(vercel.cmd domains ls)",
+      "Bash(vercel.cmd domains inspect rainchek.org)",
+      "Bash(vercel.cmd domains inspect automationnation.wtf)",
+      "Bash(vercel.cmd domains inspect eduprephub.com)",
+      "Bash(vercel.cmd project ls)"
     ]
   }
 }

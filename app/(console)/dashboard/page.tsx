@@ -10,6 +10,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { CloudSun, Calendar, Bell, TrendingUp, ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 
+import Image from "next/image";
+
 export default function DashboardPage() {
   const { businessId } = useDemoBusiness();
   const today = new Date().toISOString().split("T")[0];
@@ -26,12 +28,36 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-0">
-      {/* Page Header */}
-      <div className="px-8 py-6 border-b border-white/[0.04]">
-        <h1 className="text-xl font-bold tracking-tight">Dashboard</h1>
-        <p className="text-[12px] text-muted mt-1">
-          Today&apos;s weather overview and job status
-        </p>
+      {/* Cinematic Dashboard Hero */}
+      <div className="relative h-[300px] w-full overflow-hidden border-b border-white/[0.08]">
+        <Image
+          src="/marketing/3d-weather-radar-dashboard.png"
+          alt="Rain Check Command Center"
+          fill
+          className="object-cover object-center opacity-40 grayscale-[0.5] contrast-[1.2]"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-surface-primary via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-surface-primary/80 via-transparent to-transparent" />
+        
+        <div className="relative z-10 h-full flex flex-col justify-end px-8 pb-10">
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-accent/10 border border-accent/20 rounded text-[10px] font-bold text-accent uppercase tracking-[0.3em] mb-4 w-fit">
+            <span className="h-1 w-1 rounded-full bg-accent animate-pulse" />
+            System Live: RC-RADAR-V4
+          </div>
+          <h1 className="font-heading text-4xl lg:text-5xl font-black text-white uppercase italic tracking-tighter leading-tight">
+            Operational <br/> <span className="text-accent">Command.</span>
+          </h1>
+          <div className="mt-6 flex items-center gap-8 text-[10px] font-mono text-dim font-bold uppercase tracking-[0.2em]">
+            <div className="flex flex-col gap-1">
+              <span className="text-muted opacity-50">Signal Integrity</span>
+              <span className="text-secondary">0.994ms (Optimal)</span>
+            </div>
+            <div className="flex flex-col gap-1 border-l border-white/10 pl-8">
+              <span className="text-muted opacity-50">Weather Feed</span>
+              <span className="text-secondary">Tomorrow.io Real-time</span>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Stats Bar */}

@@ -4,6 +4,7 @@ import { useState, useMemo } from 'react';
 import { addDays, format } from 'date-fns';
 import { useAuth } from '@clerk/nextjs';
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import {
   CloudLightning,
@@ -22,6 +23,7 @@ import {
 } from 'lucide-react';
 import { StormField } from '@/components/ui/StormField';
 import { TacticalInstrument } from '@/components/ui/TacticalInstrument';
+import { AIFBlueprint } from '@/components/ui/AIFBlueprint';
 import { cn } from '@/lib/utils';
 
 const PRICING = [
@@ -104,7 +106,7 @@ export default function LandingPage() {
             <div className="bg-accent h-7 w-7 flex items-center justify-center font-bold text-white text-xs tracking-tighter rounded shadow-[0_0_20px_rgba(16,185,129,0.3)]">
               RC
             </div>
-            <span className="font-heading font-extrabold text-lg tracking-[-0.05em] uppercase text-white">Rain Check</span>
+            <span className="font-heading font-extrabold text-lg tracking-[-0.05em] uppercase text-white italic">Rain Check</span>
           </Link>
 
           <div className="hidden md:flex items-center gap-10">
@@ -141,16 +143,16 @@ export default function LandingPage() {
             </motion.div>
 
             <h1 className="font-heading text-[12vw] lg:text-[10vw] font-black tracking-[-0.08em] leading-[0.8] mb-12 text-white uppercase italic">
-              Recover <br />
+              Rain <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent via-emerald-400 to-slate-800">
-                Revenue.
+                Check.
               </span>
             </h1>
 
             <div className="max-w-2xl mx-auto space-y-12">
               <p className="text-xl lg:text-2xl text-secondary font-medium tracking-tight leading-relaxed">
-                A high-fidelity weather autopilot for trade-scale operations. 
-                Deterministic logic. Zero manual dispatch. High-stake recovery.
+                Deterministic weather intelligence for industrial-scale field operations. 
+                Auto-reschedule logic. Zero-touch comms. High-frequency recovery.
               </p>
 
               <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
@@ -159,7 +161,7 @@ export default function LandingPage() {
                   <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity" />
                 </Link>
                 <a href="#economics" className="text-[10px] font-bold uppercase tracking-[0.3em] text-muted hover:text-white border-b border-white/20 pb-1 transition-all">
-                  Analyze ROI Analysis
+                  Analyze ROI Economics
                 </a>
               </div>
             </div>
@@ -183,6 +185,8 @@ export default function LandingPage() {
             />
           </div>
         </section>
+
+        <AIFBlueprint />
 
         {/* --- TACTICAL GRID (Performance UI) --- */}
         <section id="platform" className="py-40 px-8 bg-surface-primary relative">
@@ -208,7 +212,7 @@ export default function LandingPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {[
-                { label: 'Thermal Analysis', icon: ThermometerSnowflake, val: '40Â°F', sub: 'Seal-Limit' },
+                { label: 'Thermal Analysis', icon: ThermometerSnowflake, val: '40°F', sub: 'Seal-Limit' },
                 { label: 'Velocity Monitor', icon: Wind, val: '25mph', sub: 'Safety-Gate' },
                 { label: 'Saturation Check', icon: Droplets, val: '85%', sub: 'Cure-Point' },
               ].map((item, i) => (
@@ -233,11 +237,20 @@ export default function LandingPage() {
         </section>
 
         {/* --- PRICING (Operational Tiers) --- */}
-        <section id="economics" className="py-40 px-8 bg-surface-primary border-t border-white/[0.04]">
-          <div className="mx-auto max-w-[1400px]">
+        <section id="economics" className="py-40 px-8 bg-surface-primary border-t border-white/[0.04] relative overflow-hidden">
+          <div className="absolute inset-0 z-0">
+            <img 
+              src="/marketing/storm-vs-sunny-transition.png" 
+              alt="Atmospheric Transition" 
+              className="w-full h-full object-cover opacity-10 grayscale contrast-[1.2]"
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-surface-primary via-surface-primary/90 to-surface-primary" />
+          </div>
+
+          <div className="mx-auto max-w-[1400px] relative z-10">
              <div className="mb-24 text-center">
-              <span className="text-[10px] font-bold uppercase tracking-[0.5em] text-accent mb-6 block">Activation Economics</span>
-              <h2 className="font-heading text-6xl lg:text-8xl font-black tracking-[-0.05em] uppercase text-white italic">Operational Tiers.</h2>
+              <span className="text-[10px] font-bold uppercase tracking-[0.5em] text-accent mb-6 block">Operational Tiers</span>
+              <h2 className="font-heading text-6xl lg:text-8xl font-black tracking-[-0.05em] uppercase text-white italic">Precision Pricing.</h2>
             </div>
 
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -246,11 +259,12 @@ export default function LandingPage() {
                   key={tier.name}
                   whileHover={{ y: -10 }}
                   className={cn(
-                    "flex flex-col p-10 bg-surface-secondary rounded-3xl border transition-all duration-500",
+                    "flex flex-col p-10 bg-surface-secondary/40 backdrop-blur-2xl rounded-3xl border transition-all duration-500 relative group overflow-hidden",
                     tier.pop ? "border-accent bg-accent/5" : "border-white/[0.04]"
                   )}
                 >
-                  <h3 className="text-[10px] font-extrabold uppercase tracking-[0.4em] text-muted mb-8">{tier.name}</h3>
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/[0.02] to-transparent pointer-events-none" />
+                  <h3 className="text-[10px] font-extrabold uppercase tracking-[0.4em] text-muted mb-8 group-hover:text-accent transition-colors">{tier.name}</h3>
                   <div className="mb-12">
                     <div className="text-6xl font-heading font-black text-white italic tracking-tighter mb-2">{tier.price}</div>
                     <div className="text-[10px] font-bold text-dim uppercase tracking-[0.2em]">{tier.tag}</div>
@@ -266,10 +280,11 @@ export default function LandingPage() {
                   </ul>
 
                   <Link href="/sign-up" className={cn(
-                    "block text-center py-5 text-[10px] font-extrabold uppercase tracking-[0.3em] rounded transition-all",
+                    "block text-center py-5 text-[10px] font-extrabold uppercase tracking-[0.3em] rounded transition-all relative overflow-hidden group",
                     tier.pop ? "bg-accent text-white shadow-xl" : "bg-white/[0.04] text-white hover:bg-white/[0.08]"
                   )}>
-                    Activate Tier
+                    <span className="relative z-10">Activate Tier</span>
+                    <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
                   </Link>
                 </motion.div>
               ))}
