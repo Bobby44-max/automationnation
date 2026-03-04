@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 export const runtime = "nodejs";
 export const maxDuration = 60;
 
-const AGENT_SERVER_URL = "https://agent.rainchek.org";
+const AGENT_SERVER_URL = process.env.AGENT_SERVER_URL || "https://n8n.srv1021380.hstgr.cloud/raincheck";
 const AGENT_SERVER_SECRET = process.env.AGENT_SERVER_SECRET || "";
 const CONVEX_URL = process.env.NEXT_PUBLIC_CONVEX_URL || "";
 

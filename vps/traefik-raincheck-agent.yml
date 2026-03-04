@@ -1,7 +1,8 @@
 http:
   routers:
     raincheck-agent:
-      rule: "Host(`agent.rainchek.org`)"
+      rule: "Host(`n8n.srv1021380.hstgr.cloud`) && PathPrefix(`/raincheck`)"
+      priority: 200
       entryPoints:
         - websecure
       service: raincheck-agent-svc
