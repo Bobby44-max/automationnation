@@ -27,22 +27,8 @@ import { cn } from '@/lib/utils';
 
 const PRICING = [
   {
-    name: 'The Observer',
-    price: '$0',
-    period: '/mo',
-    tag: 'Solo Pros',
-    features: [
-      '1 trade preset',
-      '5 jobs per week',
-      'Email notifications',
-      'Morning-of Intel',
-    ],
-    cta: 'Start free',
-    pop: false,
-  },
-  {
     name: 'The Operator',
-    price: '$49',
+    price: '$99',
     period: '/mo',
     tag: 'Growing crews',
     features: [
@@ -57,7 +43,7 @@ const PRICING = [
   },
   {
     name: 'The Commander',
-    price: '$99',
+    price: '$149',
     period: '/mo',
     tag: 'Professional Ops',
     features: [
@@ -73,7 +59,7 @@ const PRICING = [
   },
   {
     name: 'The National',
-    price: '$249',
+    price: '$299',
     period: '/mo',
     tag: 'Scale operations',
     features: [
@@ -251,7 +237,7 @@ export default function LandingPage() {
               <h2 className="font-heading text-6xl lg:text-8xl font-black tracking-[-0.05em] uppercase text-white italic">Precision Pricing.</h2>
             </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
               {PRICING.map((tier) => (
                 <motion.div
                   key={tier.name}

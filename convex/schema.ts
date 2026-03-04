@@ -8,7 +8,7 @@ export default defineSchema({
     name: v.string(),
     timezone: v.string(),
     primaryTrade: v.string(),
-    planTier: v.string(), // "free", "starter", "pro", "business"
+    planTier: v.string(), // "starter", "pro", "business"
     ownerEmail: v.string(),
     ownerPhone: v.optional(v.string()),
     stripeCustomerId: v.optional(v.string()),

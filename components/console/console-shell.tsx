@@ -6,13 +6,13 @@ import { Sidebar } from "./sidebar";
 import { Topbar } from "./topbar";
 
 function ShellInner({ children }: { children: ReactNode }) {
-  const { businessName } = useDemoBusiness();
+  const { businessName, planTier } = useDemoBusiness();
 
   return (
     <div className="flex min-h-screen bg-surface-primary">
       <Sidebar />
       <div className="flex-1 flex flex-col min-w-0">
-        <Topbar businessName={businessName} />
+        <Topbar businessName={businessName} planTier={planTier} />
         <main className="flex-1 relative overflow-hidden">
           {/* Rain backdrop — fixed behind all dashboard content */}
           <div

@@ -756,6 +756,38 @@ export const createJob = mutation({
   },
 });
 
+export const updateJob = mutation({
+  args: {
+    jobId: v.id("jobs"),
+    businessId: v.id("businesses"),
+    title: v.optional(v.string()),
+    date: v.optional(v.string()),
+    startTime: v.optional(v.string()),
+    endTime: v.optional(v.string()),
+    trade: v.optional(v.string()),
+    jobType: v.optional(v.string()),
+    address: v.optional(v.string()),
+    zipCode: v.optional(v.string()),
+    estimatedRevenue: v.optional(v.number()),
+    notes: v.optional(v.string()),
+    crewLeadId: v.optional(v.id("crewMembers")),
+  },
+  handler: async (ctx, { jobId, businessId, ...updates }) => {
+    const job = await ctx.db.get(jobId);
+    if (!job || job.businessId !== businessId) {
+      throw new Error("Job not found");
+    }
+    const patch: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(updates)) {
+      if (value !== undefined) patch[key] = value;
+    }
+    if (Object.keys(patch).length > 0) {
+      await ctx.db.patch(jobId, patch);
+    }
+    return jobId;
+  },
+});
+
 export const deleteJob = mutation({
   args: { jobId: v.id("jobs"), businessId: v.id("businesses") },
   handler: async (ctx, { jobId, businessId }) => {

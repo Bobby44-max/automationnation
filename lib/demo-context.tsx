@@ -8,12 +8,14 @@ import type { Id } from "@/convex/_generated/dataModel";
 interface DemoBusinessContext {
   businessId: Id<"businesses"> | null;
   businessName: string;
+  planTier: string;
   isLoading: boolean;
 }
 
 const DemoCtx = createContext<DemoBusinessContext>({
   businessId: null,
   businessName: "My Business",
+  planTier: "starter",
   isLoading: true,
 });
 
@@ -32,6 +34,7 @@ export function DemoBusinessProvider({ children }: { children: ReactNode }) {
       value={{
         businessId: business?._id ?? null,
         businessName: business?.name ?? "My Business",
+        planTier: business?.planTier ?? "starter",
         isLoading,
       }}
     >

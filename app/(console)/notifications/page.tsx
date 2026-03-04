@@ -1,34 +1,102 @@
 "use client";
 
+import { useState, useMemo } from "react";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useDemoBusiness } from "@/lib/demo-context";
 import { Bell, Mail, MessageSquare } from "lucide-react";
 
+type ChannelFilter = "all" | "sms" | "email";
+
 export default function NotificationsPage() {
   const { businessId } = useDemoBusiness();
-  const today = new Date().toISOString().split("T")[0];
+
+  // Default: last 7 days
+  const todayStr = new Date().toISOString().split("T")[0];
+  const weekAgoStr = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+    .toISOString()
+    .split("T")[0];
+
+  const [startDate, setStartDate] = useState(weekAgoStr);
+  const [endDate, setEndDate] = useState(todayStr);
+  const [channelFilter, setChannelFilter] = useState<ChannelFilter>("all");
 
   const notifications = useQuery(
     api.weatherScheduling.getNotificationLog,
     businessId
-      ? { businessId, startDate: today, endDate: today, limit: 50 }
+      ? { businessId, startDate, endDate, limit: 200 }
       : "skip"
   );
+
+  const filtered = useMemo(() => {
+    if (!notifications) return [];
+    if (channelFilter === "all") return notifications;
+    return notifications.filter((n) => n.channel === channelFilter);
+  }, [notifications, channelFilter]);
 
   return (
     <div className="space-y-0">
       <div className="px-8 py-6 border-b border-white/[0.04]">
-        <h1 className="text-xl font-bold tracking-tight">Notifications</h1>
-        <p className="text-[12px] text-muted mt-1">
-          SMS and email notification history
-        </p>
+        <div className="flex items-center justify-between flex-wrap gap-4">
+          <div>
+            <h1 className="text-xl font-bold tracking-tight">Notifications</h1>
+            <p className="text-[12px] text-muted mt-1">
+              SMS and email notification history
+            </p>
+          </div>
+          {filtered.length > 0 && (
+            <span className="px-2.5 py-1 rounded bg-accent/10 text-accent text-[10px] font-bold uppercase tracking-wider">
+              {filtered.length} notification{filtered.length !== 1 ? "s" : ""}
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* Filters */}
+      <div className="px-8 py-4 border-b border-white/[0.04] flex items-center gap-4 flex-wrap">
+        <div className="flex items-center gap-2">
+          <label className="text-[10px] font-bold text-muted uppercase tracking-widest">
+            From
+          </label>
+          <input
+            type="date"
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
+            className="bg-surface-tertiary border border-white/[0.08] rounded px-2.5 py-1.5 text-[12px] text-white"
+          />
+        </div>
+        <div className="flex items-center gap-2">
+          <label className="text-[10px] font-bold text-muted uppercase tracking-widest">
+            To
+          </label>
+          <input
+            type="date"
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
+            className="bg-surface-tertiary border border-white/[0.08] rounded px-2.5 py-1.5 text-[12px] text-white"
+          />
+        </div>
+        <div className="flex items-center gap-1 ml-auto">
+          {(["all", "sms", "email"] as const).map((ch) => (
+            <button
+              key={ch}
+              onClick={() => setChannelFilter(ch)}
+              className={`px-3 py-1.5 rounded text-[11px] font-bold uppercase tracking-wider transition-all ${
+                channelFilter === ch
+                  ? "bg-accent/10 text-accent border border-accent/30"
+                  : "bg-surface-tertiary text-muted hover:text-secondary border border-transparent"
+              }`}
+            >
+              {ch === "all" ? "All" : ch.toUpperCase()}
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="px-8 py-6">
-        {notifications && notifications.length > 0 ? (
+        {filtered.length > 0 ? (
           <div className="space-y-2">
-            {notifications.map((n) => (
+            {filtered.map((n) => (
               <div
                 key={n._id}
                 className="rounded bg-surface-secondary border border-white/[0.04] p-5 flex items-start gap-4 hover:border-white/[0.08] transition-all duration-150"
@@ -102,7 +170,7 @@ export default function NotificationsPage() {
             <Bell className="h-8 w-8 text-dim mx-auto mb-4" />
             <p className="text-body-sm text-muted">
               {businessId
-                ? "No notifications sent yet"
+                ? "No notifications found for this period"
                 : "Loading..."}
             </p>
             <p className="text-caption text-dim mt-1.5">
@@ -114,8 +182,3 @@ export default function NotificationsPage() {
     </div>
   );
 }
-
-
-
-
-
