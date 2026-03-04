@@ -1,0 +1,16 @@
+[Unit]
+Description=Rain Check Agent Server
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/rain-check-agent
+ExecStart=/usr/bin/node /opt/rain-check-agent/agent-server.js
+Restart=on-failure
+RestartSec=5
+Environment=NODE_ENV=production
+EnvironmentFile=/opt/rain-check-agent/.env
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,14 @@
+{
+  "name": "rain-check-agent-server",
+  "version": "1.0.0",
+  "description": "Agent server for Rain Check — spawns Claude CLI sessions via REST API",
+  "main": "agent-server.js",
+  "scripts": {
+    "start": "node agent-server.js",
+    "dev": "node --watch agent-server.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2"
+  }
+}

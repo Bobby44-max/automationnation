@@ -1,0 +1,14 @@
+http:
+  routers:
+    raincheck-agent:
+      rule: "Host(`agent.rainchek.org`)"
+      entryPoints:
+        - websecure
+      service: raincheck-agent-svc
+      tls:
+        certResolver: mytlschallenge
+  services:
+    raincheck-agent-svc:
+      loadBalancer:
+        servers:
+          - url: "http://172.17.0.1:3848"

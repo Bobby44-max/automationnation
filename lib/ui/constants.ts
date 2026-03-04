@@ -5,6 +5,7 @@ import {
   Bell,
   Settings,
   CreditCard,
+  Terminal,
 } from "lucide-react";
 
 export const NAV_ITEMS = [
@@ -12,6 +13,7 @@ export const NAV_ITEMS = [
   { label: "Schedule", href: "/scheduling/weather", icon: Calendar },
   { label: "Weather Rules", href: "/scheduling/weather/settings", icon: CloudSun },
   { label: "Notifications", href: "/notifications", icon: Bell },
+  { label: "Agent Terminal", href: "/terminal", icon: Terminal },
   { label: "Settings", href: "/settings", icon: Settings },
   { label: "Billing", href: "/billing", icon: CreditCard },
 ] as const;
