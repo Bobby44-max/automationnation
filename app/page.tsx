@@ -2,7 +2,6 @@
 
 import { useState, useMemo } from 'react';
 import { addDays, format } from 'date-fns';
-import { useAuth } from '@clerk/nextjs';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion, useScroll, useTransform } from 'framer-motion';
@@ -91,7 +90,6 @@ const PRICING = [
 ];
 
 export default function LandingPage() {
-  const { isSignedIn } = useAuth();
   const { scrollYProgress } = useScroll();
   const yRange = useTransform(scrollYProgress, [0, 0.2], [0, -100]);
   const opacityRange = useTransform(scrollYProgress, [0, 0.1], [1, 0]);

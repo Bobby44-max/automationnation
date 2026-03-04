@@ -1,18 +1,11 @@
-import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+// Auth middleware — currently passthrough (Clerk removed temporarily).
+// Re-add Clerk middleware here when auth is restored.
 
-const isProtectedRoute = createRouteMatcher([
-  "/dashboard(.*)",
-  "/scheduling(.*)",
-  "/notifications(.*)",
-  "/settings(.*)",
-  "/billing(.*)",
-]);
+import { NextResponse } from "next/server";
 
-export default clerkMiddleware(async (auth, req) => {
-  if (isProtectedRoute(req)) {
-    await auth.protect();
-  }
-});
+export default function middleware() {
+  return NextResponse.next();
+}
 
 export const config = {
   matcher: [
