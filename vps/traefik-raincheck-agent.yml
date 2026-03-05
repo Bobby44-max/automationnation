@@ -6,8 +6,15 @@ http:
       entryPoints:
         - websecure
       service: raincheck-agent-svc
+      middlewares:
+        - raincheck-strip
       tls:
         certResolver: mytlschallenge
+  middlewares:
+    raincheck-strip:
+      stripPrefix:
+        prefixes:
+          - "/raincheck"
   services:
     raincheck-agent-svc:
       loadBalancer:
