@@ -390,24 +390,35 @@ function killSession(session) {
   }, 60000);
 }
 
-// --- Cleanup stale sessions every 2 min ---
+// --- Cleanup stale sessions every 60s ---
 
 setInterval(() => {
   const now = Date.now();
   for (const [id, session] of sessions) {
+    const age = now - session.lastActivity;
+
+    // Clean up terminal sessions after 2 min of inactivity
     if (
       (session.state === "completed" || session.state === "error" || session.state === "cancelled") &&
-      now - session.lastActivity > 120000
+      age > 120000
     ) {
       sessions.delete(id);
-      try {
-        fs.unlinkSync(session.logPath);
-      } catch {
-        // Non-critical
-      }
+      try { fs.unlinkSync(session.logPath); } catch { /* Non-critical */ }
+      continue;
+    }
+
+    // Kill zombie sessions stuck in "running" or "waiting_approval" past TTL
+    // This catches processes that crash without firing the 'close' event
+    if (
+      (session.state === "running" || session.state === "waiting_approval") &&
+      age > SESSION_TTL_MS
+    ) {
+      console.warn(`Reaping zombie session ${id} (stuck ${Math.round(age / 1000)}s)`);
+      killSession(session);
+      appendLine(session, "system", "Session reaped — exceeded TTL with no activity.");
     }
   }
-}, 120000);
+}, 60000);
 
 // --- Start ---
 

@@ -76,9 +76,15 @@ export async function POST(request: NextRequest) {
     });
 
     if (!vpsResponse.ok) {
-      const err = await vpsResponse.text();
+      let errorMessage = "Agent server error";
+      try {
+        const errData = await vpsResponse.json();
+        errorMessage = errData.error || errorMessage;
+      } catch {
+        errorMessage = await vpsResponse.text() || errorMessage;
+      }
       return NextResponse.json(
-        { error: err || "Agent server error" },
+        { error: errorMessage },
         { status: vpsResponse.status }
       );
     }
