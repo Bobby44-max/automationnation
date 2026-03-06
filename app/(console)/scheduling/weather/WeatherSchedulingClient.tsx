@@ -10,6 +10,7 @@ import { TradeSelector } from "./components/TradeSelector";
 import { JobCard } from "./components/JobCard";
 import { BulkActionBar } from "./components/BulkActionBar";
 import { AddJobModal } from "./components/AddJobModal";
+import { MissionControlTelemetry } from "./components/MissionControlTelemetry";
 import { Plus, RefreshCw } from "lucide-react";
 
 export function WeatherSchedulingClient() {
@@ -104,9 +105,14 @@ export function WeatherSchedulingClient() {
         lastChecked={stats?.lastChecked ?? null}
       />
 
-      {/* Weather Strip */}
-      <div className="px-8 py-6">
-        <WeatherStrip businessId={businessId} />
+      {/* Weather Intelligence Grid */}
+      <div className="px-8 py-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div className="lg:col-span-8">
+          <WeatherStrip businessId={businessId} />
+        </div>
+        <div className="lg:col-span-4">
+          <MissionControlTelemetry />
+        </div>
       </div>
 
       {/* Job Cards */}
@@ -167,8 +173,3 @@ export function WeatherSchedulingClient() {
     </div>
   );
 }
-
-
-
-
-
