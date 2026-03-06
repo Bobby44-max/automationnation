@@ -1,16 +1,23 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useDemoBusiness } from "@/lib/demo-context";
+import { getAllPlans } from "@/convex/lib/entitlements";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import type { Id } from "@/convex/_generated/dataModel";
-import { Building2, Users, HardHat, Trash2, Plus, Pencil, X, Check } from "lucide-react";
+import { Building2, Users, HardHat, Trash2, Plus, Pencil, X, Check, Upload, FileSpreadsheet, CheckCircle2, XCircle, Loader2 } from "lucide-react";
 
 export default function SettingsPage() {
-  const { businessId, businessName, isLoading } = useDemoBusiness();
+  const { businessId, businessName, planTier, isLoading } = useDemoBusiness();
+
+  const plans = getAllPlans();
+  const currentPlan = plans.find((p) => p.id === planTier);
+  const planDisplay = currentPlan
+    ? `${currentPlan.name} \u2014 $${currentPlan.price}/mo`
+    : "Starter";
 
   if (isLoading) {
     return (
@@ -49,7 +56,7 @@ export default function SettingsPage() {
               </div>
               <div>
                 <span className="text-[10px] text-muted uppercase tracking-widest">Plan</span>
-                <p className="text-body text-accent font-medium mt-1">Pro â€” All Clear</p>
+                <p className="text-body text-accent font-medium mt-1">{planDisplay}</p>
               </div>
             </div>
           </div>
@@ -60,6 +67,238 @@ export default function SettingsPage() {
 
         {/* Crew Members */}
         {businessId && <CrewSection businessId={businessId} />}
+      </div>
+    </div>
+  );
+}
+
+// --- CSV Parsing ---
+
+interface ParsedRow {
+  name: string;
+  email: string;
+  phone: string;
+  address: string;
+  city: string;
+  state: string;
+  zipCode: string;
+  valid: boolean;
+  error?: string;
+}
+
+function parseCSVLine(line: string): string[] {
+  const fields: string[] = [];
+  let current = "";
+  let inQuotes = false;
+
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (inQuotes) {
+      if (ch === '"') {
+        if (i + 1 < line.length && line[i + 1] === '"') {
+          current += '"';
+          i++;
+        } else {
+          inQuotes = false;
+        }
+      } else {
+        current += ch;
+      }
+    } else {
+      if (ch === '"') {
+        inQuotes = true;
+      } else if (ch === ",") {
+        fields.push(current.trim());
+        current = "";
+      } else {
+        current += ch;
+      }
+    }
+  }
+  fields.push(current.trim());
+  return fields;
+}
+
+const COLUMN_MAP: Record<string, keyof ParsedRow> = {
+  name: "name",
+  email: "email",
+  phone: "phone",
+  address: "address",
+  city: "city",
+  state: "state",
+  zipcode: "zipCode",
+  zip_code: "zipCode",
+  zip: "zipCode",
+};
+
+function parseCSV(text: string): ParsedRow[] {
+  const lines = text.split(/\r?\n/).filter((l) => l.trim());
+  if (lines.length < 2) return [];
+
+  const headerFields = parseCSVLine(lines[0]);
+  const columnIndices: { index: number; field: keyof ParsedRow }[] = [];
+
+  headerFields.forEach((h, i) => {
+    const key = h.toLowerCase().replace(/[^a-z_]/g, "");
+    if (COLUMN_MAP[key]) {
+      columnIndices.push({ index: i, field: COLUMN_MAP[key] });
+    }
+  });
+
+  return lines.slice(1).map((line) => {
+    const values = parseCSVLine(line);
+    const row: ParsedRow = {
+      name: "",
+      email: "",
+      phone: "",
+      address: "",
+      city: "",
+      state: "",
+      zipCode: "",
+      valid: true,
+    };
+
+    columnIndices.forEach(({ index, field }) => {
+      if (field !== "valid" && field !== "error" && values[index]) {
+        (row as unknown as Record<string, string>)[field] = values[index];
+      }
+    });
+
+    if (!row.name) {
+      row.valid = false;
+      row.error = "Missing name";
+    } else if (!row.zipCode) {
+      row.valid = false;
+      row.error = "Missing zip code";
+    }
+
+    return row;
+  });
+}
+
+// --- CSV Import Modal ---
+
+function CSVImportModal({
+  rows,
+  onImport,
+  onClose,
+  importing,
+  progress,
+  done,
+  result,
+}: {
+  rows: ParsedRow[];
+  onImport: () => void;
+  onClose: () => void;
+  importing: boolean;
+  progress: { current: number; total: number } | null;
+  done: boolean;
+  result: { imported: number; skipped: number } | null;
+}) {
+  const validCount = rows.filter((r) => r.valid).length;
+  const invalidCount = rows.length - validCount;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+      <div className="bg-surface-primary border border-white/[0.08] rounded-lg shadow-2xl w-full max-w-2xl max-h-[80vh] flex flex-col">
+        {/* Header */}
+        <div className="px-5 py-4 border-b border-white/[0.06] flex items-center justify-between shrink-0">
+          <div className="flex items-center gap-2.5">
+            <FileSpreadsheet className="h-4 w-4 text-accent" />
+            <h3 className="text-body font-semibold">CSV Import Preview</h3>
+          </div>
+          <button onClick={onClose} className="p-1 text-muted hover:text-white transition-colors">
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+
+        {/* Summary */}
+        <div className="px-5 py-3 border-b border-white/[0.04] text-body-sm text-muted shrink-0">
+          {done && result ? (
+            <span className="text-emerald-400 font-medium">
+              {result.imported} clients imported{result.skipped > 0 ? `, ${result.skipped} skipped` : ""}
+            </span>
+          ) : importing && progress ? (
+            <span>Importing {progress.current} of {progress.total}...</span>
+          ) : (
+            <span>
+              {rows.length} rows parsed, <span className="text-emerald-400">{validCount} valid</span>
+              {invalidCount > 0 && <>, <span className="text-red-400">{invalidCount} invalid</span> (missing name or zip)</>}
+            </span>
+          )}
+        </div>
+
+        {/* Progress bar */}
+        {(importing || done) && progress && (
+          <div className="px-5 pt-2 shrink-0">
+            <div className="h-1.5 rounded-full bg-white/[0.06] overflow-hidden">
+              <div
+                className="h-full rounded-full bg-accent transition-all duration-300"
+                style={{ width: `${(progress.current / progress.total) * 100}%` }}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Table */}
+        <div className="flex-1 overflow-auto px-5 py-3">
+          <table className="w-full text-[12px]">
+            <thead>
+              <tr className="text-[10px] text-muted uppercase tracking-widest border-b border-white/[0.04]">
+                <th className="py-2 pr-2 text-left w-6"></th>
+                <th className="py-2 pr-3 text-left">Name</th>
+                <th className="py-2 pr-3 text-left">Zip</th>
+                <th className="py-2 pr-3 text-left">City</th>
+                <th className="py-2 pr-3 text-left">Phone</th>
+                <th className="py-2 text-left">Email</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((row, i) => (
+                <tr
+                  key={i}
+                  className={`border-b border-white/[0.02] ${!row.valid ? "opacity-50" : ""}`}
+                >
+                  <td className="py-1.5 pr-2">
+                    {row.valid ? (
+                      <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
+                    ) : (
+                      <XCircle className="h-3.5 w-3.5 text-red-400" />
+                    )}
+                  </td>
+                  <td className="py-1.5 pr-3 text-white font-medium">{row.name || "—"}</td>
+                  <td className="py-1.5 pr-3 text-muted font-mono">{row.zipCode || "—"}</td>
+                  <td className="py-1.5 pr-3 text-muted">{row.city || "—"}</td>
+                  <td className="py-1.5 pr-3 text-muted">{row.phone || "—"}</td>
+                  <td className="py-1.5 text-muted truncate max-w-[140px]">{row.email || "—"}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Footer */}
+        <div className="px-5 py-3 border-t border-white/[0.06] flex justify-end gap-2 shrink-0">
+          {done ? (
+            <Button size="sm" onClick={onClose}>Done</Button>
+          ) : (
+            <>
+              <Button variant="ghost" size="sm" onClick={onClose} disabled={importing}>
+                Cancel
+              </Button>
+              <Button size="sm" onClick={onImport} disabled={importing || validCount === 0}>
+                {importing ? (
+                  <>
+                    <Loader2 className="h-3 w-3 animate-spin" />
+                    Importing...
+                  </>
+                ) : (
+                  `Import ${validCount} Valid`
+                )}
+              </Button>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -81,6 +320,14 @@ function ClientsSection({ businessId }: { businessId: Id<"businesses"> }) {
   const [editForm, setEditForm] = useState({
     name: "", email: "", phone: "", address: "", city: "", state: "", zipCode: "",
   });
+
+  // CSV import state
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [csvRows, setCsvRows] = useState<ParsedRow[] | null>(null);
+  const [csvImporting, setCsvImporting] = useState(false);
+  const [csvProgress, setCsvProgress] = useState<{ current: number; total: number } | null>(null);
+  const [csvDone, setCsvDone] = useState(false);
+  const [csvResult, setCsvResult] = useState<{ imported: number; skipped: number } | null>(null);
 
   function update(field: string, value: string) {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -155,6 +402,67 @@ function ClientsSection({ businessId }: { businessId: Id<"businesses"> }) {
     await deleteClient({ clientId, businessId });
   }
 
+  const handleFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const text = ev.target?.result as string;
+      const rows = parseCSV(text);
+      setCsvRows(rows);
+      setCsvImporting(false);
+      setCsvDone(false);
+      setCsvResult(null);
+      setCsvProgress(null);
+    };
+    reader.readAsText(file);
+    // Reset input so same file can be re-selected
+    e.target.value = "";
+  }, []);
+
+  const handleCsvImport = useCallback(async () => {
+    if (!csvRows) return;
+    const validRows = csvRows.filter((r) => r.valid);
+    if (validRows.length === 0) return;
+
+    setCsvImporting(true);
+    setCsvProgress({ current: 0, total: validRows.length });
+    let imported = 0;
+    let skipped = 0;
+
+    for (let i = 0; i < validRows.length; i++) {
+      const row = validRows[i];
+      try {
+        await createClient({
+          businessId,
+          name: row.name,
+          email: row.email || undefined,
+          phone: row.phone || undefined,
+          address: row.address || undefined,
+          city: row.city || undefined,
+          state: row.state || undefined,
+          zipCode: row.zipCode,
+        });
+        imported++;
+      } catch {
+        skipped++;
+      }
+      setCsvProgress({ current: i + 1, total: validRows.length });
+    }
+
+    setCsvImporting(false);
+    setCsvDone(true);
+    setCsvResult({ imported, skipped: skipped + (csvRows.length - validRows.length) });
+  }, [csvRows, businessId, createClient]);
+
+  const closeCsvModal = useCallback(() => {
+    setCsvRows(null);
+    setCsvImporting(false);
+    setCsvDone(false);
+    setCsvResult(null);
+    setCsvProgress(null);
+  }, []);
+
   const labelClass = "block text-[10px] text-muted uppercase tracking-widest mb-1";
 
   return (
@@ -166,11 +474,41 @@ function ClientsSection({ businessId }: { businessId: Id<"businesses"> }) {
             Clients{clients ? ` (${clients.length})` : ""}
           </h2>
         </div>
-        <Button size="sm" onClick={() => setShowForm(!showForm)}>
-          <Plus className="h-3 w-3" />
-          Add Client
-        </Button>
+        <div className="flex items-center gap-2">
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".csv"
+            className="hidden"
+            onChange={handleFileChange}
+          />
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => fileInputRef.current?.click()}
+          >
+            <Upload className="h-3 w-3" />
+            Import CSV
+          </Button>
+          <Button size="sm" onClick={() => setShowForm(!showForm)}>
+            <Plus className="h-3 w-3" />
+            Add Client
+          </Button>
+        </div>
       </div>
+
+      {/* CSV Import Modal */}
+      {csvRows && (
+        <CSVImportModal
+          rows={csvRows}
+          onImport={handleCsvImport}
+          onClose={closeCsvModal}
+          importing={csvImporting}
+          progress={csvProgress}
+          done={csvDone}
+          result={csvResult}
+        />
+      )}
 
       {showForm && (
         <div className="rounded bg-surface-secondary border border-white/[0.04] p-5 mb-4">
@@ -178,11 +516,11 @@ function ClientsSection({ businessId }: { businessId: Id<"businesses"> }) {
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className={labelClass}>Name *</label>
-                <Input value={form.name} onChange={(e) => update("name", e.target.value)} placeholder="Margaret Chen" required />
+                <Input value={form.name} onChange={(e) => update("name", e.target.value)} placeholder="Sarah Mitchell" required />
               </div>
               <div>
                 <label className={labelClass}>Phone</label>
-                <Input value={form.phone} onChange={(e) => update("phone", e.target.value)} placeholder="+13125550101" />
+                <Input value={form.phone} onChange={(e) => update("phone", e.target.value)} placeholder="+14805550101" />
               </div>
             </div>
             <div className="grid grid-cols-2 gap-3">
@@ -192,21 +530,21 @@ function ClientsSection({ businessId }: { businessId: Id<"businesses"> }) {
               </div>
               <div>
                 <label className={labelClass}>Zip Code *</label>
-                <Input value={form.zipCode} onChange={(e) => update("zipCode", e.target.value)} placeholder="60601" required />
+                <Input value={form.zipCode} onChange={(e) => update("zipCode", e.target.value)} placeholder="85142" required />
               </div>
             </div>
             <div className="grid grid-cols-3 gap-3">
               <div>
                 <label className={labelClass}>Address</label>
-                <Input value={form.address} onChange={(e) => update("address", e.target.value)} placeholder="1420 S Michigan Ave" />
+                <Input value={form.address} onChange={(e) => update("address", e.target.value)} placeholder="21423 S 226th St" />
               </div>
               <div>
                 <label className={labelClass}>City</label>
-                <Input value={form.city} onChange={(e) => update("city", e.target.value)} placeholder="Chicago" />
+                <Input value={form.city} onChange={(e) => update("city", e.target.value)} placeholder="Queen Creek" />
               </div>
               <div>
                 <label className={labelClass}>State</label>
-                <Input value={form.state} onChange={(e) => update("state", e.target.value)} placeholder="IL" />
+                <Input value={form.state} onChange={(e) => update("state", e.target.value)} placeholder="AZ" />
               </div>
             </div>
             <div className="flex justify-end gap-2 pt-1">
@@ -232,7 +570,7 @@ function ClientsSection({ businessId }: { businessId: Id<"businesses"> }) {
                     </div>
                     <div>
                       <label className={labelClass}>Phone</label>
-                      <Input value={editForm.phone} onChange={(e) => updateEdit("phone", e.target.value)} placeholder="+13125550101" />
+                      <Input value={editForm.phone} onChange={(e) => updateEdit("phone", e.target.value)} placeholder="+14805550101" />
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-3">
@@ -428,7 +766,7 @@ function CrewSection({ businessId }: { businessId: Id<"businesses"> }) {
               </div>
               <div>
                 <label className={labelClass}>Phone *</label>
-                <Input value={form.phone} onChange={(e) => update("phone", e.target.value)} placeholder="+13125550110" required />
+                <Input value={form.phone} onChange={(e) => update("phone", e.target.value)} placeholder="+14805550110" required />
               </div>
             </div>
             <div className="grid grid-cols-2 gap-3">
@@ -554,8 +892,3 @@ function CrewSection({ businessId }: { businessId: Id<"businesses"> }) {
     </section>
   );
 }
-
-
-
-
-
