@@ -86,44 +86,47 @@ export default function DashboardPage() {
   return (
     <div className="space-y-0">
       {/* Cinematic Dashboard Hero */}
-      <div className="relative h-[300px] w-full overflow-hidden border-b border-white/[0.08]">
+      <div className="relative h-[280px] w-full overflow-hidden border-b border-white/[0.08] bg-black">
         <Image
-          src="/marketing/revenue-scoreboard.png"
-          alt="Rain Check Revenue Command"
+          src="/marketing/industrial-site-blue-hour.jpg"
+          alt="Rain Check Industrial Command"
           fill
-          className="object-cover object-center opacity-60 contrast-[1.2]"
+          className="object-cover object-center opacity-40 contrast-[1.2] grayscale-[0.3]"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-surface-primary via-transparent to-transparent" />
         <div className="absolute inset-0 bg-gradient-to-r from-surface-primary/80 via-transparent to-transparent" />
         
-        <div className="relative z-10 h-full flex flex-col justify-end px-8 pb-10">
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-accent/10 border border-accent/20 rounded text-[10px] font-bold text-accent uppercase tracking-[0.3em] mb-4 w-fit">
-            <span className="h-1 w-1 rounded-full bg-accent animate-pulse" />
-            System Live: RC-RADAR-V4
+        {/* Floating HUD Asset Overlay */}
+        <div className="absolute right-0 top-0 h-full w-1/2 pointer-events-none hidden xl:block">
+          <Image 
+            src="/marketing/tactical-hud-display.png" 
+            alt="Tactical HUD" 
+            fill 
+            className="object-contain object-right opacity-30 mix-blend-screen" 
+          />
+        </div>
+
+        <div className="relative z-10 h-full flex flex-col justify-end px-10 pb-12">
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-accent/10 border border-accent/20 rounded text-[10px] font-bold text-accent uppercase tracking-[0.4em] mb-6 w-fit">
+            <span className="h-1 w-1 rounded-full bg-accent animate-ping" />
+            Control Surface: ACTIVE
           </div>
-          <h1 className="font-heading text-4xl lg:text-5xl font-black text-white uppercase italic tracking-tighter leading-tight">
+          <h1 className="font-heading text-5xl lg:text-6xl font-black text-white uppercase italic tracking-tighter leading-tight">
             Operational <br/> <span className="text-accent">Command.</span>
           </h1>
-          <div className="mt-6 flex items-center gap-8 text-[10px] font-mono text-dim font-bold uppercase tracking-[0.2em]">
-            <div className="flex flex-col gap-1">
-              <span className="text-muted opacity-50">Signal Integrity</span>
-              <span className="text-secondary">0.994ms (Optimal)</span>
-            </div>
-            <div className="flex flex-col gap-1 border-l border-white/10 pl-8">
-              <span className="text-muted opacity-50">Weather Feed</span>
-              <span className="text-secondary">Tomorrow.io Real-time</span>
-            </div>
-          </div>
         </div>
       </div>
 
       {/* Tactical Header */}
-      <div className="px-8 py-5 border-b border-white/[0.04] flex items-center justify-between bg-surface-secondary/20 backdrop-blur-md">
-        <div>
-          <h1 className="font-heading text-2xl font-black text-white uppercase italic tracking-tighter">
+      <div className="px-10 py-8 border-b border-white/[0.04] flex items-center justify-between bg-surface-primary relative overflow-hidden">
+        {/* Micro-Grid Background for Header */}
+        <div className="absolute inset-0 opacity-[0.02] pointer-events-none bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px]" />
+        
+        <div className="relative z-10">
+          <h1 className="font-heading text-3xl font-black text-white uppercase italic tracking-tighter">
             {greeting}, {businessName}
           </h1>
-          <p className="text-caption text-muted font-mono tracking-widest uppercase mt-1">
+          <p className="text-caption text-muted font-mono tracking-[0.3em] uppercase mt-2">
             {dateDisplay}
           </p>
         </div>
@@ -233,33 +236,34 @@ export default function DashboardPage() {
           {/* Right — Ops Panel (4/12) */}
           <div className="lg:col-span-4 space-y-4">
             {/* Threat Summary */}
-            <div className="rounded bg-surface-secondary border border-white/[0.04] p-5 relative overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-br from-white/[0.01] to-transparent pointer-events-none" />
-              <h3 className="text-[10px] font-extrabold text-muted uppercase tracking-[0.3em] mb-4">
-                Threat Summary
+            <div className="rounded-2xl bg-surface-secondary/40 backdrop-blur-[40px] border border-white/[0.06] p-6 relative overflow-hidden shadow-2xl group">
+              <div className="absolute inset-0 bg-gradient-to-br from-white/[0.02] to-transparent pointer-events-none" />
+              <h3 className="text-[10px] font-extrabold text-muted uppercase tracking-[0.4em] mb-6 flex items-center gap-2">
+                <div className="h-1 w-1 rounded-full bg-accent" />
+                Operational_Threat_Index
               </h3>
-              <div className="space-y-3">
+              <div className="space-y-4">
                 <ThreatRow
-                  label="Clear"
+                  label="Nominal"
                   count={greenCount}
                   total={totalWithStatus}
-                  color="bg-emerald-400"
+                  color="bg-status-green"
                 />
                 <ThreatRow
-                  label="Warning"
+                  label="Elevated"
                   count={yellowCount}
                   total={totalWithStatus}
-                  color="bg-amber-400"
+                  color="bg-status-yellow"
                 />
                 <ThreatRow
                   label="Critical"
                   count={redCount}
                   total={totalWithStatus}
-                  color="bg-red-400"
+                  color="bg-status-red"
                 />
               </div>
-              {/* Scan line animation */}
-              <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-accent/30 to-transparent animate-pulse" />
+              {/* Tactical Scanline */}
+              <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-accent/20 to-transparent animate-[scan_4s_linear_infinite]" />
             </div>
 
             {/* Revenue at Risk */}

@@ -1,6 +1,8 @@
-// Auth config — providers cleared temporarily (Clerk removed).
-// Re-add Clerk provider here when auth is restored.
-
 export default {
-  providers: [],
+  providers: [
+    {
+      domain: process.env.CLERK_JWT_ISSUER_DOMAIN,
+      applicationID: "convex",
+    },
+  ],
 };
