@@ -6,8 +6,10 @@ import { cn } from "@/lib/utils";
 export function AIFBlueprint() {
   return (
     <section className="py-40 px-8 bg-surface-primary border-t border-white/[0.04] relative overflow-hidden">
-      {/* Schematic Grid Overlay */}
-      <div className="absolute inset-0 opacity-[0.05] pointer-events-none bg-[linear-gradient(to_right,#808080_1px,transparent_1px),linear-gradient(to_bottom,#808080_1px,transparent_1px)] bg-[size:40px_40px]" />
+      {/* Precision Schematic Background */}
+      <div className="absolute inset-0 opacity-[0.08] pointer-events-none">
+        <img src="/marketing/concrete-schematic.png" className="w-full h-full object-cover mix-blend-screen" />
+      </div>
       
       <div className="mx-auto max-w-[1400px] relative z-10">
         <div className="flex flex-col lg:flex-row gap-20 items-start">
@@ -23,7 +25,7 @@ export function AIFBlueprint() {
               <BlueprintMeta label="Logic Density" value="High-Frequency" />
               <BlueprintMeta label="Failure Tolerance" value="0.0001%" />
             </div>
-            {/* Cinematic Mascot Integration */}
+            {/* Cinematic Logic Core Integration */}
             <motion.div 
               initial={{ opacity: 0, scale: 0.9 }}
               whileInView={{ opacity: 1, scale: 1 }}
@@ -31,8 +33,8 @@ export function AIFBlueprint() {
             >
               <div className="absolute inset-0 bg-accent/5 opacity-0 group-hover:opacity-100 transition-opacity" />
               <img 
-                src="/marketing/contractor-figurine-mascot.png" 
-                alt="Rain Check Mascot" 
+                src="/marketing/logic-core-are.png" 
+                alt="Rain Check Logic Core" 
                 className="w-full h-auto rounded-2xl grayscale hover:grayscale-0 transition-all duration-700"
               />
             </motion.div>

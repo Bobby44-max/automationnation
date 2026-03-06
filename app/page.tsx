@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { addDays, format } from 'date-fns';
+import { useAuth } from '@clerk/nextjs';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion, useScroll, useTransform } from 'framer-motion';
@@ -76,6 +77,7 @@ const PRICING = [
 ];
 
 export default function LandingPage() {
+  const { isSignedIn } = useAuth();
   const { scrollYProgress } = useScroll();
   const yRange = useTransform(scrollYProgress, [0, 0.2], [0, -100]);
   const opacityRange = useTransform(scrollYProgress, [0, 0.1], [1, 0]);
@@ -112,6 +114,18 @@ export default function LandingPage() {
         <section className="relative h-screen flex items-center justify-center border-b border-white/[0.04] overflow-hidden">
           <StormField />
           
+          {/* Elite 3D Hero Asset */}
+          <div className="absolute inset-0 z-0">
+            <Image 
+              src="/marketing/hero-command-dawn.jpg" 
+              alt="Rain Check Tactical Command" 
+              fill 
+              className="object-cover opacity-40 contrast-[1.1] grayscale-[0.2]"
+              priority
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-surface-primary via-surface-primary/40 to-transparent" />
+          </div>
+
           <motion.div 
             style={{ y: yRange, opacity: opacityRange }}
             className="relative z-10 text-center px-6"
@@ -222,9 +236,10 @@ export default function LandingPage() {
 
         {/* --- PRICING (Operational Tiers) --- */}
         <section id="economics" className="py-40 px-8 bg-surface-primary border-t border-white/[0.04] relative overflow-hidden">
+          {/* Tactical Radar Path Background */}
           <div className="absolute inset-0 z-0">
             <img 
-              src="/marketing/storm-vs-sunny-transition.png" 
+              src="/marketing/tactical-radar-path.jpg" 
               alt="Atmospheric Transition" 
               className="w-full h-full object-cover opacity-10 grayscale contrast-[1.2]"
             />

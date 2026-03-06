@@ -10,13 +10,12 @@ import { JobCard } from "../scheduling/weather/components/JobCard";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Zap,
-  AlertTriangle,
   DollarSign,
-  Activity,
   ArrowUpRight,
 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import Image from "next/image";
 
 export default function DashboardPage() {
   const { businessId, businessName } = useDemoBusiness();
@@ -86,8 +85,40 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-0">
-      {/* Compact Tactical Header */}
-      <div className="px-8 py-5 border-b border-white/[0.04] flex items-center justify-between">
+      {/* Cinematic Dashboard Hero */}
+      <div className="relative h-[300px] w-full overflow-hidden border-b border-white/[0.08]">
+        <Image
+          src="/marketing/revenue-scoreboard.png"
+          alt="Rain Check Revenue Command"
+          fill
+          className="object-cover object-center opacity-60 contrast-[1.2]"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-surface-primary via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-surface-primary/80 via-transparent to-transparent" />
+        
+        <div className="relative z-10 h-full flex flex-col justify-end px-8 pb-10">
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-accent/10 border border-accent/20 rounded text-[10px] font-bold text-accent uppercase tracking-[0.3em] mb-4 w-fit">
+            <span className="h-1 w-1 rounded-full bg-accent animate-pulse" />
+            System Live: RC-RADAR-V4
+          </div>
+          <h1 className="font-heading text-4xl lg:text-5xl font-black text-white uppercase italic tracking-tighter leading-tight">
+            Operational <br/> <span className="text-accent">Command.</span>
+          </h1>
+          <div className="mt-6 flex items-center gap-8 text-[10px] font-mono text-dim font-bold uppercase tracking-[0.2em]">
+            <div className="flex flex-col gap-1">
+              <span className="text-muted opacity-50">Signal Integrity</span>
+              <span className="text-secondary">0.994ms (Optimal)</span>
+            </div>
+            <div className="flex flex-col gap-1 border-l border-white/10 pl-8">
+              <span className="text-muted opacity-50">Weather Feed</span>
+              <span className="text-secondary">Tomorrow.io Real-time</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Tactical Header */}
+      <div className="px-8 py-5 border-b border-white/[0.04] flex items-center justify-between bg-surface-secondary/20 backdrop-blur-md">
         <div>
           <h1 className="font-heading text-2xl font-black text-white uppercase italic tracking-tighter">
             {greeting}, {businessName}
@@ -137,7 +168,21 @@ export default function DashboardPage() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Left — Main Content (8/12) */}
           <div className="lg:col-span-8 space-y-6">
-            <WeatherStrip businessId={businessId} />
+            {/* Weather Strip + Comms Widget Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+              <div className="md:col-span-8">
+                <WeatherStrip businessId={businessId} />
+              </div>
+              <div className="md:col-span-4 rounded bg-surface-secondary border border-white/[0.04] p-5 overflow-hidden relative group">
+                <div className="absolute inset-0 opacity-20 grayscale group-hover:grayscale-0 transition-all duration-700">
+                  <Image src="/marketing/sms-automation.jpg" fill alt="SMS Automation" className="object-cover" />
+                </div>
+                <div className="relative z-10">
+                  <div className="text-[10px] font-bold text-accent uppercase tracking-widest mb-2">Comms Active</div>
+                  <div className="text-body font-bold text-white tracking-tight">Zero-Touch Client Notification</div>
+                </div>
+              </div>
+            </div>
 
             <div>
               <div className="flex items-center justify-between mb-4">
@@ -213,33 +258,33 @@ export default function DashboardPage() {
                   color="bg-red-400"
                 />
               </div>
-              {totalWithStatus === 0 && (
-                <p className="text-caption text-dim mt-2">
-                  No weather data yet
-                </p>
-              )}
               {/* Scan line animation */}
               <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-accent/30 to-transparent animate-pulse" />
             </div>
 
             {/* Revenue at Risk */}
-            <div className="rounded bg-surface-secondary border border-white/[0.04] p-5">
-              <h3 className="text-[10px] font-extrabold text-muted uppercase tracking-[0.3em] mb-3">
-                Revenue at Risk
-              </h3>
-              <div className="flex items-baseline gap-2">
-                <DollarSign className="h-5 w-5 text-red-400 opacity-60" />
-                <span className="text-3xl font-heading font-black text-white italic tracking-tighter">
-                  {revenueAtRisk > 0
-                    ? `$${revenueAtRisk.toLocaleString()}`
-                    : "$0"}
-                </span>
+            <div className="rounded bg-surface-secondary border border-white/[0.04] p-5 relative group overflow-hidden">
+              <div className="absolute inset-0 opacity-10 grayscale group-hover:grayscale-0 transition-all duration-700 pointer-events-none">
+                <Image src="/marketing/theater-of-ops.png" fill alt="Theater of Ops" className="object-cover" />
               </div>
-              <p className="text-caption text-dim mt-2">
-                {redCount > 0
-                  ? `${redCount} red job${redCount !== 1 ? "s" : ""} impacted`
-                  : "No jobs at risk"}
-              </p>
+              <div className="relative z-10">
+                <h3 className="text-[10px] font-extrabold text-muted uppercase tracking-[0.3em] mb-3">
+                  Revenue at Risk
+                </h3>
+                <div className="flex items-baseline gap-2">
+                  <DollarSign className="h-5 w-5 text-red-400 opacity-60" />
+                  <span className="text-3xl font-heading font-black text-white italic tracking-tighter">
+                    {revenueAtRisk > 0
+                      ? `$${revenueAtRisk.toLocaleString()}`
+                      : "$0"}
+                  </span>
+                </div>
+                <p className="text-caption text-dim mt-2">
+                  {redCount > 0
+                    ? `${redCount} red job${redCount !== 1 ? "s" : ""} impacted`
+                    : "No jobs at risk"}
+                </p>
+              </div>
             </div>
 
             {/* Recent Activity */}

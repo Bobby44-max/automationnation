@@ -52,7 +52,17 @@
       "Bash(vercel.cmd domains inspect rainchek.org)",
       "Bash(vercel.cmd domains inspect automationnation.wtf)",
       "Bash(vercel.cmd domains inspect eduprephub.com)",
-      "Bash(vercel.cmd project ls)"
+      "Bash(vercel.cmd project ls)",
+      "Bash(vercel.cmd dns:*)",
+      "Bash(vercel.cmd env:*)",
+      "WebFetch(domain:rainchek.org)",
+      "Bash(node:*)",
+      "Bash(gh api:*)",
+      "Bash(gh auth:*)",
+      "Bash(grep:*)",
+      "WebFetch(domain:n8n.srv1021380.hstgr.cloud)",
+      "WebFetch(domain:eduprephub.com)",
+      "Bash(wc:*)"
     ]
   }
 }
