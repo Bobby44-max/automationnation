@@ -788,6 +788,71 @@ export const updateJob = mutation({
   },
 });
 
+// ============================================================
+// INTEGRATIONS
+// ============================================================
+
+export const getIntegrations = query({
+  args: { businessId: v.id("businesses") },
+  handler: async (ctx, { businessId }) => {
+    return await ctx.db
+      .query("integrations")
+      .withIndex("by_business", (q) => q.eq("businessId", businessId))
+      .collect();
+  },
+});
+
+export const connectIntegration = mutation({
+  args: {
+    businessId: v.id("businesses"),
+    serviceName: v.string(),
+    apiKey: v.string(),
+    apiSecret: v.optional(v.string()),
+  },
+  handler: async (ctx, { businessId, serviceName, apiKey, apiSecret }) => {
+    const existing = await ctx.db
+      .query("integrations")
+      .withIndex("by_business_service", (q) =>
+        q.eq("businessId", businessId).eq("serviceName", serviceName)
+      )
+      .first();
+
+    const data = {
+      businessId,
+      serviceName,
+      apiKey,
+      apiSecret,
+      status: "connected" as const,
+      connectedAt: Date.now(),
+    };
+
+    if (existing) {
+      await ctx.db.patch(existing._id, data);
+      return existing._id;
+    }
+    return await ctx.db.insert("integrations", data);
+  },
+});
+
+export const disconnectIntegration = mutation({
+  args: {
+    businessId: v.id("businesses"),
+    serviceName: v.string(),
+  },
+  handler: async (ctx, { businessId, serviceName }) => {
+    const existing = await ctx.db
+      .query("integrations")
+      .withIndex("by_business_service", (q) =>
+        q.eq("businessId", businessId).eq("serviceName", serviceName)
+      )
+      .first();
+
+    if (existing) {
+      await ctx.db.delete(existing._id);
+    }
+  },
+});
+
 export const deleteJob = mutation({
   args: { jobId: v.id("jobs"), businessId: v.id("businesses") },
   handler: async (ctx, { jobId, businessId }) => {

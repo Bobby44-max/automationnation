@@ -191,6 +191,18 @@ export default defineSchema({
     .index("by_location_time", ["location", "timestamp"])
     .index("by_expires", ["expiresAt"]),
 
+  // --- Integrations ---
+  integrations: defineTable({
+    businessId: v.id("businesses"),
+    serviceName: v.string(), // "jobber", "servicetitan", "housecall_pro", "google_calendar", "quickbooks"
+    status: v.string(), // "connected"
+    apiKey: v.string(),
+    apiSecret: v.optional(v.string()), // Tenant ID, Company ID, etc.
+    connectedAt: v.number(),
+  })
+    .index("by_business", ["businessId"])
+    .index("by_business_service", ["businessId", "serviceName"]),
+
   // --- Notification Log ---
   notifications: defineTable({
     jobId: v.optional(v.id("jobs")),
