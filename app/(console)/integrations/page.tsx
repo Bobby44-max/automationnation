@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useQuery, useMutation } from "convex/react";
+import { useQuery, useMutation, useAction } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useDemoBusiness } from "@/lib/demo-context";
 import {
@@ -87,7 +87,7 @@ export default function IntegrationsPage() {
     api.weatherScheduling.getIntegrations,
     businessId ? { businessId } : "skip"
   );
-  const connectMutation = useMutation(api.weatherScheduling.connectIntegration);
+  const connectAction = useAction(api.actions.integrations.connectIntegrationSecure);
   const disconnectMutation = useMutation(api.weatherScheduling.disconnectIntegration);
 
   const [connectingService, setConnectingService] = useState<ServiceKey | null>(null);
@@ -105,7 +105,7 @@ export default function IntegrationsPage() {
     if (!businessId || !connectingService) return;
     setSaving(true);
     try {
-      await connectMutation({
+      await connectAction({
         businessId,
         serviceName: connectingService,
         apiKey: formValues.apiKey || "",

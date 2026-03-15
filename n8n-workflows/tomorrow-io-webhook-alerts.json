@@ -1,0 +1,1001 @@
+{
+  "name": "Tomorrow.io Webhook Weather Alerts",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "raincheck-weather-alerts",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-receiver",
+      "name": "Webhook Receiver",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        220,
+        460
+      ],
+      "webhookId": "raincheck-weather-alerts",
+      "notes": "Receives POST from Tomorrow.io webhook alerts. Path: /webhook/raincheck-weather-alerts. Response sent via 'Respond to Webhook' node to meet Tomorrow.io timeout requirements."
+    },
+    {
+      "parameters": {
+        "jsCode": "// Validate Tomorrow.io webhook signature header format\n// Full HMAC validation deferred \u00e2\u20ac\u201d n8n sandbox blocks both require('crypto') and crypto.subtle\n// For demo: verify header exists, format is correct, and timestamp is fresh\n//\n// Header format: X-Signature: t={timestamp},sig={hex_signature}\n\nconst headers = $input.first().json.headers;\nconst signatureHeader = headers['x-signature'] || headers['X-Signature'] || '';\n\nif (!signatureHeader) {\n  return [{ json: { valid: false, error: 'Missing X-Signature header' } }];\n}\n\n// Parse t={timestamp},sig={signature}\nconst parts = {};\nsignatureHeader.split(',').forEach(part => {\n  const idx = part.indexOf('=');\n  if (idx > 0) {\n    parts[part.substring(0, idx).trim()] = part.substring(idx + 1).trim();\n  }\n});\n\nconst timestamp = parts['t'];\nconst sig = parts['sig'];\n\n// Validate format: timestamp must be numeric, sig must be hex\nif (!timestamp || !sig) {\n  return [{ json: { valid: false, error: 'Invalid signature format \u00e2\u20ac\u201d expected t={timestamp},sig={hex}' } }];\n}\n\nif (!/^\\\\d+$/.test(timestamp)) {\n  return [{ json: { valid: false, error: 'Invalid timestamp \u00e2\u20ac\u201d must be numeric' } }];\n}\n\nif (!/^[0-9a-fA-F]{64}$/.test(sig)) {\n  return [{ json: { valid: false, error: 'Invalid signature \u00e2\u20ac\u201d expected 64-char hex (SHA-256)' } }];\n}\n\n// Freshness check: reject if timestamp is older than 5 minutes\nconst now = Math.floor(Date.now() / 1000);\nconst tsSeconds = parseInt(timestamp, 10);\nconst age = Math.abs(now - tsSeconds);\n\nif (age > 300) {\n  return [{ json: { valid: false, error: 'Stale signature \u00e2\u20ac\u201d timestamp is ' + age + 's old (max 300s)' } }];\n}\n\n// Header format valid and fresh \u00e2\u20ac\u201d pass through the body\nreturn [{ json: { valid: true, body: $input.first().json.body } }];"
+      },
+      "id": "validate-signature",
+      "name": "Validate Signature",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        440,
+        460
+      ],
+      "notes": "Validates Tomorrow.io X-Signature header format and freshness. Checks: header exists, format is t={timestamp},sig={64-char-hex}, timestamp within 5 minutes. Full HMAC-SHA256 validation deferred (n8n sandbox blocks crypto modules)."
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "sig-valid-check",
+              "leftValue": "={{ $json.valid }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ]
+        }
+      },
+      "id": "sig-check-if",
+      "name": "Signature Valid?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        660,
+        460
+      ],
+      "notes": "Routes valid signatures to processing, invalid to 401 response."
+    },
+    {
+      "parameters": {
+        "options": {},
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ error: $json.error || 'Unauthorized' }) }}",
+        "responseCode": 401
+      },
+      "id": "respond-401",
+      "name": "Respond 401 Unauthorized",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        880,
+        620
+      ],
+      "notes": "Returns 401 for invalid webhook signatures."
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parse Tomorrow.io alert payload\n// Payload root: body.data\n// Key fields:\n//   data.notification.type \u00e2\u2020\u2019 PRIOR | START | END | PUBLISH\n//   data.event.eventValues.windSpeed (m/s)\n//   data.event.eventValues.precipitationIntensity (mm/hr)\n//   data.event.eventValues.temperature (Celsius)\n//   data.event.triggerValues \u00e2\u2020\u2019 values that crossed thresholds\n//   data.event.startTime \u00e2\u2020\u2019 when weather event starts\n//   data.locations[].id \u00e2\u2020\u2019 Tomorrow.io location IDs\n\nconst payload = $input.first().json.body;\nconst data = payload?.data || payload;\n\nconst notificationType = data?.notification?.type || 'UNKNOWN';\nconst event = data?.event || {};\nconst eventValues = event.eventValues || {};\nconst triggerValues = event.triggerValues || {};\nconst locations = data?.locations || [];\nconst locationIds = locations.map(loc => loc.id);\n\n// Extract weather values (Tomorrow.io sends metric)\nconst windSpeed_ms = eventValues.windSpeed ?? null; // m/s\nconst windSpeed_mph = windSpeed_ms !== null ? Math.round(windSpeed_ms * 2.237 * 10) / 10 : null;\nconst precipIntensity_mmhr = eventValues.precipitationIntensity ?? null; // mm/hr\nconst precipIntensity_inhr = precipIntensity_mmhr !== null ? Math.round(precipIntensity_mmhr / 25.4 * 1000) / 1000 : null;\nconst temperature_c = eventValues.temperature ?? null; // Celsius\nconst temperature_f = temperature_c !== null ? Math.round((temperature_c * 9/5 + 32) * 10) / 10 : null;\nconst humidity = eventValues.humidity ?? null;\nconst visibility = eventValues.visibility ?? null;\n\nconst eventStartTime = event.startTime || null;\nconst eventEndTime = event.endTime || null;\nconst severity = event.severity || data?.notification?.severity || 'unknown';\nconst alertName = data?.notification?.name || event.name || 'Weather Alert';\n\n// Derive the affected date from event start time\nlet affectedDate = null;\nif (eventStartTime) {\n  affectedDate = eventStartTime.split('T')[0];\n}\nif (!affectedDate) {\n  affectedDate = new Date().toISOString().split('T')[0];\n}\n\nreturn [{\n  json: {\n    notificationType,\n    alertName,\n    severity,\n    affectedDate,\n    eventStartTime,\n    eventEndTime,\n    locationIds,\n    weather: {\n      windSpeed: { ms: windSpeed_ms, mph: windSpeed_mph },\n      precipitation: { mmhr: precipIntensity_mmhr, inhr: precipIntensity_inhr },\n      temperature: { celsius: temperature_c, fahrenheit: temperature_f },\n      humidity,\n      visibility\n    },\n    triggerValues,\n    rawLocations: locations\n  }\n}];"
+      },
+      "id": "parse-alert",
+      "name": "Parse Alert Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        880,
+        340
+      ],
+      "notes": "Extracts notification type, weather values, location IDs, event timing from Tomorrow.io webhook payload. Converts metric to imperial for display. Derives affected date from event start time."
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "combinator": "or",
+          "conditions": [
+            {
+              "id": "is-prior",
+              "leftValue": "={{ $json.notificationType }}",
+              "rightValue": "PRIOR",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "is-start",
+              "leftValue": "={{ $json.notificationType }}",
+              "rightValue": "START",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ]
+        }
+      },
+      "id": "filter-notification-type",
+      "name": "Filter PRIOR/START Only",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1100,
+        340
+      ],
+      "notes": "Only process PRIOR (advance warning) and START (event beginning) notifications. END and PUBLISH are logged but not acted on."
+    },
+    {
+      "parameters": {
+        "options": {},
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ status: 'ignored', type: $json.notificationType, reason: 'Only PRIOR and START notifications are processed' }) }}",
+        "responseCode": 200
+      },
+      "id": "respond-200-ignored",
+      "name": "Respond 200 Ignored",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        1320,
+        500
+      ],
+      "notes": "Returns 200 OK for ignored notification types (END, PUBLISH). Must always respond 200 to Tomorrow.io to prevent retries."
+    },
+    {
+      "parameters": {
+        "url": "https://small-pigeon-28.convex.cloud/api/query",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ path: 'weatherScheduling:getDemoBusiness', args: {} }) }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        },
+        "method": "POST"
+      },
+      "id": "fetch-business",
+      "name": "Fetch Business",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1320,
+        220
+      ],
+      "notes": "Fetches the active business from Convex. Uses getDemoBusiness for single-tenant demo. In multi-tenant production, would resolve business from Tomorrow.io location mapping."
+    },
+    {
+      "parameters": {
+        "url": "https://small-pigeon-28.convex.cloud/api/query",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ path: 'weatherScheduling:getJobsForDate', args: { businessId: $('Fetch Business').item.json.value._id, date: $('Parse Alert Data').item.json.affectedDate } }) }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        },
+        "method": "POST"
+      },
+      "id": "fetch-jobs",
+      "name": "Fetch Active Jobs",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1540,
+        220
+      ],
+      "notes": "Queries Convex for all jobs scheduled on the affected date. Returns enriched job data including client info, crew lead, and current weather status."
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "has-jobs",
+              "leftValue": "={{ ($json.value || []).length }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ]
+        }
+      },
+      "id": "has-jobs-check",
+      "name": "Has Active Jobs?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1760,
+        220
+      ],
+      "notes": "Check if there are any jobs on the affected date. If none, respond 200 and stop."
+    },
+    {
+      "parameters": {
+        "options": {},
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ status: 'ok', message: 'No active jobs for affected date', date: $('Parse Alert Data').item.json.affectedDate }) }}",
+        "responseCode": 200
+      },
+      "id": "respond-200-no-jobs",
+      "name": "Respond 200 No Jobs",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        1980,
+        380
+      ],
+      "notes": "Returns 200 OK when no jobs are found for the affected date."
+    },
+    {
+      "parameters": {
+        "jsCode": "// Deterministic Weather Rule Engine\n// Evaluates Tomorrow.io alert weather data against trade-specific rules.\n// Uses metric thresholds (Tomorrow.io sends metric).\n//\n// Thresholds:\n//   Wind: >= 11.2 m/s (25 mph) \u00e2\u2020\u2019 RED, >= 6.7 m/s (15 mph) \u00e2\u2020\u2019 YELLOW\n//   Rain: > 2.54 mm/hr (0.1 in/hr) \u00e2\u2020\u2019 RED (roofing, painting), > 0.51 mm/hr (0.02 in/hr) \u00e2\u2020\u2019 YELLOW\n//   Temp: < 1.7\u00c2\u00b0C (35\u00c2\u00b0F) \u00e2\u2020\u2019 RED (concrete), < 4.4\u00c2\u00b0C (40\u00c2\u00b0F) \u00e2\u2020\u2019 YELLOW (concrete)\n\nconst alertData = $('Parse Alert Data').first().json;\nconst business = $('Fetch Business').first().json.value;\nconst jobs = $('Fetch Active Jobs').first().json.value || [];\n\nconst weather = alertData.weather;\nconst wind_ms = weather.windSpeed.ms;\nconst rain_mmhr = weather.precipitation.mmhr;\nconst temp_c = weather.temperature.celsius;\n\n// Trade-specific thresholds (metric)\nconst TRADE_RULES = {\n  roofing: [\n    { variable: 'windSpeed', red: 11.2, yellow: 6.7, unit: 'm/s', reason_red: 'High winds unsafe for roofing', reason_yellow: 'Moderate winds \u00e2\u20ac\u201d use caution on roof' },\n    { variable: 'precipitation', red: 0.51, yellow: 0.25, unit: 'mm/hr', reason_red: 'Rain makes roofing surfaces dangerously slick', reason_yellow: 'Light rain expected \u00e2\u20ac\u201d surfaces may be slippery' },\n    { variable: 'temperature', red_below: -6.7, yellow_below: 1.7, unit: '\u00c2\u00b0C', reason_red: 'Extreme cold \u00e2\u20ac\u201d materials may crack', reason_yellow: 'Cold conditions affect shingle adhesion' }\n  ],\n  exterior_painting: [\n    { variable: 'windSpeed', red: 11.2, yellow: 6.7, unit: 'm/s', reason_red: 'Wind causes paint overspray and uneven application', reason_yellow: 'Moderate winds may affect spray painting' },\n    { variable: 'precipitation', red: 0.25, yellow: 0.1, unit: 'mm/hr', reason_red: 'Any moisture ruins fresh paint application', reason_yellow: 'Trace moisture possible \u00e2\u20ac\u201d monitor closely' },\n    { variable: 'temperature', red_below: 4.4, yellow_below: 10.0, unit: '\u00c2\u00b0C', reason_red: 'Too cold for paint to cure properly', reason_yellow: 'Low temps extend paint drying time' }\n  ],\n  landscaping: [\n    { variable: 'windSpeed', red: 15.6, yellow: 11.2, unit: 'm/s', reason_red: 'Dangerous wind conditions for outdoor work', reason_yellow: 'High winds \u00e2\u20ac\u201d secure loose materials' },\n    { variable: 'precipitation', red: 5.08, yellow: 2.54, unit: 'mm/hr', reason_red: 'Heavy rain makes ground work impossible', reason_yellow: 'Moderate rain \u00e2\u20ac\u201d mowing and grading affected' }\n  ],\n  concrete: [\n    { variable: 'windSpeed', red: 11.2, yellow: 6.7, unit: 'm/s', reason_red: 'Wind causes premature concrete surface drying', reason_yellow: 'Wind may affect concrete finish quality' },\n    { variable: 'precipitation', red: 0.51, yellow: 0.25, unit: 'mm/hr', reason_red: 'Rain damages uncured concrete surfaces', reason_yellow: 'Light rain risk \u00e2\u20ac\u201d have tarps ready' },\n    { variable: 'temperature', red_below: 1.7, yellow_below: 4.4, unit: '\u00c2\u00b0C', reason_red: 'Concrete cannot cure below freezing', reason_yellow: 'Cold slows concrete curing \u00e2\u20ac\u201d use blankets' }\n  ],\n  pressure_washing: [\n    { variable: 'windSpeed', red: 13.4, yellow: 8.9, unit: 'm/s', reason_red: 'Wind causes dangerous spray blowback', reason_yellow: 'Moderate wind affects spray control' },\n    { variable: 'temperature', red_below: -1.1, yellow_below: 1.7, unit: '\u00c2\u00b0C', reason_red: 'Freezing conditions \u00e2\u20ac\u201d water hazard on surfaces', reason_yellow: 'Near-freezing \u00e2\u20ac\u201d ice risk after washing' }\n  ]\n};\n\n// Default rules for unknown trades\nconst DEFAULT_RULES = [\n  { variable: 'windSpeed', red: 11.2, yellow: 6.7, unit: 'm/s', reason_red: 'High winds unsafe for outdoor work', reason_yellow: 'Moderate winds \u00e2\u20ac\u201d exercise caution' },\n  { variable: 'precipitation', red: 2.54, yellow: 0.51, unit: 'mm/hr', reason_red: 'Heavy rain \u00e2\u20ac\u201d reschedule outdoor work', reason_yellow: 'Light rain expected' },\n  { variable: 'temperature', red_below: -1.1, yellow_below: 1.7, unit: '\u00c2\u00b0C', reason_red: 'Extreme cold \u00e2\u20ac\u201d unsafe working conditions', reason_yellow: 'Cold conditions \u00e2\u20ac\u201d dress warmly' }\n];\n\nfunction getActualValue(variable) {\n  switch (variable) {\n    case 'windSpeed': return wind_ms;\n    case 'precipitation': return rain_mmhr;\n    case 'temperature': return temp_c;\n    default: return null;\n  }\n}\n\nfunction evaluateRule(rule) {\n  const actual = getActualValue(rule.variable);\n  if (actual === null || actual === undefined) return null;\n\n  // Temperature uses 'below' thresholds (cold is bad)\n  if (rule.red_below !== undefined) {\n    if (actual < rule.red_below) return { status: 'red', reason: rule.reason_red, actual, threshold: rule.red_below, variable: rule.variable, action: 'cancel' };\n    if (actual < rule.yellow_below) return { status: 'yellow', reason: rule.reason_yellow, actual, threshold: rule.yellow_below, variable: rule.variable, action: 'warn' };\n    return null;\n  }\n\n  // Wind and rain use 'above' thresholds\n  if (actual >= rule.red) return { status: 'red', reason: rule.reason_red, actual, threshold: rule.red, variable: rule.variable, action: 'cancel' };\n  if (actual >= rule.yellow) return { status: 'yellow', reason: rule.reason_yellow, actual, threshold: rule.yellow, variable: rule.variable, action: 'warn' };\n  return null;\n}\n\nconst results = [];\n\nfor (const job of jobs) {\n  // Skip non-exterior jobs and already cancelled/completed jobs\n  if (job.jobType === 'interior' || job.status === 'cancelled' || job.status === 'completed') {\n    continue;\n  }\n\n  const trade = job.trade || 'default';\n  const tradeRules = TRADE_RULES[trade] || DEFAULT_RULES;\n\n  const triggeredRules = [];\n  let worstStatus = 'green';\n  let worstVariable = null;\n  let worstReason = null;\n\n  for (const rule of tradeRules) {\n    const result = evaluateRule(rule);\n    if (result) {\n      triggeredRules.push({\n        variable: result.variable,\n        actual: result.actual,\n        threshold: result.threshold,\n        action: result.action,\n        reason: result.reason\n      });\n\n      if (result.status === 'red') {\n        worstStatus = 'red';\n        worstVariable = result.variable;\n        worstReason = result.reason;\n      } else if (result.status === 'yellow' && worstStatus !== 'red') {\n        worstStatus = 'yellow';\n        worstVariable = result.variable;\n        worstReason = result.reason;\n      }\n    }\n  }\n\n  const recommendation = worstStatus === 'red' ? 'reschedule' : worstStatus === 'yellow' ? 'proceed_with_caution' : 'proceed';\n\n  // Build summary string\n  let summary = '';\n  if (worstStatus === 'red') {\n    summary = `CANCEL: ${worstReason}`;\n  } else if (worstStatus === 'yellow') {\n    summary = `WARNING: ${worstReason}`;\n  } else {\n    summary = 'Weather conditions are safe for work';\n  }\n\n  results.push({\n    json: {\n      jobId: job._id,\n      businessId: business._id,\n      businessName: business.name,\n      date: job.date,\n      trade: job.trade,\n      jobTitle: job.title,\n      jobAddress: job.address,\n      startTime: job.startTime,\n      status: worstStatus,\n      triggeredRules,\n      worstVariable,\n      recommendation,\n      summary,\n      confidence: worstStatus === 'green' ? 0.95 : 0.85,\n      // Client/crew info for notifications\n      clientName: job.client?.name || 'Customer',\n      clientPhone: job.client?.phone || null,\n      clientEmail: job.client?.email || null,\n      crewLeadPhone: job.crewLead?.phone || null,\n      estimatedRevenue: job.estimatedRevenue || 0,\n      // Alert context\n      alertName: alertData.alertName,\n      notificationType: alertData.notificationType\n    }\n  });\n}\n\n// If no exterior jobs affected, return a no-op result\nif (results.length === 0) {\n  return [{ json: { status: 'green', noExteriorJobs: true, message: 'No exterior jobs affected by this alert' } }];\n}\n\nreturn results;"
+      },
+      "id": "rule-engine",
+      "name": "Weather Rule Engine",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1980,
+        100
+      ],
+      "notes": "Deterministic rule evaluation \u00e2\u20ac\u201d no LLM. Evaluates each job's trade against weather thresholds. Produces one output item per affected job with status (green/yellow/red), triggered rules, and notification details."
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "combinator": "and",
+                "conditions": [
+                  {
+                    "id": "is-red",
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": "red",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ]
+              },
+              "renameOutput": "RED \u00e2\u20ac\u201d Cancel/Reschedule"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "combinator": "and",
+                "conditions": [
+                  {
+                    "id": "is-yellow",
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": "yellow",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ]
+              },
+              "renameOutput": "YELLOW \u00e2\u20ac\u201d Warning"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "combinator": "and",
+                "conditions": [
+                  {
+                    "id": "is-green",
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": "green",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ]
+              },
+              "renameOutput": "GREEN \u00e2\u20ac\u201d Proceed"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "route-by-status",
+      "name": "Route by Status",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        2200,
+        100
+      ],
+      "notes": "Routes jobs by weather severity: RED (output 0) \u00e2\u2020\u2019 cancel + SMS + email, YELLOW (output 1) \u00e2\u2020\u2019 warning email, GREEN (output 2) \u00e2\u2020\u2019 log only."
+    },
+    {
+      "parameters": {
+        "url": "https://small-pigeon-28.convex.cloud/api/mutation",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ path: 'weatherScheduling:updateJobWeatherStatus', args: { jobId: $json.jobId, businessId: $json.businessId, date: $json.date, status: 'red', triggeredRules: $json.triggeredRules, worstVariable: $json.worstVariable, recommendation: $json.recommendation, confidence: $json.confidence, summary: $json.summary } }) }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        },
+        "method": "POST"
+      },
+      "id": "update-status-red",
+      "name": "Update Status RED",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2440,
+        -60
+      ],
+      "notes": "Updates job weather status to RED in Convex. Triggers auto-reschedule flow."
+    },
+    {
+      "parameters": {
+        "url": "https://small-pigeon-28.convex.cloud/api/mutation",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ path: 'weatherScheduling:logWeatherAction', args: { jobId: $json.jobId, businessId: $json.businessId, actionType: 'notified', fromDate: $json.date, reason: '[WEBHOOK ALERT] ' + $json.summary, notificationsSent: 0, revenueProtected: $json.estimatedRevenue, wasAutomatic: true } }) }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        },
+        "method": "POST"
+      },
+      "id": "log-action-red",
+      "name": "Log Weather Action (RED)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2660,
+        -60
+      ],
+      "notes": "Logs the weather action for audit trail. Tags with [WEBHOOK ALERT] to distinguish from scheduled checks."
+    },
+    {
+      "parameters": {
+        "url": "https://small-pigeon-28.convex.cloud/api/action",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ path: 'actions/sendSms:sendSms', args: { to: $json.crewLeadPhone, body: 'WEATHER HOLD: ' + $json.clientName + ' job (' + $json.jobAddress + ') on ' + $json.date + ' \u00e2\u20ac\u201d ' + $json.summary + '. Check dashboard for details.' } }) }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        },
+        "method": "POST"
+      },
+      "id": "sms-crew-red",
+      "name": "SMS Crew Lead (RED)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2880,
+        -180
+      ],
+      "onError": "continueRegularOutput",
+      "notes": "Sends urgent SMS to crew lead for RED status jobs. Uses Twilio via Convex action. Continues on error to not block client notification."
+    },
+    {
+      "parameters": {
+        "url": "https://small-pigeon-28.convex.cloud/api/action",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ path: 'actions/sendSms:sendSms', args: { to: $json.clientPhone, body: 'Hi ' + $json.clientName + ', weather alert for your ' + $json.trade + ' appointment on ' + $json.date + ': ' + $json.summary + '. We will contact you with a new date. \u00e2\u20ac\u201d ' + $json.businessName } }) }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        },
+        "method": "POST"
+      },
+      "id": "sms-client-red",
+      "name": "SMS Client (RED)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2880,
+        -20
+      ],
+      "onError": "continueRegularOutput",
+      "notes": "Sends SMS notification to client about weather cancellation. Uses Twilio via Convex action. Continues on error to not block email."
+    },
+    {
+      "parameters": {
+        "url": "https://small-pigeon-28.convex.cloud/api/action",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ path: 'actions/sendEmail:sendEmail', args: { to: $json.clientEmail, subject: 'Weather Alert: Your ' + $json.trade + ' appointment on ' + $json.date, htmlBody: '<h2>Weather Schedule Update</h2><p>Hi ' + $json.clientName + ',</p><p>Due to a weather alert (<strong>' + $json.alertName + '</strong>), your <strong>' + $json.trade + '</strong> appointment needs to be rescheduled:</p><ul><li><strong>Date:</strong> ' + $json.date + '</li><li><strong>Reason:</strong> ' + $json.summary + '</li></ul><p>We will contact you shortly with a new date that has a clear forecast.</p><p>Thank you for your understanding,<br/>' + $json.businessName + '</p>' } }) }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        },
+        "method": "POST"
+      },
+      "id": "email-client-red",
+      "name": "Email Client (RED)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2880,
+        140
+      ],
+      "onError": "continueRegularOutput",
+      "notes": "Sends detailed email to client about weather cancellation. Uses SendGrid via Convex action. HTML email with alert details."
+    },
+    {
+      "parameters": {
+        "url": "https://small-pigeon-28.convex.cloud/api/mutation",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ path: 'weatherScheduling:logNotification', args: { jobId: $json.jobId, businessId: $json.businessId, recipientType: 'client', recipientName: $json.clientName, channel: 'sms', to: $json.clientPhone || 'none', message: '[WEBHOOK] RED alert \u00e2\u20ac\u201d ' + $json.summary, status: 'sent', wasAiGenerated: false } }) }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        },
+        "method": "POST"
+      },
+      "id": "log-notification-red",
+      "name": "Log Notifications (RED)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3100,
+        -20
+      ],
+      "onError": "continueRegularOutput",
+      "notes": "Logs RED notification to Convex notification table for audit trail."
+    },
+    {
+      "parameters": {
+        "url": "https://small-pigeon-28.convex.cloud/api/mutation",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ path: 'weatherScheduling:updateJobWeatherStatus', args: { jobId: $json.jobId, businessId: $json.businessId, date: $json.date, status: 'yellow', triggeredRules: $json.triggeredRules, worstVariable: $json.worstVariable, recommendation: $json.recommendation, confidence: $json.confidence, summary: $json.summary } }) }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        },
+        "method": "POST"
+      },
+      "id": "update-status-yellow",
+      "name": "Update Status YELLOW",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2440,
+        140
+      ],
+      "notes": "Updates job weather status to YELLOW (warning) in Convex."
+    },
+    {
+      "parameters": {
+        "url": "https://small-pigeon-28.convex.cloud/api/mutation",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ path: 'weatherScheduling:logWeatherAction', args: { jobId: $json.jobId, businessId: $json.businessId, actionType: 'warning_sent', fromDate: $json.date, reason: '[WEBHOOK ALERT] ' + $json.summary, notificationsSent: 0, wasAutomatic: true } }) }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        },
+        "method": "POST"
+      },
+      "id": "log-action-yellow",
+      "name": "Log Weather Action (YELLOW)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2660,
+        140
+      ],
+      "notes": "Logs YELLOW warning action for audit trail."
+    },
+    {
+      "parameters": {
+        "url": "https://small-pigeon-28.convex.cloud/api/action",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ path: 'actions/sendSms:sendSms', args: { to: $json.crewLeadPhone, body: 'WEATHER WATCH: ' + $json.clientName + ' job at ' + $json.startTime + ' \u00e2\u20ac\u201d ' + $json.summary + '. Job is still on. Monitor conditions and have backup plan ready.' } }) }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        },
+        "method": "POST"
+      },
+      "id": "sms-crew-yellow",
+      "name": "SMS Crew Lead (YELLOW)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2880,
+        80
+      ],
+      "onError": "continueRegularOutput",
+      "notes": "Sends warning SMS to crew lead for YELLOW status jobs. Job is still on \u00e2\u20ac\u201d crew should monitor conditions."
+    },
+    {
+      "parameters": {
+        "url": "https://small-pigeon-28.convex.cloud/api/action",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ path: 'actions/sendEmail:sendEmail', args: { to: $json.clientEmail, subject: 'Weather Watch: Your ' + $json.trade + ' appointment on ' + $json.date, htmlBody: '<h2>Weather Watch</h2><p>Hi ' + $json.clientName + ',</p><p>We are monitoring weather conditions for your <strong>' + $json.trade + '</strong> appointment:</p><ul><li><strong>Date:</strong> ' + $json.date + ' at ' + $json.startTime + '</li><li><strong>Condition:</strong> ' + $json.summary + '</li></ul><p>Your appointment is <strong>still scheduled</strong>. We will notify you immediately if conditions change and rescheduling becomes necessary.</p><p>Thank you,<br/>' + $json.businessName + '</p>' } }) }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        },
+        "method": "POST"
+      },
+      "id": "email-client-yellow",
+      "name": "Email Client (YELLOW)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2880,
+        220
+      ],
+      "onError": "continueRegularOutput",
+      "notes": "Sends warning email to client for YELLOW status. Appointment is still on \u00e2\u20ac\u201d monitoring conditions."
+    },
+    {
+      "parameters": {
+        "url": "https://small-pigeon-28.convex.cloud/api/mutation",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ path: 'weatherScheduling:logNotification', args: { jobId: $json.jobId, businessId: $json.businessId, recipientType: 'client', recipientName: $json.clientName, channel: 'email', to: $json.clientEmail || 'none', message: '[WEBHOOK] YELLOW warning \u00e2\u20ac\u201d ' + $json.summary, status: 'sent', wasAiGenerated: false } }) }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        },
+        "method": "POST"
+      },
+      "id": "log-notification-yellow",
+      "name": "Log Notifications (YELLOW)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3100,
+        200
+      ],
+      "onError": "continueRegularOutput",
+      "notes": "Logs YELLOW notification to Convex notification table for audit trail."
+    },
+    {
+      "parameters": {
+        "url": "https://small-pigeon-28.convex.cloud/api/mutation",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ path: 'weatherScheduling:updateJobWeatherStatus', args: { jobId: $json.jobId, businessId: $json.businessId, date: $json.date, status: 'green', triggeredRules: [], recommendation: 'proceed', confidence: 0.95, summary: 'Weather conditions safe for work' } }) }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        },
+        "method": "POST"
+      },
+      "id": "update-status-green",
+      "name": "Update Status GREEN",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2440,
+        340
+      ],
+      "notes": "Updates job weather status to GREEN in Convex. No notification needed \u00e2\u20ac\u201d job proceeds as scheduled."
+    },
+    {
+      "parameters": {
+        "options": {},
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ status: 'processed', alertName: $('Parse Alert Data').first().json.alertName, type: $('Parse Alert Data').first().json.notificationType, date: $('Parse Alert Data').first().json.affectedDate, jobsProcessed: true }) }}",
+        "responseCode": 200
+      },
+      "id": "respond-200-success",
+      "name": "Respond 200 Success",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        3320,
+        100
+      ],
+      "notes": "Returns 200 OK to Tomorrow.io after all processing is complete. Must respond within Tomorrow.io timeout window."
+    }
+  ],
+  "connections": {
+    "Webhook Receiver": {
+      "main": [
+        [
+          {
+            "node": "Validate Signature",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Signature": {
+      "main": [
+        [
+          {
+            "node": "Signature Valid?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Signature Valid?": {
+      "main": [
+        [
+          {
+            "node": "Parse Alert Data",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond 401 Unauthorized",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Alert Data": {
+      "main": [
+        [
+          {
+            "node": "Filter PRIOR/START Only",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter PRIOR/START Only": {
+      "main": [
+        [
+          {
+            "node": "Fetch Business",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond 200 Ignored",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Business": {
+      "main": [
+        [
+          {
+            "node": "Fetch Active Jobs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Active Jobs": {
+      "main": [
+        [
+          {
+            "node": "Has Active Jobs?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has Active Jobs?": {
+      "main": [
+        [
+          {
+            "node": "Weather Rule Engine",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond 200 No Jobs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Weather Rule Engine": {
+      "main": [
+        [
+          {
+            "node": "Route by Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route by Status": {
+      "main": [
+        [
+          {
+            "node": "Update Status RED",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Update Status YELLOW",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Update Status GREEN",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Status RED": {
+      "main": [
+        [
+          {
+            "node": "Log Weather Action (RED)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Weather Action (RED)": {
+      "main": [
+        [
+          {
+            "node": "SMS Crew Lead (RED)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "SMS Client (RED)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Email Client (RED)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SMS Crew Lead (RED)": {
+      "main": [
+        [
+          {
+            "node": "Log Notifications (RED)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SMS Client (RED)": {
+      "main": [
+        [
+          {
+            "node": "Log Notifications (RED)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email Client (RED)": {
+      "main": [
+        [
+          {
+            "node": "Log Notifications (RED)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Notifications (RED)": {
+      "main": [
+        [
+          {
+            "node": "Respond 200 Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Status YELLOW": {
+      "main": [
+        [
+          {
+            "node": "Log Weather Action (YELLOW)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Weather Action (YELLOW)": {
+      "main": [
+        [
+          {
+            "node": "SMS Crew Lead (YELLOW)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Email Client (YELLOW)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SMS Crew Lead (YELLOW)": {
+      "main": [
+        [
+          {
+            "node": "Log Notifications (YELLOW)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email Client (YELLOW)": {
+      "main": [
+        [
+          {
+            "node": "Log Notifications (YELLOW)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Notifications (YELLOW)": {
+      "main": [
+        [
+          {
+            "node": "Respond 200 Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Status GREEN": {
+      "main": [
+        [
+          {
+            "node": "Respond 200 Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [
+    {
+      "name": "weather"
+    },
+    {
+      "name": "webhook"
+    },
+    {
+      "name": "production"
+    },
+    {
+      "name": "tomorrow-io"
+    }
+  ],
+  "triggerCount": 1,
+  "updatedAt": "2026-03-14T23:30:00.000Z",
+  "versionId": "1"
+}
