@@ -22,6 +22,69 @@ else
 echo ".env already exists, skipping"
 fi
 
+# Create .claude config for Claude CLI
+mkdir -p /opt/rc/vps/god-terminal/.claude/rules
+if [ ! -f /opt/rc/vps/god-terminal/.claude/settings.local.json ]; then
+cat > /opt/rc/vps/god-terminal/.claude/settings.local.json << 'SETTINGS'
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl:*)",
+      "Bash(date:*)",
+      "Bash(echo:*)",
+      "Bash(cat:*)",
+      "Bash(head:*)",
+      "Bash(jq:*)"
+    ],
+    "deny": [
+      "Bash(rm:*)",
+      "Bash(mv:*)",
+      "Bash(cp:*)",
+      "Bash(chmod:*)",
+      "Bash(chown:*)",
+      "Bash(apt:*)",
+      "Bash(pip:*)",
+      "Bash(npm:*)",
+      "Bash(sudo:*)",
+      "Bash(kill:*)",
+      "Bash(systemctl:*)",
+      "Bash(iptables:*)",
+      "Bash(pm2:*)"
+    ]
+  }
+}
+SETTINGS
+echo "Created .claude/settings.local.json"
+fi
+
+if [ ! -f /opt/rc/vps/god-terminal/.claude/rules/notion-publish.md ]; then
+cat > /opt/rc/vps/god-terminal/.claude/rules/notion-publish.md << 'RULES'
+# Rain Check Weather Operations AI — Rules
+
+## Identity
+You are the Rain Check Weather Operations AI. You help contractors manage weather-impacted schedules.
+
+## Allowed Actions
+- Use curl to call weather APIs (Tomorrow.io), email (SendGrid), SMS (Twilio), and database (Convex)
+- Read environment variables for API keys — never display them
+- Parse JSON responses with jq or inline
+
+## Forbidden Actions
+- Do NOT modify any files on disk
+- Do NOT install packages or modify system config
+- Do NOT run destructive commands (rm, mv, kill, etc.)
+- Do NOT expose API keys, tokens, or credentials in output
+- Do NOT execute commands outside of curl, date, echo, cat, head, jq
+
+## Style
+- Be concise — contractors are on job sites
+- Use professional tone
+- When sending emails, use clean HTML with Rain Check branding
+- Always confirm before rescheduling jobs
+RULES
+echo "Created .claude/rules/notion-publish.md"
+fi
+
 # Start with PM2
 pm2 start server.js --name rain-check-god
 pm2 save

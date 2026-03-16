@@ -1,16 +1,17 @@
 /**
- * Rain Check God Terminal — Express Server
+ * Rain Check God Terminal — Express Server (CLI Edition)
  *
- * Anthropic SDK agentic loop with SSE streaming.
- * Replaces the old agent-server.js (which spawned Claude CLI).
+ * Spawns Claude CLI processes with stream-json output.
+ * The CLI has access to Bash, file read/write, and uses CLAUDE.md
+ * for weather operations context (API keys, endpoints, contacts).
  *
  * Endpoints:
  *   POST /api/run           — Start a new session, returns sessionId
  *   GET  /api/stream?sessionId=X — SSE event stream (replay + live)
- *   POST /api/approve       — Approve a pending tool execution
+ *   POST /api/approve       — Send approval to CLI stdin
  *   GET  /health            — Server health check
  *
- * Deploy: /opt/rain-check-god-terminal/ on VPS
+ * Deploy: /opt/rc/vps/god-terminal/ on VPS
  * Port: 3848
  */
 
@@ -18,9 +19,8 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const crypto = require("crypto");
-const Anthropic = require("@anthropic-ai/sdk");
-
-const { toolDefinitions, executeTool, requiresApproval } = require("./tools");
+const { spawn } = require("child_process");
+const path = require("path");
 
 // ---------------------------------------------------------------------------
 // Config
@@ -29,36 +29,10 @@ const { toolDefinitions, executeTool, requiresApproval } = require("./tools");
 const PORT = process.env.PORT || 3848;
 const AGENT_SECRET = process.env.AGENT_SERVER_SECRET;
 const MAX_CONCURRENT = 5;
-const MAX_TOOL_ROUNDS = 25;
 const SESSION_TTL_MS = 10 * 60 * 1000; // 10 minutes
 
-const SYSTEM_PROMPT = `You are the Rain Check Weather Operations AI — an elite weather intelligence system for contractors.
-
-You help roofing, painting, landscaping, and concrete contractors manage weather-impacted schedules. You are concise, professional, and action-oriented.
-
-Available tools:
-- weather_check: Get real-time weather forecast for any zip code
-- send_email: Send formatted weather report emails to clients or crew
-- send_sms: Send SMS notifications to crew leads or clients
-- check_jobs: View today's scheduled jobs and their weather status
-- reschedule_job: Reschedule a weather-impacted job (requires approval)
-
-Key contacts:
-- Tommy Brochu: tommy.brochu@alu-rex.com
-- Marie-Andree Vezina: marie-andree.vezina@alu-rex.com
-- Kevin Brochu: kevin.brochu@alu-rex.com
-- Jeff: jeff@alu-rex.com
-
-When sending emails, use clean professional HTML with the Rain Check brand. Include weather data, job impact, and recommendations.
-
-Business: Apex Roofing & Exteriors
-Location: Queen Creek, AZ (primary) / Boston, MA (demo)`;
-
-// ---------------------------------------------------------------------------
-// Anthropic Client
-// ---------------------------------------------------------------------------
-
-const anthropic = new Anthropic();
+// The working directory for Claude CLI — it reads CLAUDE.md from here
+const CLI_CWD = path.resolve(__dirname);
 
 // ---------------------------------------------------------------------------
 // Session Store (in-memory — fine for demo)
@@ -73,8 +47,7 @@ const sessions = new Map();
  *   state: "running" | "waiting_approval" | "completed" | "error",
  *   events: Array<{ event: string, data: object }>,
  *   sseClients: Set<Response>,
- *   messages: Array<{role, content}>,
- *   pendingApproval: { toolUseId, toolName, input, resolve } | null,
+ *   process: ChildProcess | null,
  *   createdAt: number,
  *   lastActivity: number,
  * }
@@ -119,7 +92,7 @@ app.get("/health", (req, res) => {
     activeSessions,
     totalSessions: sessions.size,
     maxConcurrent: MAX_CONCURRENT,
-    version: "2.0.0-god-terminal",
+    version: "2.1.0-cli",
   });
 });
 
@@ -127,7 +100,7 @@ app.get("/health", (req, res) => {
 app.use("/api", requireAuth);
 
 // ---------------------------------------------------------------------------
-// POST /api/run — Start a new agentic session
+// POST /api/run — Start a new CLI session
 // ---------------------------------------------------------------------------
 
 app.post("/api/run", (req, res) => {
@@ -154,8 +127,7 @@ app.post("/api/run", (req, res) => {
     state: "running",
     events: [],
     sseClients: new Set(),
-    messages: [{ role: "user", content: message }],
-    pendingApproval: null,
+    process: null,
     createdAt: Date.now(),
     lastActivity: Date.now(),
   };
@@ -165,13 +137,8 @@ app.post("/api/run", (req, res) => {
   // Return sessionId immediately — client connects to SSE next
   res.json({ sessionId, state: "running" });
 
-  // Run the agentic loop in background
-  runAgentLoop(session).catch((err) => {
-    console.error(`[${sessionId}] Agent loop error:`, err.message);
-    session.state = "error";
-    emitEvent(session, "error", { message: err.message });
-    emitEvent(session, "done", {});
-  });
+  // Spawn Claude CLI in background
+  spawnCLI(session, message, businessId);
 });
 
 // ---------------------------------------------------------------------------
@@ -217,7 +184,7 @@ app.get("/api/stream", (req, res) => {
 });
 
 // ---------------------------------------------------------------------------
-// POST /api/approve — Approve or deny a pending tool execution
+// POST /api/approve — Send approval to CLI stdin
 // ---------------------------------------------------------------------------
 
 app.post("/api/approve", (req, res) => {
@@ -228,13 +195,22 @@ app.post("/api/approve", (req, res) => {
     return res.status(404).json({ error: "Session not found" });
   }
 
-  if (!session.pendingApproval) {
-    return res.status(400).json({ error: "No pending approval for this session" });
+  if (session.state !== "waiting_approval") {
+    return res.status(400).json({ error: "Session not waiting for approval" });
   }
 
-  const isApproved = approved !== false; // default true
-  session.pendingApproval.resolve(isApproved);
-  session.pendingApproval = null;
+  if (!session.process || !session.process.stdin.writable) {
+    return res.status(400).json({ error: "CLI process not accepting input" });
+  }
+
+  const isApproved = approved !== false;
+
+  if (isApproved) {
+    session.process.stdin.write("y\n");
+  } else {
+    session.process.stdin.write("n\n");
+  }
+
   session.state = "running";
   session.lastActivity = Date.now();
 
@@ -266,160 +242,197 @@ function emitEvent(session, event, data) {
 }
 
 // ---------------------------------------------------------------------------
-// Agentic Loop
+// Spawn Claude CLI
 // ---------------------------------------------------------------------------
 
-async function runAgentLoop(session) {
-  for (let round = 0; round < MAX_TOOL_ROUNDS; round++) {
-    // Call Anthropic API with streaming
-    const stream = anthropic.messages.stream({
-      model: "claude-sonnet-4-20250514",
-      max_tokens: 8096,
-      system: SYSTEM_PROMPT,
-      tools: toolDefinitions,
-      messages: session.messages,
-    });
+function spawnCLI(session, message, businessId) {
+  // Build the prompt — include business context
+  const prompt = businessId
+    ? `[Business ID: ${businessId}]\n\n${message}`
+    : message;
 
-    // Collect the full response while streaming text chunks
-    let currentText = "";
-    const toolUseBlocks = [];
-
-    stream.on("text", (text) => {
-      currentText += text;
-      emitEvent(session, "text", { text });
-    });
-
-    // Wait for the full message
-    const response = await stream.finalMessage();
-
-    // Build the assistant content blocks from the response
-    const assistantContent = response.content;
-
-    // Collect tool_use blocks
-    for (const block of assistantContent) {
-      if (block.type === "tool_use") {
-        toolUseBlocks.push(block);
-      }
-    }
-
-    // Append assistant message to conversation
-    session.messages.push({ role: "assistant", content: assistantContent });
-
-    // If stop_reason is "end_turn" or no tool calls, we're done
-    if (response.stop_reason === "end_turn" || toolUseBlocks.length === 0) {
-      session.state = "completed";
-      emitEvent(session, "done", { state: "completed" });
-      return;
-    }
-
-    // Process tool calls
-    const toolResults = [];
-
-    for (const toolBlock of toolUseBlocks) {
-      const { id: toolUseId, name: toolName, input } = toolBlock;
-
-      emitEvent(session, "tool_use", {
-        toolUseId,
-        toolName,
-        input,
-        requiresApproval: requiresApproval(toolName),
-      });
-
-      // Check if this tool requires approval
-      if (requiresApproval(toolName)) {
-        session.state = "waiting_approval";
-
-        emitEvent(session, "approval_required", {
-          toolUseId,
-          toolName,
-          input,
-          message: `Approve "${toolName}"? ${JSON.stringify(input)}`,
-        });
-
-        // Wait for user approval
-        const approved = await waitForApproval(session, toolUseId, toolName, input);
-
-        if (!approved) {
-          toolResults.push({
-            type: "tool_result",
-            tool_use_id: toolUseId,
-            content: JSON.stringify({
-              error: "User denied this action",
-              message: "The user chose not to approve this tool execution.",
-            }),
-          });
-          emitEvent(session, "tool_result", {
-            toolUseId,
-            toolName,
-            result: { denied: true },
-          });
-          continue;
-        }
-      }
-
-      // Execute the tool
-      try {
-        const result = await executeTool(toolName, input);
-
-        toolResults.push({
-          type: "tool_result",
-          tool_use_id: toolUseId,
-          content: JSON.stringify(result),
-        });
-
-        emitEvent(session, "tool_result", {
-          toolUseId,
-          toolName,
-          result,
-        });
-      } catch (err) {
-        const errorResult = { error: err.message };
-
-        toolResults.push({
-          type: "tool_result",
-          tool_use_id: toolUseId,
-          content: JSON.stringify(errorResult),
-          is_error: true,
-        });
-
-        emitEvent(session, "tool_result", {
-          toolUseId,
-          toolName,
-          result: errorResult,
-          isError: true,
-        });
-      }
-    }
-
-    // Append tool results as a user message and continue the loop
-    session.messages.push({ role: "user", content: toolResults });
-  }
-
-  // If we hit max rounds
-  session.state = "completed";
-  emitEvent(session, "text", {
-    text: "\n\n[Reached maximum tool rounds — stopping.]",
+  const proc = spawn("claude", ["-p", prompt, "--output-format", "stream-json"], {
+    cwd: CLI_CWD,
+    env: { ...process.env },
+    stdio: ["pipe", "pipe", "pipe"],
   });
-  emitEvent(session, "done", { state: "completed" });
+
+  session.process = proc;
+
+  // Parse stream-json from stdout (newline-delimited JSON)
+  let buffer = "";
+  proc.stdout.on("data", (chunk) => {
+    buffer += chunk.toString();
+    const lines = buffer.split("\n");
+    buffer = lines.pop() || "";
+
+    for (const line of lines) {
+      if (!line.trim()) continue;
+      try {
+        const event = JSON.parse(line);
+        handleStreamEvent(session, event);
+      } catch {
+        // Plain text fallback
+        emitEvent(session, "text", { text: line });
+      }
+    }
+  });
+
+  // Capture stderr
+  proc.stderr.on("data", (chunk) => {
+    const text = chunk.toString().trim();
+    if (text) {
+      console.error(`[${session.id}] stderr: ${text}`);
+      // Don't emit noisy stderr to clients unless it's meaningful
+      if (text.includes("Error") || text.includes("error")) {
+        emitEvent(session, "error", { message: text });
+      }
+    }
+  });
+
+  // Process exit
+  proc.on("close", (code) => {
+    session.process = null;
+
+    // Flush any remaining buffer
+    if (buffer.trim()) {
+      try {
+        const event = JSON.parse(buffer.trim());
+        handleStreamEvent(session, event);
+      } catch {
+        emitEvent(session, "text", { text: buffer.trim() });
+      }
+      buffer = "";
+    }
+
+    if (session.state === "running" || session.state === "waiting_approval") {
+      session.state = code === 0 ? "completed" : "error";
+    }
+
+    emitEvent(session, "done", {
+      state: session.state,
+      exitCode: code,
+    });
+  });
+
+  proc.on("error", (err) => {
+    console.error(`[${session.id}] Process error:`, err.message);
+    session.state = "error";
+    session.process = null;
+    emitEvent(session, "error", { message: `CLI process error: ${err.message}` });
+    emitEvent(session, "done", { state: "error" });
+  });
+
+  // Auto-kill after TTL
+  setTimeout(() => {
+    if (sessions.has(session.id) && (session.state === "running" || session.state === "waiting_approval")) {
+      killSession(session);
+      emitEvent(session, "error", { message: "Session timed out (10 min limit)" });
+      emitEvent(session, "done", { state: "error" });
+    }
+  }, SESSION_TTL_MS);
 }
 
 // ---------------------------------------------------------------------------
-// Approval Wait (Promise-based)
+// Parse Claude CLI stream-json events → SSE events
 // ---------------------------------------------------------------------------
 
-function waitForApproval(session, toolUseId, toolName, input) {
-  return new Promise((resolve) => {
-    session.pendingApproval = { toolUseId, toolName, input, resolve };
-
-    // Auto-deny after 5 minutes
-    setTimeout(() => {
-      if (session.pendingApproval?.toolUseId === toolUseId) {
-        session.pendingApproval = null;
-        emitEvent(session, "approval_timeout", { toolUseId, toolName });
-        resolve(false);
+function handleStreamEvent(session, event) {
+  switch (event.type) {
+    // Full assistant message (contains text + tool_use blocks)
+    case "assistant":
+      if (event.message?.content) {
+        for (const block of event.message.content) {
+          if (block.type === "text" && block.text) {
+            emitEvent(session, "text", { text: block.text });
+          } else if (block.type === "tool_use") {
+            emitEvent(session, "tool_use", {
+              toolUseId: block.id,
+              toolName: block.name,
+              input: block.input,
+            });
+          }
+        }
       }
-    }, 5 * 60 * 1000);
-  });
+      break;
+
+    // Streaming text deltas
+    case "content_block_delta":
+      if (event.delta?.type === "text_delta" && event.delta.text) {
+        emitEvent(session, "text", { text: event.delta.text });
+      }
+      break;
+
+    // Content block start (can contain tool_use info)
+    case "content_block_start":
+      if (event.content_block?.type === "tool_use") {
+        emitEvent(session, "tool_use", {
+          toolUseId: event.content_block.id,
+          toolName: event.content_block.name,
+          input: event.content_block.input,
+        });
+      }
+      break;
+
+    // Tool result
+    case "tool_result":
+      emitEvent(session, "tool_result", {
+        toolUseId: event.tool_use_id,
+        toolName: event.name,
+        result: event.content || event.output,
+      });
+      break;
+
+    // Final result
+    case "result":
+      if (event.result) {
+        emitEvent(session, "text", { text: event.result });
+      }
+      if (event.is_error) {
+        session.state = "error";
+      }
+      break;
+
+    // System messages (including approval requests)
+    case "system":
+      if (event.subtype === "tool_use_permission") {
+        session.state = "waiting_approval";
+        emitEvent(session, "approval_required", {
+          toolName: event.tool_name || "tool use",
+          message: event.description || `Permission requested: ${event.tool_name || "tool use"}`,
+        });
+      } else if (event.message) {
+        // System info — emit as text for visibility
+        emitEvent(session, "system", { message: event.message });
+      }
+      break;
+
+    default:
+      // Unknown event — emit text if available
+      if (event.text) {
+        emitEvent(session, "text", { text: event.text });
+      }
+      break;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Kill Session
+// ---------------------------------------------------------------------------
+
+function killSession(session) {
+  if (session.process) {
+    try {
+      session.process.kill("SIGTERM");
+      // Force kill after 3s
+      setTimeout(() => {
+        try {
+          session.process?.kill("SIGKILL");
+        } catch { /* already dead */ }
+      }, 3000);
+    } catch { /* already dead */ }
+  }
+  session.state = "error";
 }
 
 // ---------------------------------------------------------------------------
@@ -436,7 +449,6 @@ setInterval(() => {
       (session.state === "completed" || session.state === "error") &&
       age > 5 * 60 * 1000
     ) {
-      // Close any lingering SSE connections
       for (const client of session.sseClients) {
         try { client.end(); } catch { /* ignore */ }
       }
@@ -450,15 +462,9 @@ setInterval(() => {
       age > SESSION_TTL_MS
     ) {
       console.warn(`[cleanup] Session ${id} exceeded TTL (${Math.round(age / 1000)}s idle)`);
-      session.state = "error";
+      killSession(session);
       emitEvent(session, "error", { message: "Session timed out" });
       emitEvent(session, "done", { state: "error" });
-
-      // Reject any pending approval
-      if (session.pendingApproval) {
-        session.pendingApproval.resolve(false);
-        session.pendingApproval = null;
-      }
     }
   }
 }, 60000);
@@ -468,10 +474,9 @@ setInterval(() => {
 // ---------------------------------------------------------------------------
 
 app.listen(PORT, "0.0.0.0", () => {
-  console.log(`Rain Check God Terminal v2.0.0`);
+  console.log(`Rain Check God Terminal v2.1.0 (CLI Edition)`);
   console.log(`Listening on http://0.0.0.0:${PORT}`);
+  console.log(`CLI working dir: ${CLI_CWD}`);
   console.log(`Max concurrent sessions: ${MAX_CONCURRENT}`);
   console.log(`Session TTL: ${SESSION_TTL_MS / 1000}s`);
-  console.log(`Max tool rounds: ${MAX_TOOL_ROUNDS}`);
-  console.log(`Anthropic API key: ${process.env.ANTHROPIC_API_KEY ? "configured" : "MISSING"}`);
 });
