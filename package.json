@@ -2,6 +2,9 @@
   "name": "apex-weather-scheduling",
   "version": "1.0.0",
   "private": true,
+  "engines": {
+    "node": "20.x"
+  },
   "description": "AI-powered weather scheduling automation for 5,000+ service businesses",
   "scripts": {
     "dev": "next dev",
