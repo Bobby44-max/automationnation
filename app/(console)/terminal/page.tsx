@@ -12,18 +12,14 @@ import {
   ArrowUp,
   Lock,
   Zap,
+  ChevronDown,
+  ChevronRight,
+  Wrench,
+  AlertTriangle,
 } from "lucide-react";
 import Link from "next/link";
 
 // --- Types ---
-
-type LineType = "stdout" | "stderr" | "system" | "approval_required" | "exit";
-
-interface OutputLine {
-  type: LineType;
-  text: string;
-  timestamp: number;
-}
 
 type SessionState =
   | "idle"
@@ -33,6 +29,26 @@ type SessionState =
   | "completed"
   | "error"
   | "cancelled";
+
+interface ToolCard {
+  toolUseId: string;
+  toolName: string;
+  input: Record<string, unknown>;
+  requiresApproval: boolean;
+  status: "pending" | "success" | "error" | "denied";
+  result?: unknown;
+  expanded: boolean;
+}
+
+interface OutputEntry {
+  id: string;
+  type: "text" | "tool" | "system" | "approval" | "error";
+  // For text entries
+  text?: string;
+  // For tool entries
+  toolCard?: ToolCard;
+  timestamp: number;
+}
 
 // --- Suggested Commands ---
 
@@ -65,32 +81,37 @@ const SUGGESTED_COMMANDS = [
 
 // --- Component ---
 
+let entryCounter = 0;
+function nextId() {
+  return `entry-${++entryCounter}`;
+}
+
 export default function AgentTerminalPage() {
   const { businessId, businessName, planTier, isLoading } = useDemoBusiness();
 
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [sessionState, setSessionState] = useState<SessionState>("idle");
-  const [output, setOutput] = useState<OutputLine[]>([]);
+  const [entries, setEntries] = useState<OutputEntry[]>([]);
   const [input, setInput] = useState("");
   const [commandHistory, setCommandHistory] = useState<string[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
-  const [pollOffset, setPollOffset] = useState(0);
 
   const outputRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const pollingRef = useRef(false);
-  const abortRef = useRef<AbortController | null>(null);
+  const eventSourceRef = useRef<EventSource | null>(null);
 
   const isProOrBusiness = planTier === "pro" || planTier === "business";
   const isActive =
-    sessionState === "running" || sessionState === "waiting_approval" || sessionState === "starting";
+    sessionState === "running" ||
+    sessionState === "waiting_approval" ||
+    sessionState === "starting";
 
   // Auto-scroll output
   useEffect(() => {
     if (outputRef.current) {
       outputRef.current.scrollTop = outputRef.current.scrollHeight;
     }
-  }, [output]);
+  }, [entries]);
 
   // Focus input on mount
   useEffect(() => {
@@ -99,124 +120,190 @@ export default function AgentTerminalPage() {
     }
   }, [isProOrBusiness]);
 
-  // --- Polling ---
-
-  const pollSession = useCallback(
-    async (id: string, offset: number) => {
-      if (pollingRef.current) return;
-      pollingRef.current = true;
-
-      let currentOffset = offset;
-
-      while (pollingRef.current) {
-        try {
-          const controller = new AbortController();
-          abortRef.current = controller;
-
-          const res = await fetch(
-            `/api/agent?id=${encodeURIComponent(id)}&since=${currentOffset}`,
-            { signal: controller.signal }
-          );
-
-          if (!res.ok) {
-            const err = await res.json().catch(() => ({ error: "Unknown error" }));
-            addLine("system", `Error: ${err.error || res.statusText}`);
-            setSessionState("error");
-            break;
-          }
-
-          const data = await res.json();
-
-          // Append new lines
-          if (data.lines && data.lines.length > 0) {
-            const newLines: OutputLine[] = data.lines.map(
-              (l: { type?: string; text?: string }) => ({
-                type: (l.type || "stdout") as LineType,
-                text: l.text || "",
-                timestamp: Date.now(),
-              })
-            );
-            setOutput((prev) => [...prev, ...newLines]);
-            currentOffset = data.offset ?? currentOffset + data.lines.length;
-            setPollOffset(currentOffset);
-          }
-
-          // Update state
-          if (data.state) {
-            const mappedState = mapVpsState(data.state);
-            setSessionState(mappedState);
-
-            if (
-              mappedState === "completed" ||
-              mappedState === "error" ||
-              mappedState === "cancelled"
-            ) {
-              // Add exit line
-              if (mappedState === "completed") {
-                addLine("exit", "Session completed successfully.");
-              } else if (mappedState === "cancelled") {
-                addLine("system", "Session cancelled.");
-              }
-              break;
-            }
-          }
-        } catch (err) {
-          if (err instanceof DOMException && err.name === "AbortError") {
-            break;
-          }
-          // Network error — wait and retry
-          await new Promise((r) => setTimeout(r, 2000));
-        }
-      }
-
-      pollingRef.current = false;
-      abortRef.current = null;
-    },
-    []
-  );
-
-  // Cleanup on unmount
+  // Cleanup EventSource on unmount
   useEffect(() => {
     return () => {
-      pollingRef.current = false;
-      abortRef.current?.abort();
+      eventSourceRef.current?.close();
     };
   }, []);
 
+  // --- Helpers ---
+
+  function addEntry(entry: Omit<OutputEntry, "id" | "timestamp">) {
+    setEntries((prev) => [
+      ...prev,
+      { ...entry, id: nextId(), timestamp: Date.now() },
+    ]);
+  }
+
+  function updateToolCard(
+    toolUseId: string,
+    updater: (card: ToolCard) => ToolCard
+  ) {
+    setEntries((prev) =>
+      prev.map((e) => {
+        if (e.type === "tool" && e.toolCard?.toolUseId === toolUseId) {
+          return { ...e, toolCard: updater(e.toolCard!) };
+        }
+        return e;
+      })
+    );
+  }
+
+  // --- SSE Connection ---
+
+  const connectSSE = useCallback(
+    (sid: string) => {
+      // Close any existing connection
+      eventSourceRef.current?.close();
+
+      const es = new EventSource(`/api/agent?sessionId=${encodeURIComponent(sid)}`);
+      eventSourceRef.current = es;
+
+      // Accumulate text chunks into the last text entry for streaming feel
+      let lastTextEntryId: string | null = null;
+
+      es.addEventListener("text", (e) => {
+        const data = JSON.parse(e.data);
+        const chunk = data.text || "";
+
+        // If the last entry was a text entry, append to it for streaming feel
+        if (lastTextEntryId) {
+          setEntries((prev) =>
+            prev.map((entry) =>
+              entry.id === lastTextEntryId
+                ? { ...entry, text: (entry.text || "") + chunk }
+                : entry
+            )
+          );
+        } else {
+          const id = nextId();
+          lastTextEntryId = id;
+          setEntries((prev) => [
+            ...prev,
+            { id, type: "text", text: chunk, timestamp: Date.now() },
+          ]);
+        }
+      });
+
+      es.addEventListener("tool_use", (e) => {
+        // New tool call — reset text accumulation
+        lastTextEntryId = null;
+
+        const data = JSON.parse(e.data);
+        const card: ToolCard = {
+          toolUseId: data.toolUseId,
+          toolName: data.toolName,
+          input: data.input || {},
+          requiresApproval: data.requiresApproval || false,
+          status: "pending",
+          expanded: false,
+        };
+        addEntry({ type: "tool", toolCard: card });
+      });
+
+      es.addEventListener("tool_result", (e) => {
+        const data = JSON.parse(e.data);
+        updateToolCard(data.toolUseId, (card) => ({
+          ...card,
+          result: data.result,
+          status: data.isError
+            ? "error"
+            : data.result?.denied
+              ? "denied"
+              : "success",
+        }));
+      });
+
+      es.addEventListener("approval_required", (e) => {
+        lastTextEntryId = null;
+        const data = JSON.parse(e.data);
+        setSessionState("waiting_approval");
+        addEntry({
+          type: "approval",
+          text: data.message || `Approve "${data.toolName}"?`,
+        });
+      });
+
+      es.addEventListener("approval_resolved", (e) => {
+        const data = JSON.parse(e.data);
+        setSessionState("running");
+        addEntry({
+          type: "system",
+          text: data.approved ? "Approved by user." : "Denied by user.",
+        });
+      });
+
+      es.addEventListener("error", (e) => {
+        lastTextEntryId = null;
+        try {
+          const me = e as MessageEvent;
+          if (me.data) {
+            const data = JSON.parse(me.data);
+            addEntry({
+              type: "error",
+              text: data.message || "An error occurred",
+            });
+          } else {
+            addEntry({ type: "error", text: "Connection error" });
+          }
+        } catch {
+          addEntry({ type: "error", text: "Connection error" });
+        }
+        setSessionState("error");
+      });
+
+      es.addEventListener("done", (e) => {
+        lastTextEntryId = null;
+        let state = "completed";
+        try {
+          const data = JSON.parse(e.data);
+          state = data.state || "completed";
+        } catch {
+          // ignore
+        }
+        setSessionState(state === "error" ? "error" : "completed");
+        if (state !== "error") {
+          addEntry({ type: "system", text: "Session completed." });
+        }
+        es.close();
+        eventSourceRef.current = null;
+      });
+
+      // EventSource's native error event (connection lost)
+      es.onerror = () => {
+        // EventSource auto-reconnects, but if the server closed,
+        // readyState will be CLOSED (2)
+        if (es.readyState === EventSource.CLOSED) {
+          lastTextEntryId = null;
+          // Only show error if we didn't already get a "done" event
+          setSessionState((prev) => {
+            if (prev === "running" || prev === "starting") {
+              addEntry({
+                type: "error",
+                text: "Lost connection to agent server.",
+              });
+              return "error";
+            }
+            return prev;
+          });
+          eventSourceRef.current = null;
+        }
+      };
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
+
   // --- Actions ---
-
-  function addLine(type: LineType, text: string) {
-    setOutput((prev) => [...prev, { type, text, timestamp: Date.now() }]);
-  }
-
-  function mapVpsState(state: string): SessionState {
-    switch (state) {
-      case "running":
-        return "running";
-      case "waiting_approval":
-        return "waiting_approval";
-      case "completed":
-      case "done":
-        return "completed";
-      case "error":
-      case "failed":
-        return "error";
-      case "cancelled":
-      case "killed":
-        return "cancelled";
-      default:
-        return "running";
-    }
-  }
 
   async function startSession(command: string) {
     if (!businessId || !command.trim()) return;
 
     // Reset
-    setOutput([]);
-    setPollOffset(0);
+    setEntries([]);
     setSessionState("starting");
-    addLine("system", `$ ${command}`);
+    addEntry({ type: "system", text: `$ ${command}` });
 
     try {
       const res = await fetch("/api/agent", {
@@ -228,63 +315,78 @@ export default function AgentTerminalPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        addLine("system", `Error: ${data.error || "Failed to start session"}`);
+        addEntry({
+          type: "error",
+          text: data.error || "Failed to start session",
+        });
         setSessionState("error");
         return;
       }
 
-      const id = data.id;
-      setSessionId(id);
+      const sid = data.sessionId;
+      setSessionId(sid);
       setSessionState("running");
-      addLine("system", `Session started (${id.slice(0, 8)}...)`);
+      addEntry({
+        type: "system",
+        text: `Session started (${sid.slice(0, 8)}...)`,
+      });
 
-      // Start polling
-      pollSession(id, 0);
+      // Connect to SSE stream
+      connectSSE(sid);
     } catch {
-      addLine("system", "Error: Failed to connect to agent server");
+      addEntry({
+        type: "error",
+        text: "Failed to connect to agent server",
+      });
       setSessionState("error");
     }
   }
 
   async function handleApprove() {
     if (!sessionId) return;
-    addLine("system", "Approved.");
     setSessionState("running");
 
     try {
       await fetch("/api/agent/approve", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: sessionId }),
+        body: JSON.stringify({ sessionId, approved: true }),
       });
     } catch {
-      addLine("system", "Error: Failed to send approval");
+      addEntry({ type: "error", text: "Failed to send approval" });
     }
   }
 
   async function handleDeny() {
     if (!sessionId) return;
-    await handleCancel();
-  }
-
-  async function handleCancel() {
-    if (!sessionId) return;
-
-    pollingRef.current = false;
-    abortRef.current?.abort();
+    setSessionState("running");
 
     try {
-      await fetch("/api/agent/cancel", {
+      await fetch("/api/agent/approve", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sessionId, approved: false }),
+      });
+    } catch {
+      addEntry({ type: "error", text: "Failed to send denial" });
+    }
+  }
+
+  function handleCancel() {
+    eventSourceRef.current?.close();
+    eventSourceRef.current = null;
+
+    if (sessionId) {
+      // Best-effort cancel on the server (no cancel endpoint on God Server yet)
+      fetch("/api/agent/cancel", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id: sessionId }),
-      });
-    } catch {
-      // Best effort
+      }).catch(() => {});
     }
 
     setSessionState("cancelled");
-    addLine("system", "Session cancelled.");
+    addEntry({ type: "system", text: "Session cancelled." });
   }
 
   function handleSubmit() {
@@ -307,7 +409,10 @@ export default function AgentTerminalPage() {
     } else if (e.key === "ArrowUp") {
       e.preventDefault();
       if (commandHistory.length > 0) {
-        const newIndex = Math.min(historyIndex + 1, commandHistory.length - 1);
+        const newIndex = Math.min(
+          historyIndex + 1,
+          commandHistory.length - 1
+        );
         setHistoryIndex(newIndex);
         setInput(commandHistory[newIndex]);
       }
@@ -325,10 +430,11 @@ export default function AgentTerminalPage() {
   }
 
   function handleNewSession() {
+    eventSourceRef.current?.close();
+    eventSourceRef.current = null;
     setSessionId(null);
     setSessionState("idle");
-    setOutput([]);
-    setPollOffset(0);
+    setEntries([]);
     inputRef.current?.focus();
   }
 
@@ -420,7 +526,7 @@ export default function AgentTerminalPage() {
         className="flex-1 overflow-y-auto p-6 font-mono text-sm leading-relaxed bg-[#010B14]"
         onClick={() => inputRef.current?.focus()}
       >
-        {output.length === 0 && sessionState === "idle" ? (
+        {entries.length === 0 && sessionState === "idle" ? (
           // Suggested commands
           <div className="space-y-6">
             <div>
@@ -428,9 +534,8 @@ export default function AgentTerminalPage() {
                 {businessName}
               </p>
               <p className="text-secondary text-sm">
-                Type a command or pick a suggestion below. The agent can
-                read your weather data, reschedule jobs, and send
-                notifications.
+                Type a command or pick a suggestion below. The agent can read
+                your weather data, reschedule jobs, and send notifications.
               </p>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -455,9 +560,28 @@ export default function AgentTerminalPage() {
           </div>
         ) : (
           // Session output
-          <div className="space-y-0.5">
-            {output.map((line, i) => (
-              <TerminalLine key={i} line={line} />
+          <div className="space-y-2">
+            {entries.map((entry) => (
+              <OutputEntryView
+                key={entry.id}
+                entry={entry}
+                onToggleTool={(toolUseId) => {
+                  setEntries((prev) =>
+                    prev.map((e) =>
+                      e.type === "tool" &&
+                      e.toolCard?.toolUseId === toolUseId
+                        ? {
+                            ...e,
+                            toolCard: {
+                              ...e.toolCard!,
+                              expanded: !e.toolCard!.expanded,
+                            },
+                          }
+                        : e
+                    )
+                  );
+                }}
+              />
             ))}
 
             {/* Approval buttons */}
@@ -507,9 +631,7 @@ export default function AgentTerminalPage() {
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder={
-              isActive
-                ? "Session in progress..."
-                : "Type a command..."
+              isActive ? "Session in progress..." : "Type a command..."
             }
             disabled={isActive}
             className="flex-1 bg-transparent border-none outline-none text-white font-mono text-sm placeholder:text-white/20 disabled:opacity-40 disabled:cursor-not-allowed"
@@ -580,20 +702,152 @@ function SessionBadge({ state }: { state: SessionState }) {
   }
 }
 
-function TerminalLine({ line }: { line: OutputLine }) {
-  const colorClass = {
-    stdout: "text-gray-100",
-    stderr: "text-amber-400",
-    system: "text-accent/60 italic",
-    approval_required: "text-amber-400 font-bold",
-    exit: line.text.toLowerCase().includes("error")
-      ? "text-red-400"
-      : "text-emerald-400",
-  }[line.type];
+function OutputEntryView({
+  entry,
+  onToggleTool,
+}: {
+  entry: OutputEntry;
+  onToggleTool: (toolUseId: string) => void;
+}) {
+  if (entry.type === "text") {
+    return (
+      <div className="text-gray-100 whitespace-pre-wrap break-words">
+        {entry.text}
+      </div>
+    );
+  }
+
+  if (entry.type === "system") {
+    return (
+      <div className="text-accent/60 italic whitespace-pre-wrap break-words">
+        {entry.text}
+      </div>
+    );
+  }
+
+  if (entry.type === "error") {
+    return (
+      <div className="text-red-400 whitespace-pre-wrap break-words">
+        {entry.text}
+      </div>
+    );
+  }
+
+  if (entry.type === "approval") {
+    return (
+      <div className="flex items-center gap-2 text-amber-400 font-bold">
+        <AlertTriangle className="h-4 w-4 shrink-0" />
+        <span className="whitespace-pre-wrap break-words">{entry.text}</span>
+      </div>
+    );
+  }
+
+  if (entry.type === "tool" && entry.toolCard) {
+    return (
+      <ToolCardView card={entry.toolCard} onToggle={onToggleTool} />
+    );
+  }
+
+  return null;
+}
+
+function ToolCardView({
+  card,
+  onToggle,
+}: {
+  card: ToolCard;
+  onToggle: (toolUseId: string) => void;
+}) {
+  const borderColor = {
+    pending: "border-amber-500/30",
+    success: "border-emerald-500/30",
+    error: "border-red-500/30",
+    denied: "border-red-500/30",
+  }[card.status];
+
+  const statusIcon = {
+    pending: (
+      <div className="h-2 w-2 rounded-full bg-amber-400 animate-pulse" />
+    ),
+    success: <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />,
+    error: <XCircle className="h-3.5 w-3.5 text-red-400" />,
+    denied: <XCircle className="h-3.5 w-3.5 text-red-400" />,
+  }[card.status];
+
+  const statusLabel = {
+    pending: "Running...",
+    success: "Completed",
+    error: "Error",
+    denied: "Denied",
+  }[card.status];
 
   return (
-    <div className={`${colorClass} whitespace-pre-wrap break-words`}>
-      {line.text}
+    <div
+      className={`rounded border ${borderColor} bg-white/[0.02] overflow-hidden my-1`}
+    >
+      {/* Tool header — clickable to expand/collapse */}
+      <button
+        onClick={() => onToggle(card.toolUseId)}
+        className="w-full flex items-center gap-2 px-3 py-2 hover:bg-white/[0.02] transition-colors text-left"
+      >
+        {card.expanded ? (
+          <ChevronDown className="h-3.5 w-3.5 text-white/40 shrink-0" />
+        ) : (
+          <ChevronRight className="h-3.5 w-3.5 text-white/40 shrink-0" />
+        )}
+        <Wrench className="h-3.5 w-3.5 text-accent shrink-0" />
+        <span className="text-xs font-bold text-accent uppercase tracking-wider">
+          {formatToolName(card.toolName)}
+        </span>
+        {card.requiresApproval && (
+          <span className="text-[9px] font-bold text-amber-400 bg-amber-400/10 px-1.5 py-0.5 rounded uppercase">
+            Requires Approval
+          </span>
+        )}
+        <span className="ml-auto flex items-center gap-1.5 text-[10px] text-white/40">
+          {statusIcon}
+          <span>{statusLabel}</span>
+        </span>
+      </button>
+
+      {/* Expanded details */}
+      {card.expanded && (
+        <div className="border-t border-white/[0.04] px-3 py-2 space-y-2">
+          {/* Input params */}
+          <div>
+            <p className="text-[10px] text-white/30 uppercase tracking-wider mb-1">
+              Input
+            </p>
+            <pre className="text-xs text-white/60 bg-black/30 rounded p-2 overflow-x-auto max-h-40">
+              {JSON.stringify(card.input, null, 2)}
+            </pre>
+          </div>
+
+          {/* Result */}
+          {card.result !== undefined && (
+            <div>
+              <p className="text-[10px] text-white/30 uppercase tracking-wider mb-1">
+                Result
+              </p>
+              <pre
+                className={`text-xs rounded p-2 overflow-x-auto max-h-40 ${
+                  card.status === "error" || card.status === "denied"
+                    ? "text-red-300 bg-red-500/5"
+                    : "text-emerald-300 bg-emerald-500/5"
+                }`}
+              >
+                {typeof card.result === "string"
+                  ? card.result
+                  : JSON.stringify(card.result, null, 2)}
+              </pre>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
+}
+
+function formatToolName(name: string): string {
+  return name.replace(/_/g, " ");
 }

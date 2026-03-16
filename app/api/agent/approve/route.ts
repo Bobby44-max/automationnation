@@ -2,20 +2,21 @@ import { NextRequest, NextResponse } from "next/server";
 
 export const runtime = "nodejs";
 
-const AGENT_SERVER_URL = process.env.AGENT_SERVER_URL || "https://n8n.srv1021380.hstgr.cloud/raincheck";
+const AGENT_SERVER_URL =
+  process.env.AGENT_SERVER_URL || "http://72.60.170.65:3848";
 const AGENT_SERVER_SECRET = process.env.AGENT_SERVER_SECRET || "";
 
 /**
- * POST /api/agent/approve — Approve a pending tool use
- * Body: { id: string }
+ * POST /api/agent/approve — Approve or deny a pending tool execution
+ * Body: { sessionId: string, approved: boolean }
  */
 export async function POST(request: NextRequest) {
   try {
-    const { id } = await request.json();
+    const { sessionId, approved } = await request.json();
 
-    if (!id) {
+    if (!sessionId) {
       return NextResponse.json(
-        { error: "Session ID is required" },
+        { error: "sessionId is required" },
         { status: 400 }
       );
     }
@@ -27,20 +28,28 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const vpsResponse = await fetch(
-      `${AGENT_SERVER_URL}/APPROVE?id=${encodeURIComponent(id)}`,
-      {
-        method: "POST",
-        headers: {
-          "x-agent-secret": AGENT_SERVER_SECRET,
-        },
-      }
-    );
+    const vpsResponse = await fetch(`${AGENT_SERVER_URL}/api/approve`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${AGENT_SERVER_SECRET}`,
+      },
+      body: JSON.stringify({
+        sessionId,
+        approved: approved !== false,
+      }),
+    });
 
     if (!vpsResponse.ok) {
-      const err = await vpsResponse.text();
+      let errorMessage = "Approve failed";
+      try {
+        const errData = await vpsResponse.json();
+        errorMessage = errData.error || errorMessage;
+      } catch {
+        errorMessage = (await vpsResponse.text()) || errorMessage;
+      }
       return NextResponse.json(
-        { error: err || "Approve failed" },
+        { error: errorMessage },
         { status: vpsResponse.status }
       );
     }
@@ -50,7 +59,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error("Agent approve error:", error);
     return NextResponse.json(
-      { error: "Failed to approve" },
+      { error: "Failed to send approval" },
       { status: 500 }
     );
   }

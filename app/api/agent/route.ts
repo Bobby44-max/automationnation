@@ -1,16 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export const runtime = "nodejs";
-export const maxDuration = 60;
+export const maxDuration = 300; // SSE streams can be long-lived
 
-const AGENT_SERVER_URL = process.env.AGENT_SERVER_URL || "https://n8n.srv1021380.hstgr.cloud/raincheck";
+const AGENT_SERVER_URL =
+  process.env.AGENT_SERVER_URL || "http://72.60.170.65:3848";
 const AGENT_SERVER_SECRET = process.env.AGENT_SERVER_SECRET || "";
 const CONVEX_URL = process.env.NEXT_PUBLIC_CONVEX_URL || "";
 
 /**
  * POST /api/agent — Start a new agent session
  * Body: { command: string, businessId: string }
- * Verifies plan tier server-side via Convex, then forwards to VPS.
+ * Verifies plan tier server-side via Convex, then forwards to God Server.
+ * Returns: { sessionId: string, state: string }
  */
 export async function POST(request: NextRequest) {
   try {
@@ -54,7 +56,8 @@ export async function POST(request: NextRequest) {
       if (planTier !== "pro" && planTier !== "business") {
         return NextResponse.json(
           {
-            error: "Agent Terminal requires All Clear ($129/mo) or Storm Command ($199/mo) plan",
+            error:
+              "Agent Terminal requires All Clear ($129/mo) or Storm Command ($199/mo) plan",
             upgrade: true,
           },
           { status: 403 }
@@ -62,15 +65,15 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Forward to VPS agent server
-    const vpsResponse = await fetch(`${AGENT_SERVER_URL}/START`, {
+    // Forward to God Server — note: God Server expects "message" not "command"
+    const vpsResponse = await fetch(`${AGENT_SERVER_URL}/api/run`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "x-agent-secret": AGENT_SERVER_SECRET,
+        Authorization: `Bearer ${AGENT_SERVER_SECRET}`,
       },
       body: JSON.stringify({
-        command: command.trim(),
+        message: command.trim(),
         businessId,
       }),
     });
@@ -81,7 +84,7 @@ export async function POST(request: NextRequest) {
         const errData = await vpsResponse.json();
         errorMessage = errData.error || errorMessage;
       } catch {
-        errorMessage = await vpsResponse.text() || errorMessage;
+        errorMessage = (await vpsResponse.text()) || errorMessage;
       }
       return NextResponse.json(
         { error: errorMessage },
@@ -101,18 +104,16 @@ export async function POST(request: NextRequest) {
 }
 
 /**
- * GET /api/agent — Long-poll for session output
- * Query: ?id=<sessionId>&since=<offset>
- * Polls VPS for up to 30s, returns new lines + state.
+ * GET /api/agent?sessionId=X — SSE stream proxy
+ * Proxies the SSE event stream from God Server to the browser client.
  */
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
-  const id = searchParams.get("id");
-  const since = searchParams.get("since") || "0";
+  const sessionId = searchParams.get("sessionId");
 
-  if (!id) {
+  if (!sessionId) {
     return NextResponse.json(
-      { error: "Session ID is required" },
+      { error: "sessionId is required" },
       { status: 400 }
     );
   }
@@ -126,34 +127,46 @@ export async function GET(request: NextRequest) {
 
   try {
     const vpsResponse = await fetch(
-      `${AGENT_SERVER_URL}/POLL?id=${encodeURIComponent(id)}&since=${encodeURIComponent(since)}`,
+      `${AGENT_SERVER_URL}/api/stream?sessionId=${encodeURIComponent(sessionId)}`,
       {
         method: "GET",
         headers: {
-          "x-agent-secret": AGENT_SERVER_SECRET,
+          Authorization: `Bearer ${AGENT_SERVER_SECRET}`,
+          Accept: "text/event-stream",
         },
-        signal: AbortSignal.timeout(35000), // 35s timeout (30s long-poll + 5s buffer)
       }
     );
 
     if (!vpsResponse.ok) {
       const err = await vpsResponse.text();
       return NextResponse.json(
-        { error: err || "Poll failed" },
+        { error: err || "Stream failed" },
         { status: vpsResponse.status }
       );
     }
 
-    const data = await vpsResponse.json();
-    return NextResponse.json(data);
-  } catch (error) {
-    // Timeout is expected for long-poll — return empty
-    if (error instanceof DOMException && error.name === "TimeoutError") {
-      return NextResponse.json({ lines: [], state: "running", offset: parseInt(since) });
+    // Pipe the SSE stream through to the client
+    const body = vpsResponse.body;
+    if (!body) {
+      return NextResponse.json(
+        { error: "No stream body from server" },
+        { status: 502 }
+      );
     }
-    console.error("Agent GET error:", error);
+
+    return new Response(body, {
+      status: 200,
+      headers: {
+        "Content-Type": "text/event-stream",
+        "Cache-Control": "no-cache",
+        Connection: "keep-alive",
+        "X-Accel-Buffering": "no",
+      },
+    });
+  } catch (error) {
+    console.error("Agent SSE proxy error:", error);
     return NextResponse.json(
-      { error: "Failed to poll agent" },
+      { error: "Failed to connect to agent stream" },
       { status: 500 }
     );
   }
