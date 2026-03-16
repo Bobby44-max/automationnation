@@ -1,13 +1,16 @@
 /**
  * Rain Check God Terminal — Tool Definitions & Executors
  *
- * 6 tools for the Rain Check Weather Operations AI:
- *   1. weather_check   — Tomorrow.io forecast for a zip code
- *   2. send_email      — SendGrid email dispatch
- *   3. send_sms        — Twilio SMS dispatch
- *   4. check_jobs      — Convex query for today's jobs
- *   5. reschedule_job  — Convex mutation to reschedule (REQUIRES APPROVAL)
- *   6. log_to_notion   — Log operations to Notion page
+ * 9 tools for the Rain Check Weather Operations AI:
+ *   1. weather_check          — Tomorrow.io forecast for a zip code
+ *   2. send_email             — SendGrid email dispatch
+ *   3. send_sms               — Twilio SMS dispatch
+ *   4. check_jobs             — Convex query for today's jobs
+ *   5. reschedule_job         — Convex mutation to reschedule (REQUIRES APPROVAL)
+ *   6. log_to_notion          — Log operations to Notion page
+ *   7. web_search             — Brave Search for weather news and alerts
+ *   8. get_trade_safety       — OSHA/industry safety guidelines lookup
+ *   9. calculate_revenue_impact — Financial impact of weather delays
  */
 
 const https = require("https");
@@ -142,6 +145,69 @@ const toolDefinitions = [
         },
       },
       required: ["title", "content"],
+    },
+  },
+  {
+    name: "web_search",
+    description:
+      "Search the web for weather news, storm alerts, contractor safety bulletins, or any other relevant information. Returns top 5 results with title, URL, and description.",
+    input_schema: {
+      type: "object",
+      properties: {
+        query: {
+          type: "string",
+          description: "Search query (e.g., 'Boston weather alert today', 'OSHA roofing wind safety')",
+        },
+      },
+      required: ["query"],
+    },
+  },
+  {
+    name: "get_trade_safety",
+    description:
+      "Get OSHA and industry safety guidelines for a specific trade and weather condition. Returns authoritative safety rules, thresholds, and recommendations.",
+    input_schema: {
+      type: "object",
+      properties: {
+        trade: {
+          type: "string",
+          enum: ["roofing", "painting", "concrete", "landscaping", "pressure_washing"],
+          description: "The contractor trade type",
+        },
+        condition: {
+          type: "string",
+          enum: ["wind", "rain", "heat", "cold", "ice", "humidity"],
+          description: "The weather condition to get safety guidelines for",
+        },
+      },
+      required: ["trade", "condition"],
+    },
+  },
+  {
+    name: "calculate_revenue_impact",
+    description:
+      "Calculate the financial impact of weather delays on scheduled jobs. Returns revenue at risk, crew idle costs, total exposure, and a recommendation.",
+    input_schema: {
+      type: "object",
+      properties: {
+        jobs_at_risk: {
+          type: "number",
+          description: "Number of jobs that may be impacted by weather",
+        },
+        avg_job_value: {
+          type: "number",
+          description: "Average value per job in dollars",
+        },
+        delay_days: {
+          type: "number",
+          description: "Expected delay in days",
+        },
+        crew_daily_cost: {
+          type: "number",
+          description: "Daily cost of idle crew (default: $800)",
+        },
+      },
+      required: ["jobs_at_risk", "avg_job_value", "delay_days"],
     },
   },
 ];
@@ -434,6 +500,129 @@ async function executeLogToNotion(input) {
   }
 }
 
+async function executeWebSearch(input) {
+  const apiKey = process.env.BRAVE_API_KEY;
+  if (!apiKey) return { error: "BRAVE_API_KEY not configured" };
+
+  const query = encodeURIComponent(input.query);
+  const url = `https://api.search.brave.com/res/v1/web/search?q=${query}&count=5`;
+
+  try {
+    const res = await httpRequest(url, {
+      method: "GET",
+      headers: {
+        "X-Subscription-Token": apiKey,
+        Accept: "application/json",
+      },
+    });
+
+    if (res.status !== 200) {
+      return { error: `Brave Search error (${res.status})`, details: res.data };
+    }
+
+    const results = (res.data?.web?.results || []).map((r) => ({
+      title: r.title,
+      url: r.url,
+      description: r.description,
+    }));
+
+    return {
+      query: input.query,
+      resultCount: results.length,
+      results,
+    };
+  } catch (err) {
+    return { error: `Web search failed: ${err.message}` };
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Trade Safety Lookup (local — no API call)
+// ---------------------------------------------------------------------------
+
+const TRADE_SAFETY = {
+  "roofing|wind": "OSHA 1926.501 — No roofing work above 25mph sustained. Secure all materials. Materials become projectiles above 30mph.",
+  "roofing|rain": "Water intrusion liability during tear-off. Tarp all open decking. No shingle installation on wet surfaces.",
+  "roofing|cold": "Shingles won't seal below 40\u00B0F — adhesive strip failure. Ice/frost = slip hazard. Require safety harness inspection.",
+  "roofing|heat": "Heat illness prevention required above 90\u00B0F. Mandatory water breaks every 20 min. Dark shingles reach 160\u00B0F+ in direct sun.",
+  "roofing|ice": "All roofing work suspended. Ice on roof = fall hazard. No exceptions. Wait for full thaw and dry surface.",
+  "roofing|humidity": "High humidity slows adhesive cure. Extended seal time for self-adhering membranes. Monitor dew point.",
+  "painting|wind": "No spray application above 15mph — overspray drift. Brush/roll only above 10mph. Dust contamination risk.",
+  "painting|rain": "No application within 4 hours of expected rain. Uncured coating will wash. Check 8-hour forecast before starting.",
+  "painting|cold": "Most coatings require 50\u00B0F+ for application and cure. Latex paint fails below 35\u00B0F. Check product TDS.",
+  "painting|heat": "Rapid solvent flash above 95\u00B0F causes bubbling. Paint in shade when possible. Early morning starts recommended.",
+  "painting|humidity": "Coating failure above 85% RH. Extended cure times above 70% RH. Dew point spread under 5\u00B0F = condensation risk.",
+  "painting|ice": "No painting on icy or frosted surfaces. Surface must be dry and above dew point. Wait for full thaw.",
+  "concrete|wind": "Surface dries too fast above 20mph — plastic shrinkage cracking. Use windbreaks or evaporation retarder.",
+  "concrete|rain": "Surface finish damage. Do not pour. Cover fresh pours immediately.",
+  "concrete|cold": "Won't cure below 40\u00B0F. Use heated blankets below 50\u00B0F.",
+  "concrete|heat": "Flash setting above 90\u00B0F. Rapid surface cracking. Use retarder additives. Continuous water curing.",
+  "concrete|humidity": "High humidity slows surface drying but helps curing. Monitor for condensation on forms.",
+  "concrete|ice": "Do not pour on frozen ground or into frozen forms. Subgrade must be thawed minimum 12 inches.",
+  "landscaping|wind": "Chemical spray drift above 15mph. No herbicide/pesticide application. Debris hazard for mowing.",
+  "landscaping|rain": "Wet grass clumps mower deck. Ruts in soft ground from heavy equipment. Delay 24hr after heavy rain.",
+  "landscaping|cold": "Frost heave damages fresh plantings. No planting if ground frost expected within 48hr.",
+  "landscaping|heat": "Heat stress for workers above 95\u00B0F. Mandatory shade breaks. Fresh sod/plantings need extra watering.",
+  "landscaping|humidity": "Fungal disease risk on turf above 85% RH. Avoid watering. Monitor for mold on mulch.",
+  "landscaping|ice": "No equipment operation on icy surfaces. Slip hazard for workers. Postpone all ground work.",
+  "pressure_washing|wind": "Overspray drift above 15mph. Chemical mist hazard. Adjust spray pattern or postpone.",
+  "pressure_washing|rain": "Can work in light rain. Stop for lightning. Heavy rain dilutes cleaning solutions.",
+  "pressure_washing|cold": "Water freezes on surfaces below 32\u00B0F — slip hazard and surface damage. Minimum 40\u00B0F for safe operation.",
+  "pressure_washing|heat": "Chemicals dry too fast on hot surfaces above 95\u00B0F. Pre-wet surfaces. Work in sections.",
+  "pressure_washing|humidity": "Slower drying after wash. Plan for extended dry time before coating or sealing.",
+  "pressure_washing|ice": "Suspended — ice formation on wet surfaces is immediate fall/vehicle hazard. No exceptions.",
+};
+
+function executeGetTradeSafety(input) {
+  const key = `${input.trade}|${input.condition}`;
+  const guideline = TRADE_SAFETY[key] ||
+    "Check local weather service for specific advisories. When in doubt, stand down.";
+
+  return {
+    trade: input.trade,
+    condition: input.condition,
+    guideline,
+    source: TRADE_SAFETY[key] ? "OSHA/Industry Standards" : "General Advisory",
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Revenue Impact Calculator (local — no API call)
+// ---------------------------------------------------------------------------
+
+function executeCalculateRevenueImpact(input) {
+  const jobsAtRisk = input.jobs_at_risk;
+  const avgJobValue = input.avg_job_value;
+  const delayDays = input.delay_days;
+  const crewDailyCost = input.crew_daily_cost || 800;
+
+  const revenueAtRisk = jobsAtRisk * avgJobValue;
+  const crewIdleCost = crewDailyCost * delayDays;
+  const totalExposure = revenueAtRisk + crewIdleCost;
+  const costPerDelayDay = revenueAtRisk / Math.max(delayDays, 1) + crewDailyCost;
+
+  let recommendation;
+  if (totalExposure > 50000) {
+    recommendation = "CRITICAL — Executive notification recommended. Consider emergency rescheduling and client communication immediately.";
+  } else if (totalExposure > 20000) {
+    recommendation = "HIGH IMPACT — Proactive rescheduling recommended. Notify affected clients and crew leads today.";
+  } else if (totalExposure > 5000) {
+    recommendation = "MODERATE — Monitor weather closely. Prepare contingency schedule. Alert crew leads.";
+  } else {
+    recommendation = "LOW IMPACT — Standard weather monitoring. No immediate action required.";
+  }
+
+  return {
+    revenue_at_risk: revenueAtRisk,
+    crew_idle_cost: crewIdleCost,
+    total_exposure: totalExposure,
+    cost_per_delay_day: Math.round(costPerDelayDay),
+    jobs_at_risk: jobsAtRisk,
+    delay_days: delayDays,
+    recommendation,
+  };
+}
+
 // ---------------------------------------------------------------------------
 // Dispatcher
 // ---------------------------------------------------------------------------
@@ -445,6 +634,9 @@ const executors = {
   check_jobs: executeCheckJobs,
   reschedule_job: executeRescheduleJob,
   log_to_notion: executeLogToNotion,
+  web_search: executeWebSearch,
+  get_trade_safety: executeGetTradeSafety,
+  calculate_revenue_impact: executeCalculateRevenueImpact,
 };
 
 async function executeTool(name, input) {

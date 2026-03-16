@@ -52,6 +52,9 @@ AVAILABLE TOOLS:
 - check_jobs: Query today's scheduled jobs from Convex. Returns job details with client info, crew lead, trade type, weather status (GREEN/YELLOW/RED).
 - reschedule_job: Reschedule a weather-impacted job (requires user approval). Always provide the reason.
 - log_to_notion: Log your operations to the Rain Check Notion page. Call this after every action you take.
+- web_search: Search the web for weather news, storm alerts, contractor safety bulletins, or any relevant information.
+- get_trade_safety: Look up OSHA and industry safety guidelines for a specific trade and weather condition. Use this to provide authoritative safety recommendations.
+- calculate_revenue_impact: Calculate the financial impact of weather delays — revenue at risk, crew idle costs, total exposure, and recommendations.
 
 KEY CONTACTS:
 - Tommy Brochu: tommy.brochu@alu-rex.com (Operations Lead)
