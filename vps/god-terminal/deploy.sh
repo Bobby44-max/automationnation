@@ -15,19 +15,9 @@ npm install --production
 
 # Create .env if it doesn't exist
 if [ ! -f .env ]; then
-cat > .env << 'ENVFILE'
-ANTHROPIC_API_KEY=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
-AGENT_SERVER_SECRET=rc2026demo
-SENDGRID_API_KEY=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
-SENDGRID_FROM_EMAIL=bobby@apexai.technology
-TWILIO_ACCOUNT_SID=AC9c75a89d5628b0ed1c1d6ee336e1ad8b
-TWILIO_AUTH_TOKEN=f2132e6f563365d6315c3f2fc5cd7931
-TWILIO_PHONE_NUMBER=+17813748995
-TOMORROW_IO_API_KEY=enhsRq7TiV2UttBBAcuJQ7HrHvVXVcBY
-CONVEX_URL=https://charming-marten-399.convex.cloud
-PORT=3848
-ENVFILE
-echo "Created .env with all keys"
+cp .env.example .env
+echo "Created .env from template — fill in API keys manually on the VPS"
+echo "NEVER commit real keys to the repo"
 else
 echo ".env already exists, skipping"
 fi
@@ -45,4 +35,6 @@ echo "=== DONE ==="
 echo "God Terminal running on port 3848"
 echo "Health check: curl http://localhost:3848/health"
 echo ""
-echo "Test: curl http://localhost:3848/health"
+echo "IMPORTANT: Ensure 'claude' CLI is installed and authed on this VPS:"
+echo "  claude auth login"
+echo ""
