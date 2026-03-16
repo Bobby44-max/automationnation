@@ -79,7 +79,7 @@ export function WeatherStrip({ businessId }: WeatherStripProps) {
         <div className="ml-auto text-caption text-muted font-medium">
         {weatherSummary
           ? `Updated ${new Date(weatherSummary.timestamp).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}`
-          : “Rain expected 10a — 3p”}
+          : "Rain expected 10a — 3p"}
         </div>
         </div>
 
