@@ -95,9 +95,8 @@ iptables -C INPUT -p tcp --dport 3848 -j ACCEPT 2>/dev/null || iptables -A INPUT
 
 echo ""
 echo "=== DONE ==="
-echo "God Terminal running on port 3848"
+echo "God Terminal v3.0.0 (SDK + Notion) running on port 3848"
 echo "Health check: curl http://localhost:3848/health"
 echo ""
-echo "IMPORTANT: Ensure 'claude' CLI is installed and authed on this VPS:"
-echo "  claude auth login"
+echo "IMPORTANT: Ensure .env has ANTHROPIC_API_KEY and NOTION_API_TOKEN set"
 echo ""

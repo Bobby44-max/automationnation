@@ -1,12 +1,13 @@
 /**
  * Rain Check God Terminal — Tool Definitions & Executors
  *
- * 5 tools for the Rain Check Weather Operations AI:
+ * 6 tools for the Rain Check Weather Operations AI:
  *   1. weather_check   — Tomorrow.io forecast for a zip code
  *   2. send_email      — SendGrid email dispatch
  *   3. send_sms        — Twilio SMS dispatch
  *   4. check_jobs      — Convex query for today's jobs
  *   5. reschedule_job  — Convex mutation to reschedule (REQUIRES APPROVAL)
+ *   6. log_to_notion   — Log operations to Notion page
  */
 
 const https = require("https");
@@ -26,7 +27,7 @@ const toolDefinitions = [
       properties: {
         zip_code: {
           type: "string",
-          description: "US zip code (e.g., '85142' for Queen Creek, AZ)",
+          description: "US zip code (e.g., '85142' for Queen Creek, AZ). Default to '02101' for Boston if not specified.",
         },
         hours: {
           type: "number",
@@ -122,6 +123,25 @@ const toolDefinitions = [
         },
       },
       required: ["job_id", "new_date", "reason"],
+    },
+  },
+  {
+    name: "log_to_notion",
+    description:
+      "Log an operation to the Rain Check Notion operations log. Call this after every operation to record what you did. Include a clear title and detailed content about the action taken, results, and any relevant data.",
+    input_schema: {
+      type: "object",
+      properties: {
+        title: {
+          type: "string",
+          description: "Title of the log entry (e.g., 'Weather Check — Boston 02101', 'Email Sent — Tommy Brochu')",
+        },
+        content: {
+          type: "string",
+          description: "Detailed content describing what was done, results, data points, and any follow-up needed",
+        },
+      },
+      required: ["title", "content"],
     },
   },
 ];
@@ -301,7 +321,6 @@ async function executeCheckJobs(input) {
   if (!convexUrl) return { error: "CONVEX_URL not configured" };
 
   const date = input.date || new Date().toISOString().split("T")[0];
-  // Default business ID — for the demo this is Apex Roofing
   const businessId = input.business_id || process.env.DEFAULT_BUSINESS_ID;
 
   if (!businessId) {
@@ -367,6 +386,54 @@ async function executeRescheduleJob(input) {
   }
 }
 
+async function executeLogToNotion(input) {
+  const notionToken = process.env.NOTION_API_TOKEN;
+  if (!notionToken) return { error: "NOTION_API_TOKEN not configured" };
+
+  const parentPageId = "325b7955e25381adacd9cdf02e213df9";
+
+  const payload = {
+    parent: { page_id: parentPageId },
+    properties: {
+      title: {
+        title: [{ text: { content: input.title } }],
+      },
+    },
+    children: [
+      {
+        object: "block",
+        type: "paragraph",
+        paragraph: {
+          rich_text: [{ type: "text", text: { content: input.content } }],
+        },
+      },
+    ],
+  };
+
+  try {
+    const res = await httpRequest("https://api.notion.com/v1/pages", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${notionToken}`,
+        "Content-Type": "application/json",
+        "Notion-Version": "2022-06-28",
+      },
+      body: payload,
+    });
+
+    if (res.status >= 200 && res.status < 300) {
+      return {
+        success: true,
+        message: `Logged to Notion: ${input.title}`,
+        pageId: res.data?.id,
+      };
+    }
+    return { error: `Notion API error (${res.status})`, details: res.data };
+  } catch (err) {
+    return { error: `Notion log failed: ${err.message}` };
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Dispatcher
 // ---------------------------------------------------------------------------
@@ -377,6 +444,7 @@ const executors = {
   send_sms: executeSendSms,
   check_jobs: executeCheckJobs,
   reschedule_job: executeRescheduleJob,
+  log_to_notion: executeLogToNotion,
 };
 
 async function executeTool(name, input) {
