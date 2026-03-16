@@ -10,6 +10,15 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: "/schedule",
+        destination: "/scheduling/weather",
+        permanent: false,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

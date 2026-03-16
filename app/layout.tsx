@@ -10,7 +10,7 @@ const raleway = Raleway({
 });
 
 export const metadata: Metadata = {
-  title: "Rain Check â€” Weather Scheduling for Contractors",
+  title: “Rain Check — Weather Scheduling for Contractors”,
   description:
     "Automated weather monitoring and job rescheduling for roofing, painting, landscaping, and concrete contractors. Protect $47K+ in annual revenue.",
 };

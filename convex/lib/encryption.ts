@@ -1,3 +1,4 @@
+"use node";
 /**
  * Encryption Utility — AES-256-GCM for credentials at rest
  *

@@ -93,7 +93,9 @@ export function Sidebar() {
 
         {/* Footer */}
         <div className="relative z-10 px-5 py-5 border-t border-white/[0.04]">
-          <p className="text-[10px] font-mono font-bold text-dim uppercase tracking-widest italic opacity-40 group-hover:opacity-100 transition-opacity">Rain Check v1.0.4-Industrial</p>
+          {process.env.NODE_ENV === "development" && (
+            <p className="text-[10px] font-mono font-bold text-dim uppercase tracking-widest italic opacity-40 group-hover:opacity-100 transition-opacity">Rain Check v1.0.4-Industrial</p>
+          )}
         </div>
       </aside>
     </>

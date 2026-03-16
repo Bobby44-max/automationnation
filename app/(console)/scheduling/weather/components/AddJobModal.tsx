@@ -146,7 +146,7 @@ export function AddJobModal({ open, onClose, businessId }: AddJobModalProps) {
             <option value="">Select client...</option>
             {clients?.map((c) => (
               <option key={c._id} value={c._id}>
-                {c.name} â€” {c.zipCode}
+                {c.name} — {c.zipCode}
               </option>
             ))}
           </select>
